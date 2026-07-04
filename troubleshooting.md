@@ -1,0 +1,66 @@
+# Troubleshooting — errors decoded
+
+Real errors you may actually hit, each with the plain-language cause and the fix. Search this file (Ctrl+F) for a phrase from your error before panicking — most walls of red text have a two-minute cure.
+
+---
+
+## Setup (Lesson 00)
+
+### `'java' is not recognized as an internal or external command` (same for `mvn` / `git`)
+
+**Cause:** the terminal searches only the folders listed in the PATH environment variable, and the tool's folder isn't on that list — *or* it is, but your terminal window was opened before the install and still holds the old list.
+
+**Fix, in order:**
+1. Close the terminal completely and open a new one. (Fixes it 9 times out of 10.)
+2. Still failing? The installer didn't update PATH. Add it by hand: Start → type "environment variables" → *Edit the system environment variables* → **Environment Variables…** → under *User variables* select `Path` → **Edit** → **New** → paste the tool's `bin` folder, e.g. `C:\Program Files\Eclipse Adoptium\jdk-21.0.7-hotspot\bin` — then open a new terminal and verify again.
+
+### `java -version` shows the wrong version (e.g. 1.8 or 17 instead of 21)
+
+**Cause:** more than one Java is installed and an older one sits earlier in the PATH list — the first match wins.
+
+**Fix:** run `where.exe java` to see every `java.exe` the terminal can find, in search order. Then either uninstall the old Java (Settings → Apps) or move the Temurin 21 entry **above** the older one in the PATH editor (see previous entry — the *Move Up* button).
+
+### `mvn -version` fails with `JAVA_HOME not found` / `JAVA_HOME is set to an invalid directory`
+
+**Cause:** Maven locates Java through the `JAVA_HOME` environment variable — which must hold the JDK's folder (NOT its `bin` subfolder) — and it's missing or pointing at a deleted/old install.
+
+**Fix:** in the same Environment Variables dialog, create or edit `JAVA_HOME` under *User variables*, value e.g. `C:\Program Files\Eclipse Adoptium\jdk-21.0.7-hotspot` (check the real folder name in File Explorer — the patch number in yours may differ). New terminal, verify with `mvn -version` and confirm its `Java version:` line says 21.
+
+### `mvn -version` reports a different Java than `java -version`
+
+**Cause:** the two tools resolve Java differently — `java` via PATH, Maven via `JAVA_HOME` — and they point at different installs.
+
+**Fix:** make both point at Temurin 21 using the two entries above. They must agree, or the app you run and the app Maven builds will differ.
+
+### `winget : The term 'winget' is not recognized`
+
+**Cause:** winget arrives via the Microsoft Store's "App Installer" package, and this machine doesn't have it (common on fresh or corporate Windows).
+
+**Fix:** open the Microsoft Store, search **App Installer**, update/install it. Or skip winget entirely — every Lesson 00 install has a manual-download alternative that works identically.
+
+### `winget install ...` says `No package found matching input criteria`
+
+**Cause:** package names in the winget catalog occasionally change.
+
+**Fix:** search the catalog for the current name — `winget search temurin`, `winget search maven`, `winget search git` — and install the matching ID. Or use the manual download path from Lesson 00.
+
+### `git commit` fails with `Author identity unknown` / `Please tell me who you are`
+
+**Cause:** every commit records an author, and Git hasn't been told your name and email yet on this machine.
+
+**Fix:**
+```powershell
+git config --global user.name "Your Name"
+git config --global user.email "you@example.com"
+```
+Then rerun the commit.
+
+### `git push` opens a browser window asking me to sign in
+
+**Not an error.** The first push must prove you're allowed to write to the GitHub repository. Sign in once in that browser window; Git Credential Manager (installed with Git for Windows) remembers you for all future pushes.
+
+### `git push` rejected with `Authentication failed` or `Permission denied`
+
+**Cause:** stored credentials are stale, or the remote URL points at a repository your account can't write to.
+
+**Fix:** check the remote with `git remote -v` — the URL must be *your* repository. If it is, clear the saved credential (Start → "Credential Manager" → Windows Credentials → remove the `git:https://github.com` entry) and push again to trigger a fresh sign-in.
