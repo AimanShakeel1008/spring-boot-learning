@@ -64,3 +64,58 @@ Then rerun the commit.
 **Cause:** stored credentials are stale, or the remote URL points at a repository your account can't write to.
 
 **Fix:** check the remote with `git remote -v` — the URL must be *your* repository. If it is, clear the saved credential (Start → "Credential Manager" → Windows Credentials → remove the `git:https://github.com` entry) and push again to trigger a fresh sign-in.
+
+---
+
+## Build and first run (Lesson 02)
+
+### `The goal you specified requires a project to execute but there is no POM in this directory`
+
+**Cause:** you ran `mvn` from a folder that has no `pom.xml`. Maven only works from the project root. In this repo the project root is two levels below the repo root.
+
+**Fix:** `cd phase-1-monolith\ecommerce` first, then rerun the command.
+
+### The first build prints hundreds of `Downloading from central:` lines and takes minutes
+
+**Not an error.** Maven is stocking its local cache (`C:\Users\you\.m2\repository`) with the whole dependency tree — once per machine, ever. Let it finish; the next build reads from disk and takes seconds.
+
+### `Could not resolve dependencies` / `Could not transfer artifact`
+
+**Cause:** the network hiccupped mid-download (or a proxy/VPN blocked Maven Central), possibly leaving a half-downloaded file in the cache.
+
+**Fix:** check your connection and rerun — Maven resumes what's missing. If the *same* artifact keeps failing, delete that artifact's folder inside `C:\Users\you\.m2\repository\...` (follow the group/artifact path in the error message) and rerun to force a fresh download.
+
+### `Web server failed to start. Port 8080 was already in use.`
+
+**Cause:** ports are exclusive — some other program (very often a previous, still-running copy of this very app in a forgotten terminal) already owns door 8080.
+
+**Fix:** find and stop the owner:
+```powershell
+netstat -ano | findstr :8080        # last column = the owning process ID (PID)
+taskkill /PID <that-number> /F      # stop it
+```
+Check any other open terminals first — if one is running the app, `Ctrl+C` there is the polite version.
+
+### `error: release version 21 not supported` / `invalid target release: 21`
+
+**Cause:** Maven is running under an older JDK than the project's pinned Java 21. Maven finds Java via `JAVA_HOME`, which can point somewhere different from what `java -version` shows (that one follows `PATH`).
+
+**Fix:** run `mvn -version` and read its `Java version:` line. If it isn't 21, point `JAVA_HOME` at the Temurin 21 folder (see the JAVA_HOME entry in the Setup section above), open a new terminal, verify again.
+
+### Browser shows "Whitelabel Error Page ... status=404"
+
+**Usually not an error.** This is Spring Boot's built-in page for "the server is running, but no code claims that URL." While the app has no endpoints (or you mistyped a URL), this page is the *expected* answer. It only signals a real problem when a URL you *know* exists produces it — then check the app's startup log for errors and the URL for typos.
+
+### The terminal "hangs" after `Started EcommerceApplication`
+
+**Not stuck — alive.** A server is a program that deliberately never finishes; it's parked, listening for requests. Stop it with `Ctrl+C` in that terminal. Need to run other commands while it serves? Open a second terminal.
+
+### `BUILD FAILURE` with `There are test failures`
+
+**Cause:** the Maven conveyor belt halts when any test fails — that's the safety net doing its job, not Maven being difficult.
+
+**Fix:** scroll up to the `[ERROR]` lines above the summary — they name the failing test class, method, and the expectation that broke. Run `mvn test` alone to reproduce faster. The failing assertion is the lesson: something the tests promise is no longer true.
+
+### A tutorial says `spring-boot-starter-web` but our pom says `spring-boot-starter-webmvc`
+
+**Not an error — a rename.** Spring Boot 4 renamed several starters (`web` → `webmvc`, `-test` variants likewise). The old names still work but are deprecated. Use the new names; treat old-name tutorials as carbon-dated (pre-Boot-4).

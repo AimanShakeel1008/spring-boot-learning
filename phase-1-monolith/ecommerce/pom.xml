@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- pom.xml: Maven's recipe file for this project - "POM" = Project Object Model,
+     Maven's description of WHAT this project is, WHAT it needs, and HOW to build it.
+     Maven refuses to work in any folder that lacks this file. -->
+
+<!-- The root element. The xmlns/xsi attributes name the official POM format rules
+     so tools (and your IDE) can validate this file's structure as you type. -->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+	<!-- The version of the POM file FORMAT itself (not of our project, not of Maven).
+	     4.0.0 is the only value in use; it exists so the format could evolve someday. -->
+	<modelVersion>4.0.0</modelVersion>
+
+	<!-- THE PARENT: our pom inherits from Spring Boot's parent pom. This is the
+	     JAR-hell killer from Lesson 01/02: the parent carries the version numbers of
+	     hundreds of libraries, all tested together by the Spring team, which is why
+	     our own <dependency> entries below need NO <version> lines. -->
+	<parent>
+		<!-- Who publishes the parent: the Spring Boot project itself. -->
+		<groupId>org.springframework.boot</groupId>
+		<!-- Which artifact: the starter parent, made to be inherited by apps like ours. -->
+		<artifactId>spring-boot-starter-parent</artifactId>
+		<!-- THE course pin: Spring Boot 4.1.0 - verified as the current latest release
+		     against spring.io and the Spring Boot GitHub releases on 2026-07-05.
+		     This one number decides the version of nearly everything we use. -->
+		<version>4.1.0</version>
+		<!-- Empty on purpose: "don't look for the parent on my disk - fetch it from the
+		     repository like any dependency." (Non-empty is for multi-project setups.) -->
+		<relativePath/>
+	</parent>
+
+	<!-- OUR OWN COORDINATES: this project's postal address in the Maven world
+	     (group = who makes it, artifact = which product, version = which edition). -->
+	<!-- Who makes this: us. Reverse-domain style keeps names globally unique. -->
+	<groupId>com.ecommerce</groupId>
+	<!-- The product name; also becomes the built JAR's file name. -->
+	<artifactId>ecommerce</artifactId>
+	<!-- Our edition. 0.0.1 = first baby version; -SNAPSHOT = Maven's marker for
+	     "still in development, not a frozen release" (a release would drop the suffix). -->
+	<version>0.0.1-SNAPSHOT</version>
+	<!-- Human-friendly display name, used in build logs and IDE views. -->
+	<name>ecommerce</name>
+	<!-- One line for humans reading this file about what the project is. -->
+	<description>E-Commerce platform monolith - Phase 1 of the Spring Boot learning project</description>
+
+	<!-- Settings the build reads. -->
+	<properties>
+		<!-- Compile for Java 21 - our pinned LTS from Lesson 00. The parent pom reads
+		     this property and configures the compiler accordingly. -->
+		<java.version>21</java.version>
+	</properties>
+
+	<!-- WHAT THIS PROJECT NEEDS: each entry is a job declaration (a starter), and
+	     Maven fetches it plus everything it transitively needs from Maven Central
+	     into the local cache (~/.m2), then puts it all on the classpath. -->
+	<dependencies>
+		<!-- "This is a web application (Spring MVC style)": pulls in the web machinery,
+		     embedded Tomcat, and JSON handling - versions chosen by the parent.
+		     NOTE the Boot-4 name: webmvc. The name old tutorials show
+		     (spring-boot-starter-web) is deprecated since Boot 4. -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-webmvc</artifactId>
+		</dependency>
+
+		<!-- "And it will be tested": JUnit and the Spring test tools for web apps.
+		     Boot 4's per-technology test starter (replaces the old lone starter-test). -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-webmvc-test</artifactId>
+			<!-- scope=test: available while running tests, but NOT packaged into the
+			     final application JAR - test tools have no business in production. -->
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+
+	<!-- HOW TO BUILD: extra abilities bolted onto Maven. -->
+	<build>
+		<plugins>
+			<!-- The Spring Boot Maven plugin, which gives us:
+			     1) `mvn spring-boot:run` - build and start the app in one command;
+			     2) repackaging `mvn package`'s plain JAR into the self-contained
+			        EXECUTABLE JAR (app + dependencies + embedded Tomcat) that runs
+			        anywhere with `java -jar`. (Version: inherited from the parent.) -->
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+			</plugin>
+		</plugins>
+	</build>
+
+</project>

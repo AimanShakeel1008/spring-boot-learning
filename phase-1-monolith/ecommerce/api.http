@@ -1,0 +1,12 @@
+# api.http - one runnable HTTP request per endpoint of our application.
+# Format: the "REST Client" plain-text format. In VS Code install the extension
+# named "REST Client" (by Huachao Mao) and a "Send Request" link appears above
+# each request; IntelliJ IDEA Ultimate has this built in (Community: use the
+# browser or curl for now). Each request block is separated by a ### line.
+#
+# The app has NO endpoints yet - no code claims any URL. This first request
+# exists to PROVE the server is alive: it asks for "/" and the correct answer
+# is a 404 Not Found error page, which means "server running, URL unclaimed."
+
+### Is the server alive? (expected result: 404 Not Found - that IS the success signal for now)
+GET http://localhost:8080/

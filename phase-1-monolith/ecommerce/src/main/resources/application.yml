@@ -1,0 +1,16 @@
+# application.yml - the application's settings file, read automatically at startup.
+# This is where we write down our DISAGREEMENTS with Spring Boot's defaults
+# (Lesson 01: opinionated defaults - you only configure where you deviate).
+#
+# The format is YAML: nesting is expressed by indentation (2 spaces per level),
+# values follow a colon. `spring: application: name:` below means one setting
+# whose full name is spring.application.name. (YAML vs .properties in Lesson 29.)
+#
+# Secrets NEVER go in this file - it is committed to Git. Real secret values live
+# in environment variables or the git-ignored application-local.yml (none yet).
+
+spring:
+  application:
+    # The application's own name - appears in logs and, later, in monitoring
+    # and service discovery. Our one (cosmetic) deviation from the defaults so far.
+    name: ecommerce

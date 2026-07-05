@@ -16,23 +16,45 @@ This repository is a complete E-Commerce backend, built step by step as a learni
 | Tool | Version |
 |---|---|
 | Java | 21 (LTS) — Eclipse Temurin |
-| Spring Boot | 4.1.x |
+| Spring Boot | **4.1.0** (verified current, 2026-07-05) |
 | Build | Maven |
 
 ## Current status
 
-**Chapter 0 complete — environment ready.** JDK 21, Maven, IntelliJ IDEA, and Git are installed and verified; this repository is connected to GitHub. No application code exists yet — the first Spring Boot project is scaffolded in Chapter 1.
+**The Phase-1 monolith exists and runs.** The `ecommerce` application is scaffolded (Spring Boot 4.1.0, Java 21, Maven), starts an embedded Tomcat on port 8080, and passes its first self-check test. No business features yet — endpoints arrive chapter by chapter.
+
+## How to run
+
+```powershell
+cd phase-1-monolith\ecommerce
+mvn spring-boot:run
+```
+
+Then open `http://localhost:8080/` — for now you'll see Spring Boot's Whitelabel 404 page, which is expected: the server is alive; no URL is claimed yet. Stop the app with `Ctrl+C`.
+
+Run the tests:
+
+```powershell
+cd phase-1-monolith\ecommerce
+mvn test
+```
+
+Build the self-contained executable JAR and run it production-style:
+
+```powershell
+cd phase-1-monolith\ecommerce
+mvn clean package
+java -jar target\ecommerce-0.0.1-SNAPSHOT.jar
+```
+
+Ready-to-send requests for every endpoint live in `phase-1-monolith/ecommerce/api.http` (VS Code: install the "REST Client" extension to get click-to-send).
 
 ## Repository layout
 
 - `lessons/` — the full written curriculum, one markdown file per lesson, organized by phase and chapter
-- `phase-1-monolith/` — the monolith's code *(arrives in Chapter 1)*
+- `phase-1-monolith/ecommerce/` — the monolith (live code)
 - `phase-2-microservices/`, `phase-3-production/` — later architectural stages
 - `glossary.md` — every technical term defined, with the lesson that introduced it
 - `troubleshooting.md` — real errors, decoded: cause + fix
 - `architecture-doc.md` — the current shape of the system, kept up to date chapter by chapter
 - `.env.example` — names (never values) of the secrets the system expects
-
-## How to run
-
-Nothing to run yet. From Chapter 1 onward, this section will always contain the exact commands to start the current system.
