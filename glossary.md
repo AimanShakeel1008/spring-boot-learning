@@ -6,6 +6,14 @@ Every term this course introduces, with its plain-language definition and the le
 |---|---|---|
 | **404 Not Found** | HTTP's standard answer for "the server is fine, but nothing lives at that URL." Status codes get their full lesson in Lesson 11. | Lesson 02 |
 | **annotation** | A label starting with `@` attached to code; it doesn't run, it's read by frameworks and tools as an instruction about the code it sits on — a sticky note on a folder. | Lesson 01 |
+| **`ApplicationContext`** | The container that holds every bean Spring created and manages the connections between them — the running application's assembled "brain." `SpringApplication.run(...)` builds it and returns it. | Lesson 03 |
+| **bean** | An object Spring creates and manages for you (instead of you writing `new`), then hands to whoever needs it. `@Component`/`@Service`/`@Repository`/`@Controller` are all kinds of beans. Full story ("IoC"): Chapter 2. | Lesson 03 |
+| **`CommandLineRunner`** | A one-method interface; a bean that implements it has its `run(...)` called once, automatically, right after startup finishes — the official place for a "do this once on boot" action. | Lesson 03 |
+| **`@ComponentScan`** | One of the three annotations inside `@SpringBootApplication`: finds bean-marked classes starting from its own package and searching **every sub-package below it only** — which is why the main class sits at the top-level package. | Lesson 03 |
+| **`@Configuration`** | One of the three annotations inside `@SpringBootApplication`: marks a class as a source of setup decisions and a legitimate place to define beans. | Lesson 03 |
+| **condition evaluation report** | The list printed by running with `--debug` showing every auto-configuration recipe and whether its conditions matched ("Positive/Negative matches") — `@EnableAutoConfiguration` showing its work. | Lesson 03 |
+| **`DispatcherServlet`** | The central web bean that web auto-configuration creates; its presence in the context is the fingerprint that the web layer was configured. Full treatment: Chapter 3. | Lesson 03 |
+| **`@EnableAutoConfiguration`** | One of the three annotations inside `@SpringBootApplication`: switches on the auto-configuration rule engine (Lesson 01) — apply every recipe whose conditions pass. | Lesson 03 |
 | **argument (command)** | An extra word after a command's name telling it what exactly to do — in `java -version`, `-version` is the argument. | Lesson 00 |
 | **artifact** | A specific built product at a specific Maven address — in practice, the actual JAR file identified by coordinates. Our project is itself an artifact: `com.ecommerce:ecommerce:0.0.1-SNAPSHOT`. | Lesson 02 |
 | **auto-configuration** | Spring Boot's startup rule engine: ~150 candidate "recipes," each guarded by conditions (mainly "is the library on the classpath?" and "did the user define their own?"); surviving recipes configure the app. | Lesson 01 |
@@ -48,6 +56,7 @@ Every term this course introduces, with its plain-language definition and the le
 | **Maven** | The build tool used throughout this course: coordinates, Central, local cache, transitive resolution, lifecycle, plugins. | Lesson 00 (named) / Lesson 02 (full treatment) |
 | **Maven Central** | The world's default public warehouse of Java libraries, addressed by coordinates — where Maven fetches everything it doesn't already have cached. | Lesson 02 |
 | **Maven wrapper (`mvnw`)** | Small committed scripts that auto-download a project-pinned Maven so teammates need no pre-installed Maven. Useful on teams; we use our Lesson-00 installed Maven instead. | Lesson 02 |
+| **meta-annotation (composed annotation)** | An annotation built out of other annotations: wearing it is the same as wearing all the ones it is annotated with. `@SpringBootApplication` is one — it bundles `@Configuration` + `@ComponentScan` + `@EnableAutoConfiguration`. | Lesson 03 |
 | **opinionated defaults** | For every configuration question, Spring Boot ships a pre-chosen reasonable answer that applies automatically — every one of which you can override; you write down only your disagreements. | Lesson 01 |
 | **package (Java)** | Java's namespace for classes: a dotted name (`com.ecommerce`) declared at the top of each file, which must mirror the file's folder path under the source root. | Lesson 02 |
 | **parent POM** | A pom your pom inherits from. Ours — `spring-boot-starter-parent` — carries the tested-together version table for hundreds of libraries, which is why our dependencies declare no versions. | Lesson 02 |
@@ -69,6 +78,7 @@ Every term this course introduces, with its plain-language definition and the le
 | **Spring Boot** | Spring Framework pre-assembled: starters + auto-configuration + embedded server + opinionated defaults. Not a replacement for Framework — a layer on top of it. | Lesson 01 |
 | **Spring Framework** | The core machinery (2004, Rod Johnson): object management, web handling, data access, transactions — the engine every Spring Boot app runs on. | Lesson 01 |
 | **Spring Initializr** | The official Spring project generator at start.spring.io: answer a short form, receive a correct, current, buildable skeleton. | Lesson 02 |
+| **`@SpringBootApplication`** | The label on the main class; a meta-annotation bundling three jobs — `@Configuration` (this class holds config), `@ComponentScan` (find my beans from here down), `@EnableAutoConfiguration` (auto-configure what my libraries imply). | Lesson 03 |
 | **@SpringBootTest** | The annotation marking a test that starts the entire application for real inside the test run. Full treatment in Lesson 59. | Lesson 02 |
 | **starter** | A dependency that names a *job* ("web application") rather than a library, pulling in the whole correct, version-compatible bundle for that job. Boot 4 names: `spring-boot-starter-webmvc` (the pre-4 name `spring-boot-starter-web` is deprecated). | Lesson 01 |
 | **terminal** | A window where you type text commands and the computer answers in text. Also called command line, console, or shell. Ours is PowerShell. | Lesson 00 |
