@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Lesson 04 — Inversion of Control, the Soul of Spring</title>
+  <link rel="stylesheet" href="../../assets/lesson.css">
+</head>
+<body>
+<div class="page">
+
+  <aside class="toc">
+    <p class="toc-title">On this page</p>
+    <nav>
+      <a href="#problem">1 · The Problem</a>
+      <a href="#analogy">2 · Real-World Analogy</a>
+      <a href="#concept">3 · The Concept Explained</a>
+      <a href="#wrong">4 · The Wrong Way</a>
+      <a href="#right">5 · The Right Way</a>
+      <a href="#applied">6 · Applied to Our Project</a>
+      <a href="#gotchas">7 · Gotchas &amp; Mistakes</a>
+      <a href="#tradeoffs">8 · Tradeoffs</a>
+      <a href="#takeaways">9 · Key Takeaways</a>
+      <a href="#challenge">10 · Coding Challenge</a>
+      <a href="#next">11 · What Is Next</a>
+    </nav>
+    <div class="prevnext">
+      <a class="prev" href="../chapter-01-getting-started/chapter-01-summary.html">← Ch. 1 Summary</a>
+      <a class="next disabled" href="#">Lesson 05 (soon)</a>
+    </div>
+  </aside>
+
+  <main>
+
+    <header class="lesson">
+      <p class="kicker">Phase 1 · Chapter 02 — IoC, DI, and the Container · Lesson 04</p>
+      <h1>Inversion of Control, the Soul of Spring</h1>
+      <p class="subtitle">Tight coupling, its cure, and the principle every annotation in the rest of this course stands on — built from nothing, in plain Java, with no Spring magic to hide behind.</p>
+      <p class="meta">Files created (all clearly-labelled, for-learning-only demos): <code>demos/ioc/ReceiptSender.java</code> · <code>demos/ioc/EmailReceiptSender.java</code> · <code>demos/ioc/TightlyCoupledOrderService.java</code> · <code>demos/ioc/LooselyCoupledOrderService.java</code> · <code>src/test/java/com/ecommerce/demos/ioc/InversionOfControlDemoTests.java</code> · Prerequisites: Lessons 01 and 03</p>
+    </header>
+
+    <section id="problem">
+      <h2><span class="secno">1</span>The Problem</h2>
+      <p>Picture the E-Commerce system a few weeks from now. You have an <code>OrderService</code> that places an order and then sends the customer a receipt by email. You wrote the obvious thing: inside <code>OrderService</code>, you did <code>new EmailReceiptSender()</code> and called it. It worked. You shipped it. Everyone was happy.</p>
+      <p>Then reality arrives in three waves. <strong>Wave one:</strong> the business wants SMS receipts for some customers, not email. But <code>OrderService</code> is welded to <code>EmailReceiptSender</code> — the choice is buried inside it — so you have to crack open <code>OrderService</code> and edit it, even though the <em>ordering</em> logic hasn't changed at all. <strong>Wave two:</strong> you sit down to write a test for <code>OrderService.placeOrder(...)</code> and discover you can't, not without a real email sender firing off real emails every time the test runs, because the service builds its own sender and gives you no way to substitute a harmless fake. <strong>Wave three:</strong> multiply this by every service in the system — payments, notifications, inventory — each one hard-wiring the exact classes it depends on. Change one low-level class and you're editing a dozen high-level ones. The system has quietly fused into a single rigid block where nothing can move without everything moving.</p>
+      <p>That fusing has a name — <strong>tight coupling</strong> — and it is the disease this entire chapter cures. The cure has a name too — <strong>Inversion of Control</strong> — and it is so central that people call it the soul of Spring. Everything you will write from here on (every <code>@Service</code>, every <code>@RestController</code>, every repository) works because of the idea in this one lesson. So we slow all the way down and build it from nothing, in plain Java first, with no Spring magic to hide behind — because if you understand <em>why</em> this idea exists, every annotation in the rest of the course becomes obvious instead of mysterious.</p>
+    </section>
+
+    <section id="analogy">
+      <h2><span class="secno">2</span>Real-World Analogy</h2>
+      <p>Think about hiring for a job versus doing everything yourself.</p>
+      <p><strong>The tightly-coupled way is a one-person shop who insists on making their own tools.</strong> Say you run a bakery and you need flour. Instead of <em>ordering</em> flour, you decide to grow the wheat, harvest it, and mill it yourself — inside the bakery. Now your bakery is welded to one exact source of flour. Want to try a different flour? You must rebuild your milling operation. Want someone to check your bread recipe without an entire wheat farm running in the background? Impossible — the farm is baked into the bakery. Every ingredient made this way turns your small bakery into a sprawling, immovable factory where changing anything means changing everything.</p>
+      <p><strong>The loosely-coupled way is a bakery that simply orders what it needs.</strong> You write on your supply list: "I need <em>flour</em> — I don't care which farm, as long as it's flour." A supplier delivers it to your door. Now you can switch farms without touching your ovens. You can hand a tester a bag of <em>pretend</em> flour to check your process safely. The bakery states <em>what</em> it needs and lets someone else decide <em>which</em> one shows up and deliver it. The bakery does far less, yet can do far more.</p>
+      <p>Notice the direction of control. In the first bakery, the bakery reaches <em>out</em> and grabs (constructs) everything itself — control points outward from the bakery. In the second, the bakery just declares its needs and an outside supplier <em>pushes</em> the right thing <em>in</em> — control has been turned around, or <strong>inverted</strong>. That inversion is the whole lesson. And here's the punchline that names the players: the "supplier who reads your list and delivers the right thing to your door" — in Spring, that supplier is the <strong>container</strong> (the <code>ApplicationContext</code> from Lesson 03). The list of what each part needs is your code. Spring reads the lists and does the deliveries.</p>
+      <div class="tablewrap">
+        <table>
+          <thead>
+            <tr><th>In the bakery</th><th>In Spring</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Growing/milling your own flour inside the bakery</td><td><code>new EmailReceiptSender()</code> inside a service (tight coupling)</td></tr>
+            <tr><td>A supply list: "I need <em>flour</em>, any farm"</td><td>depending on an interface (a "what"), not a concrete class</td></tr>
+            <tr><td>The supplier who reads the list and delivers</td><td>the container / <code>ApplicationContext</code></td></tr>
+            <tr><td>The delivery arriving at your door</td><td>dependency injection (the object handed in)</td></tr>
+            <tr><td>Handing a tester pretend flour</td><td>injecting a fake in a test</td></tr>
+            <tr><td>Control turned around: needs declared, goods pushed in</td><td>Inversion of Control</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="concept">
+      <h2><span class="secno">3</span>The Concept Explained</h2>
+      <p>We build the idea in five small steps: <strong>coupling</strong>, then <strong>tight coupling and why it hurts</strong>, then <strong>depending on a "what" instead of a "how"</strong>, then <strong>Inversion of Control and Dependency Injection</strong>, and finally <strong>what a bean really is</strong> and how the container ties it all together.</p>
+
+      <h3>3.1 What "coupling" means</h3>
+      <p><strong>Coupling</strong> is simply <em>how much one piece of code depends on the exact details of another piece</em>. Two classes are <strong>tightly coupled</strong> when one of them knows and relies on the specific, concrete details of the other — so you cannot change or replace one without disturbing the other. They are <strong>loosely coupled</strong> when each depends only on a minimal, stable promise, so either can change freely as long as the promise holds.</p>
+      <p>A tiny everyday example: a lamp with its power cord <em>soldered directly into the wall wiring</em> is tightly coupled to that wall — move house and you're cutting wires. A lamp with a <em>plug</em> is loosely coupled — the plug is a stable promise ("two prongs, this voltage"), and any socket that honours it will do. The plug didn't remove the dependency (the lamp still needs power); it made the dependency <em>swappable</em>. Loose coupling is never about needing nothing — it's about depending on a stable promise instead of a fixed, specific thing.</p>
+
+      <h3>3.2 Tight coupling, concretely, and the three things it breaks</h3>
+      <p>Here is tight coupling in one line of Java, the line every beginner writes:</p>
+      <pre><code>public class OrderService {
+    private final EmailReceiptSender sender = new EmailReceiptSender();  <span class="c">// &lt;-- welded</span>
+}</code></pre>
+      <p>That <code>new EmailReceiptSender()</code> looks innocent, but it silently does three harmful things:</p>
+      <ol>
+        <li><strong>It hard-wires one exact class.</strong> <code>OrderService</code> now depends on <code>EmailReceiptSender</code> <em>specifically</em> — not on "something that can send receipts", but on that one class. Swapping to SMS means editing <code>OrderService</code>, even though ordering logic is unchanged. A high-level policy class (ordering) is now chained to a low-level detail class (email).</li>
+        <li><strong>It makes the class untestable in isolation.</strong> To test <code>placeOrder(...)</code> you must run a <em>real</em> <code>EmailReceiptSender</code>. There is no seam to slip a harmless fake into, because the service creates its collaborator itself, privately, out of your reach. Tests become slow, flaky, and dependent on real email working.</li>
+        <li><strong>It gives the class a second job it shouldn't have.</strong> <code>OrderService</code> should place orders. Deciding <em>which</em> receipt sender exists and <em>building</em> it is a different responsibility entirely. By newing its own dependency, the service has quietly taken on the job of a factory and a wiring diagram, on top of its real job.</li>
+      </ol>
+      <p>The root cause of all three is the same: <strong>the object is constructing its own dependencies.</strong> Every cure below flows from taking that one job away from it.</p>
+
+      <h3>3.3 Depend on a "what", not a "how" (program to an interface)</h3>
+      <p>Step one of the cure: stop depending on the concrete class, and depend on a <strong>promise</strong> instead.</p>
+      <div class="note">
+        <p><strong>New term — interface (as a dependency).</strong> An <strong>interface</strong> in Java is a named list of abilities with no bodies — a pure promise of <em>what</em> can be done, saying nothing about <em>how</em>. <code>ReceiptSender</code> with a single <code>send(...)</code> method is an interface: it promises "you can send a receipt" without committing to email, SMS, or anything else. Why does this help? Because if your service depends on the interface <code>ReceiptSender</code> rather than the class <code>EmailReceiptSender</code>, it depends only on the stable <em>what</em>. Any class that keeps the promise — <code>EmailReceiptSender</code>, <code>SmsReceiptSender</code>, a fake test sender — can stand in, and the service neither knows nor cares which. This is called <strong>programming to an interface</strong>: point your dependencies at the promise (the "what"), not the implementation (the "how").</p>
+      </div>
+      <p>So we split one class into two ideas:</p>
+      <pre class="diagram"><code>   ReceiptSender  (interface, the "what")   &lt;-- the service depends on THIS
+        ▲
+        │ implements
+   ┌────┴──────────┐
+EmailReceiptSender  SmsReceiptSender   (the "how"s, interchangeable)</code></pre>
+      <p>The service will now say "I need a <code>ReceiptSender</code>" and be satisfied by <em>any</em> of them. But one question remains, and it's the important one: <strong>if the service no longer builds its own sender, who does, and how does the service get one?</strong></p>
+
+      <h3>3.4 Inversion of Control and Dependency Injection</h3>
+      <p>Step two of the cure answers that question — and this is the heart of the lesson.</p>
+      <p>Look at where the <em>control</em> lives in the tightly-coupled version. <code>OrderService</code> decides which sender exists (<code>new EmailReceiptSender()</code>), when it's built, and holds it. Control over the dependency points <em>outward</em> from the service. Now we turn that around: we make the service <em>stop deciding</em>, and instead <em>receive</em> its sender from outside, through its constructor:</p>
+      <pre><code>public class OrderService {
+    private final ReceiptSender sender;                 <span class="c">// a "what", not a "how"</span>
+    public OrderService(ReceiptSender sender) {         <span class="c">// hand me one; I won't build it</span>
+        this.sender = sender;
+    }
+}</code></pre>
+      <p>Two distinct ideas just happened, and they have two distinct names — people mix them up constantly, so hold them apart:</p>
+      <div class="note">
+        <p><strong>New term — Inversion of Control (IoC).</strong> <strong>Inversion of Control</strong> is the <em>principle</em> that a component should not decide and fetch its own collaborators; that decision is taken away from it and handed to something outside. The "control" being inverted is control over <em>which concrete things this object depends on and when they're created</em>. In the tight version, the service held that control; now an outside party holds it. Why does this exist? Because when high-level objects stop choosing their own low-level details, you can rearrange, swap, and test the system from the outside without surgery on the inside. It is the same principle you met in Lesson 01 as the difference between a <em>library</em> (your code calls it) and a <em>framework</em> (it calls your code) — the framework is in control, hence the <strong>Hollywood Principle: "Don't call us, we'll call you."</strong> The object stops calling out for what it needs; the outside world calls <em>into</em> it, handing it what it needs.</p>
+      </div>
+      <div class="note">
+        <p><strong>New term — Dependency Injection (DI).</strong> <strong>Dependency Injection</strong> is the concrete <em>technique</em> that carries out that principle: the dependencies an object needs are <em>given to it</em> ("injected"), typically through its constructor, rather than created inside it. "Dependency" = a thing this object needs to do its job (the sender). "Injection" = handing it in from outside. So IoC is the <em>idea</em> ("don't fetch your own collaborators"); DI is the <em>mechanism</em> ("they're passed into your constructor"). DI is the most common way to achieve IoC, which is why the two terms travel together.</p>
+      </div>
+      <p>Crucial point for building real intuition: <strong>none of this needs Spring.</strong> In the demo for this lesson we do the injecting <em>by hand</em> — plain Java, we write the <code>new</code> in the test and pass it in. That already gives us swap-ability and testability. So what does Spring actually add? Spring is the <strong>tireless automatic supplier</strong>: in a real app you have hundreds of objects, each needing several others, forming a huge web. Wiring that web by hand — newing everything in the right order and passing each into the next — is enormous, error-prone boilerplate. Spring reads which objects need which, builds them all once, and injects each into the others <em>for</em> you. <strong>Spring doesn't invent DI; it automates DI at scale.</strong> Understanding that the principle stands on its own, and Spring is "merely" the machine that automates it, is exactly the mental model that stops Spring from feeling like magic.</p>
+
+      <h3>3.5 What a bean really is, and the container that makes them</h3>
+      <p>In Lesson 03 we gave "bean" a one-line meaning so we could keep moving. Now we can give it the full, honest definition, because you finally have the idea it rests on.</p>
+      <div class="note">
+        <p><strong>New term (full version) — bean.</strong> A <strong>bean</strong> is an object whose entire lifecycle — <em>creating it, giving it the collaborators it depends on, holding onto it, and eventually destroying it</em> — is managed by Spring instead of by you. You don't write <code>new</code> for a bean and you don't hand it its dependencies; you <em>declare</em> that it's a bean and <em>declare</em> what it needs, and the container does the constructing and the injecting. Why does this exist? Because that is precisely the automation from 3.4: once Spring is in charge of creating your objects, it's also the natural place to inject each object's dependencies. A "bean" is just "an object enrolled in that management." The words <code>@Component</code>, <code>@Service</code>, <code>@Repository</code>, <code>@Controller</code> you'll meet next lesson are all just different labels that mean "enroll this class as a bean."</p>
+      </div>
+      <p>And the thing doing the managing is the <strong>container</strong>, which you already met:</p>
+      <div class="note">
+        <p><strong>The <code>ApplicationContext</code> is the container (Lesson 03, revisited in depth).</strong> The container is the "tireless supplier" from the analogy made real. At startup it (1) finds every class you declared as a bean, (2) works out which beans each one needs, (3) creates them all in an order where every dependency exists before whoever needs it, and (4) injects each bean's dependencies into it. The finished result — every bean built and wired together — is the <code>ApplicationContext</code>. So Lesson 03's "container full of beans" and this lesson's "automatic dependency injection" are two views of the <em>same</em> object: the context is <em>where</em> IoC happens. When you heard "Spring wires your beans," this is the wiring: the container performing dependency injection across the whole graph of objects at startup.</p>
+      </div>
+      <p>Putting the whole chapter's spine in one breath: <strong>you declare beans and what they need → the container creates them and injects their dependencies (that's DI) → so no object fetches its own collaborators (that's IoC) → so nothing is tightly coupled → so the system stays swappable and testable.</strong> Every concept after this is a detail hanging off that spine.</p>
+      <pre class="diagram"><code>   You write:                    The container does at startup:
+   ┌──────────────────┐          ┌───────────────────────────────────────┐
+   │ "OrderService is  │          │ 1. see OrderService needs a ReceiptSender│
+   │  a bean, it needs │  ─────►  │ 2. build the ReceiptSender bean first   │
+   │  a ReceiptSender" │          │ 3. build OrderService, INJECT the sender │
+   └──────────────────┘          │ 4. keep both in the ApplicationContext  │
+                                  └───────────────────────────────────────┘</code></pre>
+    </section>
+
+    <section id="wrong">
+      <h2><span class="secno">4</span>The Wrong Way</h2>
+      <div class="warn">
+        <p><strong>WRONG APPROACH</strong> — a service that builds its own dependency:</p>
+      </div>
+      <pre><code>public class TightlyCoupledOrderService {
+
+    <span class="c">// The service reaches out and constructs its own collaborator, welding itself</span>
+    <span class="c">// to one exact class and one exact behaviour (email).</span>
+    private final EmailReceiptSender receiptSender = new EmailReceiptSender();
+
+    public String placeOrder(String orderId, String customerEmail) {
+        <span class="c">// ...pretend we validated and saved the order...</span>
+        return receiptSender.send(orderId, customerEmail);   <span class="c">// can ONLY ever be email</span>
+    }
+}</code></pre>
+      <p><strong>What goes wrong.</strong> The code compiles and even runs correctly <em>today</em> — that's what makes the trap so easy to fall into. The damage shows up the moment anything needs to change or be tested. Suppose you now want to unit-test <code>placeOrder(...)</code> without sending real email. You cannot: there is no way in, because the sender is created privately inside the service. Suppose you want SMS for some customers. You cannot, without editing this file and probably adding an <code>if</code>. The service has fused ordering logic to email delivery, and the two can never be separated again without surgery.</p>
+      <p><strong>If you tried to test it in isolation, the experience would be</strong> (a prediction):</p>
+      <pre><code><span class="c">// You want to write:  "when I place an order, verify the RIGHT receipt was sent" -</span>
+<span class="c">// but you have no way to pass in a fake sender to observe. Your only option is:</span>
+
+TightlyCoupledOrderService service = new TightlyCoupledOrderService();
+service.placeOrder("ORD-1", "amy@example.com");
+<span class="c">// -&gt; a REAL EmailReceiptSender runs. In a real app this hits a real email provider.</span>
+<span class="c">//    Console shows:</span>
+<span class="hi">[EmailReceiptSender] EMAIL receipt for order ORD-1 sent to amy@example.com</span>
+<span class="c">// The test is now slow, online, and you STILL can't cleanly assert which sender ran,</span>
+<span class="c">// because the choice was hidden inside the class. You are stuck with email, forever,</span>
+<span class="c">// unless you EDIT the service itself.</span></code></pre>
+      <p>The service <em>works</em>, but it is rigid and hard to test — and rigidity that only bites you later is the most expensive kind, because by then a dozen classes are built the same way.</p>
+    </section>
+
+    <section id="right">
+      <h2><span class="secno">5</span>The Right Way</h2>
+      <div class="tryit">
+        <p><strong>CORRECT APPROACH</strong> — the same service, receiving its dependency instead of building it:</p>
+      </div>
+      <pre><code><span class="c">// Depend on the interface (a "what"), not a concrete class (a "how").</span>
+public class LooselyCoupledOrderService {
+
+    private final ReceiptSender receiptSender;                 <span class="c">// set once, never rebuilt here</span>
+
+    <span class="c">// The dependency is HANDED IN. Control over "which sender" now lives with the</span>
+    <span class="c">// caller (Inversion of Control); passing it through the constructor is the</span>
+    <span class="c">// technique (Dependency Injection).</span>
+    public LooselyCoupledOrderService(ReceiptSender receiptSender) {
+        this.receiptSender = receiptSender;
+    }
+
+    public String placeOrder(String orderId, String customerEmail) {
+        <span class="c">// ...pretend we validated and saved the order...</span>
+        return receiptSender.send(orderId, customerEmail);     <span class="c">// whichever sender you injected</span>
+    }
+}</code></pre>
+      <p><strong>Step-by-step walkthrough of what happens when the test runs it:</strong></p>
+      <ol>
+        <li>The test creates a sender — either a harmless fake (<code>RecordingReceiptSender</code>) or the real <code>EmailReceiptSender</code>. <em>The test</em> is in control of that choice now, not the service.</li>
+        <li>The test passes that sender into <code>new LooselyCoupledOrderService(sender)</code>. The dependency is injected through the constructor. The service stores it, without knowing or caring which concrete class it is.</li>
+        <li>The test calls <code>service.placeOrder("ORD-1", "amy@example.com")</code>.</li>
+        <li>Inside, <code>placeOrder</code> calls <code>receiptSender.send(...)</code> — on whatever sender was injected. With the fake, nothing real happens; the fake just records the call and returns a canned line. With the real email sender, an email line is produced.</li>
+        <li>The test inspects the fake (was it called? with what?) and asserts. Because a seam existed to inject the fake, the service is testable in complete isolation — fast, offline, deterministic.</li>
+      </ol>
+      <p><strong>Expected output</strong> — running the demo's tests (a prediction):</p>
+      <pre><code>[EmailReceiptSender] EMAIL receipt for order ORD-2 sent to ben@example.com
+[EmailReceiptSender] EMAIL receipt for order ORD-3 sent to cara@example.com
+
+<span class="hi">[INFO] Tests run: 7, Failures: 0, Errors: 0, Skipped: 0</span>
+<span class="hi">[INFO] BUILD SUCCESS</span></code></pre>
+      <p>(The two <code>EMAIL...</code> lines come from Test 2 and Test 3, which use the real email sender. Test 1 uses the fake, so it prints nothing — proving it ran fully offline.)</p>
+      <p><strong>How to run it:</strong></p>
+      <pre><code>cd phase-1-monolith/ecommerce
+mvn test</code></pre>
+      <div class="tryit">
+        <p><strong>Check it matches.</strong> You should see <code>Tests run: 7</code> and <code>BUILD SUCCESS</code> (the 4 tests from Chapter 1 plus the 3 new ones here). If the count or result differs, the machine is right — send me what you saw and we'll trace it.</p>
+      </div>
+      <p>Notice what we did <em>not</em> need for any of this: Spring. The injection was done by hand in the test. That's deliberate — it proves the principle stands on its own. Starting next lesson, Spring takes over the hand-wiring and does it automatically for the whole app.</p>
+    </section>
+
+    <section id="applied">
+      <h2><span class="secno">6</span>Applied to Our Project (a Labelled Demo)</h2>
+      <p>This lesson teaches a <em>principle</em> (IoC/DI), not yet a Spring feature with an annotation — the annotations that let Spring perform the injection arrive in Lesson 05, in dependency order. But the principle can absolutely be shown as runnable code, so per our rules it gets a clearly-labelled, for-learning-only demo rather than being left as talk. The E-Commerce product does not use these classes yet; they exist purely to let you see tight coupling and its cure with your own hands.</p>
+      <div class="demo">
+        <p><strong>Disclaimer (also at the top of every demo file):</strong> <em>This <code>demos/ioc</code> package is included purely to demonstrate Inversion of Control and Dependency Injection as plain-Java ideas. The E-Commerce product does not need it here.</em> None of these classes carry a bean annotation, so component scanning ignores them and the running application is completely unchanged.</p>
+      </div>
+      <p><strong>Saved:</strong> <code>phase-1-monolith/ecommerce/src/main/java/com/ecommerce/demos/ioc/ReceiptSender.java</code><br>
+      <strong>Saved:</strong> <code>phase-1-monolith/ecommerce/src/main/java/com/ecommerce/demos/ioc/EmailReceiptSender.java</code><br>
+      <strong>Saved:</strong> <code>phase-1-monolith/ecommerce/src/main/java/com/ecommerce/demos/ioc/TightlyCoupledOrderService.java</code><br>
+      <strong>Saved:</strong> <code>phase-1-monolith/ecommerce/src/main/java/com/ecommerce/demos/ioc/LooselyCoupledOrderService.java</code><br>
+      <strong>Saved:</strong> <code>phase-1-monolith/ecommerce/src/test/java/com/ecommerce/demos/ioc/InversionOfControlDemoTests.java</code></p>
+      <p><strong>What this adds to our system.</strong> No behavior change to the app at all — it still boots the same and serves the same 404 handshake from Lesson 02. What it adds is the chapter's foundational idea made executable: a side-by-side of the rigid way and the flexible way, plus three tests that lock in <em>why</em> the flexible way wins (isolation, swap-ability, and the rigidity of the alternative). When Lesson 05 introduces <code>@Service</code> and <code>@Autowired</code>, you'll recognise them instantly as "Spring doing, automatically, the exact hand-injection we just did here."</p>
+      <p><strong>If a user interacted with this right now:</strong> they couldn't — there's no endpoint. These are internal demo classes exercised only by the test. That's expected for a principle-first lesson; the wiring becomes user-visible once controllers arrive in Chapter 3.</p>
+      <p><strong>Does the project still build, run, and pass tests?</strong> Tracing by hand: the four demo classes carry no Spring annotations, so component scanning skips them — the <code>ApplicationContext</code> and its bean count are unchanged, and startup is unaffected. The new test uses only plain <code>new</code>, starts no Spring context, and its assertions all hold against the code as written. The 4 Chapter-1 tests are untouched. So <code>mvn test</code> should now run <strong>7 tests, all green</strong> (4 old + 3 new). No new endpoint (<code>api.http</code> unchanged), no new dependency (<code>pom.xml</code> unchanged), no new secret (<code>.env.example</code> unchanged).</p>
+    </section>
+
+    <section id="gotchas">
+      <h2><span class="secno">7</span>Gotchas and Common Mistakes</h2>
+      <ul>
+        <li><strong>Confusing IoC with DI.</strong> People use them interchangeably; they're not the same. IoC is the <em>principle</em> (an object doesn't fetch its own collaborators); DI is the <em>technique</em> that delivers it (dependencies passed in). <em>Avoid the muddle:</em> say "IoC is the why, DI is the how." DI is one way — the common way — to achieve IoC.</li>
+        <li><strong>Thinking DI requires Spring.</strong> DI is plain Java: pass dependencies into constructors. Spring only <em>automates</em> it. <em>Avoid it:</em> remember this lesson's demo injects by hand with zero Spring — the payoff (testability, swap-ability) is already there before any framework.</li>
+        <li><strong>Depending on the concrete class "just this once."</strong> Typing <code>new EmailReceiptSender()</code> inside a service feels harmless and saves a keystroke today. It is exactly the weld that costs you later. <em>Avoid it:</em> depend on the interface and let it be injected, from the start.</li>
+        <li><strong>Injecting a concrete type instead of an interface.</strong> Even with constructor injection, if you inject <code>EmailReceiptSender</code> instead of <code>ReceiptSender</code>, you've kept half the coupling — you still can't swap the implementation. <em>Avoid it:</em> the injected type should be the promise (interface), not the implementation, whenever more than one implementation is plausible.</li>
+        <li><strong>Assuming loose coupling means "no dependencies."</strong> It doesn't — the service still needs a sender. Loose coupling means depending on a <em>stable promise</em> you can satisfy many ways, not depending on <em>nothing</em>. <em>Avoid it:</em> aim to make dependencies swappable, not to eliminate them.</li>
+      </ul>
+    </section>
+
+    <section id="tradeoffs">
+      <h2><span class="secno">8</span>Tradeoffs and When Not to Use This</h2>
+      <ul>
+        <li><strong>Indirection has a cost.</strong> Every interface-plus-injection adds a layer: to see what actually runs, you follow the wiring rather than reading one class top to bottom. For a huge system that price buys flexibility and testability many times over; for a five-line throwaway script it's pure ceremony. Don't wrap a trivial helper in an interface it will never have a second implementation of.</li>
+        <li><strong>Not every object should be a bean.</strong> Simple value objects (an <code>Order</code>, a <code>Money</code> amount, a DTO) are <em>data</em>, created with <code>new</code> all day long — they have no collaborators to inject and no lifecycle to manage. IoC/DI is for <em>collaborators</em> (services, repositories, senders), not for plain data. Forcing everything into the container is a classic over-correction.</li>
+        <li><strong>One implementation, forever?</strong> If a dependency genuinely has exactly one implementation and always will, the interface earns less. Many teams still inject it (for testability alone); others inject the concrete class directly. It's a judgement call — the testability seam is usually worth the interface even then.</li>
+        <li><strong>The failure mode of over-abstraction.</strong> It's possible to bury simple logic under so many interfaces and injected layers that the code becomes hard to follow — "where does anything actually <em>happen</em>?" Use IoC where things genuinely vary or need isolating in tests; don't cargo-cult an interface onto every last class.</li>
+      </ul>
+    </section>
+
+    <section id="takeaways">
+      <h2><span class="secno">9</span>Key Takeaways</h2>
+      <ul>
+        <li>Tight coupling — an object building its own dependencies with <code>new</code> — welds high-level logic to low-level details, making the system rigid to change and impossible to test in isolation.</li>
+        <li>The cure is to depend on a stable <em>promise</em> (an interface, the "what") instead of a concrete class (the "how"), so any implementation that keeps the promise can be substituted freely.</li>
+        <li>Inversion of Control is the principle that an object should not choose and fetch its own collaborators; that control is handed to something outside — the same "don't call us, we'll call you" idea as a framework calling your code.</li>
+        <li>Dependency Injection is the technique that carries out IoC by passing an object's dependencies into it (usually through its constructor), and it is plain Java — Spring's job is to <em>automate</em> it across a whole application, not to invent it.</li>
+        <li>A bean is an object whose creation, dependency-wiring, and lifecycle Spring manages inside the <code>ApplicationContext</code>; that container is exactly <em>where</em> dependency injection happens at startup, tying Lesson 03's "container of beans" to this lesson's "automatic injection."</li>
+      </ul>
+    </section>
+
+    <section id="challenge">
+      <h2><span class="secno">10</span>Coding Challenge with Hidden Answer</h2>
+      <p><strong>Challenge.</strong> The business now wants an <code>SmsReceiptSender</code> — receipts by text message. Using <em>only</em> the plain-Java demo classes from this lesson (still no Spring):</p>
+      <p><strong>(a)</strong> What is the complete list of files you must create or edit to make <code>LooselyCoupledOrderService</code> send SMS instead of email for a given call? <strong>(b)</strong> What would that same change require if you were forced to work with <code>TightlyCoupledOrderService</code> instead? <strong>(c)</strong> Write the <code>SmsReceiptSender</code> class and a short snippet that makes <code>LooselyCoupledOrderService</code> use it, and predict the returned line.</p>
+      <details>
+        <summary>Click to reveal the answer</summary>
+        <p><strong>(a) For the loosely-coupled service: add one new file, edit the service ZERO times.</strong><br>
+        You create <code>SmsReceiptSender implements ReceiptSender</code>. That's it. <code>LooselyCoupledOrderService</code> already depends on the <code>ReceiptSender</code> interface and receives its sender from outside, so it needs <em>no</em> change — you just inject the new sender at the call site. This is the payoff: new behaviour, and the high-level service is untouched.</p>
+        <p><strong>(b) For the tightly-coupled service: you must EDIT the service itself.</strong><br>
+        <code>TightlyCoupledOrderService</code> hard-codes <code>new EmailReceiptSender()</code> inside it. To send SMS you'd have to open that file and change the field (or add branching logic), risking the ordering code every time the delivery method changes — the exact rigidity the lesson warns about.</p>
+        <p><strong>(c) The new class and the wiring:</strong></p>
+        <pre><code><span class="c">// New file: SmsReceiptSender.java - keeps the same promise a different way.</span>
+package com.ecommerce.demos.ioc;
+
+public class SmsReceiptSender implements ReceiptSender {
+    @Override
+    public String send(String orderId, String customerEmail) {
+        <span class="c">// (In a real app this would go to a phone number; we reuse the parameter</span>
+        <span class="c">//  for simplicity in the demo.)</span>
+        String receipt = "SMS receipt for order " + orderId;
+        System.out.println("[SmsReceiptSender] " + receipt);
+        return receipt;
+    }
+}</code></pre>
+        <pre><code><span class="c">// Wiring - note LooselyCoupledOrderService is NOT edited, only what we inject changes:</span>
+LooselyCoupledOrderService service =
+        new LooselyCoupledOrderService(new SmsReceiptSender());   <span class="c">// inject SMS instead</span>
+String result = service.placeOrder("ORD-9", "dan@example.com");</code></pre>
+        <p><strong>Predicted output</strong> (a prediction):</p>
+        <pre><code><span class="hi">[SmsReceiptSender] SMS receipt for order ORD-9</span>
+<span class="c">// result == "SMS receipt for order ORD-9"</span></code></pre>
+        <p>To check it yourself: add <code>SmsReceiptSender.java</code> to the <code>demos/ioc</code> package, add a quick test that injects it and asserts the returned line starts with <code>"SMS receipt"</code>, and run <code>mvn test</code>. Same service class, new behaviour, no surgery — that's Inversion of Control earning its keep.</p>
+      </details>
+    </section>
+
+    <section id="next">
+      <h2><span class="secno">11</span>What Is Next</h2>
+      <p>You now have the principle by hand: depend on promises, let dependencies be injected, keep control outside the object. Next, <strong>Lesson 05 — Stereotype annotations and component scanning</strong> hands the hand-wiring to Spring: you'll mark classes with <code>@Component</code>, <code>@Service</code>, <code>@Repository</code>, and <code>@Controller</code> to enrol them as beans, and use <code>@Autowired</code> so the container performs exactly the injection we just did ourselves — automatically, across the whole application.</p>
+    </section>
+
+    <footer class="next">
+      <p class="kicker">Next up</p>
+      <h2>Lesson 05 — Stereotype Annotations and Component Scanning</h2>
+      <p>Spring takes over the hand-wiring: <code>@Component</code>, <code>@Service</code>, <code>@Repository</code>, <code>@Controller</code>, and <code>@Autowired</code> — the container performing our exact injection, automatically.</p>
+    </footer>
+
+    <p class="lesson-footer">Lesson 04 of the curriculum — Phase 1, Chapter 2, Lesson 1 of 7 in the chapter.</p>
+
+  </main>
+
+</div>
+</body>
+</html>

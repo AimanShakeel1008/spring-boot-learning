@@ -1,0 +1,799 @@
+/* ==========================================================================
+   lesson.css — the ONE shared stylesheet for every lesson page in this course.
+   Design rules (from CLAUDE.md):
+     - LITERAL color values ONLY. No CSS custom properties (var(--x)) anywhere,
+       because some preview renderers silently drop them.
+     - A solid-color fallback line sits immediately before every gradient.
+     - Palette (three roles + one demo hue):
+         primary   Spring green  #2b8a3e   (headings, links, accents)
+         secondary teal          #0b7285   (subsections, secondary accents)
+         tertiary  violet        #5f3dc4   (collapsibles, gradient end)
+         demo      orange        #e8590c   (demo callouts only — marks
+                                            "for learning only" material)
+     - Warm paper background, dark ink, ~47rem content column.
+   ========================================================================== */
+
+/* ---------- Reset & base ---------- */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  background: #faf7f2;
+  color: #2b2822;
+  font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+  font-size: 1.0625rem;
+  line-height: 1.75;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+a {
+  color: #2b8a3e;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 2px;
+}
+
+a:hover {
+  color: #1f6f31;
+}
+
+strong {
+  color: #1f1c17;
+}
+
+hr {
+  border: none;
+  border-top: 1px solid #e5dfd3;
+  margin: 2.5rem 0;
+}
+
+/* ---------- Page grid: sticky TOC left, content right ---------- */
+
+.page {
+  display: grid;
+  grid-template-columns: 15rem minmax(0, 47rem);
+  gap: 2.75rem;
+  max-width: 67rem;
+  margin: 0 auto;
+  padding: 2.5rem 1.5rem 4rem;
+}
+
+/* ---------- Table of contents sidebar ---------- */
+
+.toc {
+  position: sticky;
+  top: 1.5rem;
+  align-self: start;
+  max-height: calc(100vh - 3rem);
+  overflow-y: auto;
+  background: #ffffff;
+  border: 1px solid #eae4d8;
+  border-radius: 12px;
+  padding: 1.25rem 1rem;
+  font-size: 0.875rem;
+  animation: riseFade 0.6s ease 0.15s both;
+}
+
+.toc-title {
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #8a8271;
+  margin-bottom: 0.75rem;
+}
+
+.toc nav a {
+  display: block;
+  color: #55503f;
+  text-decoration: none;
+  padding: 0.3rem 0.5rem;
+  border-radius: 6px;
+  line-height: 1.4;
+  transition: transform 0.18s ease, color 0.18s ease,
+    background-color 0.18s ease;
+}
+
+.toc nav a:hover {
+  color: #2b8a3e;
+  background: #f2efe7;
+  transform: translateX(4px);
+}
+
+.prevnext {
+  margin-top: 1.25rem;
+  padding-top: 1rem;
+  border-top: 1px solid #eae4d8;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.prevnext a {
+  display: block;
+  text-decoration: none;
+  font-weight: 600;
+  color: #2b8a3e;
+  background: #f0f7ef;
+  border: 1px solid #d6e8d6;
+  border-radius: 8px;
+  padding: 0.45rem 0.7rem;
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.prevnext a:hover {
+  transform: translateX(4px);
+  box-shadow: 0 2px 8px rgba(43, 138, 62, 0.18);
+}
+
+.prevnext a.disabled {
+  color: #a29a89;
+  background: #f5f2ea;
+  border-color: #e8e2d5;
+  pointer-events: none;
+}
+
+/* ---------- Lesson header banner ---------- */
+
+.lesson {
+  color: #ffffff;
+  border-radius: 16px;
+  padding: 2.5rem 2.25rem;
+  margin-bottom: 2.5rem;
+  background: #257b3e; /* solid fallback — must stay directly before gradient */
+  background: linear-gradient(135deg, #257b3e 0%, #0b7285 50%, #5f3dc4 100%);
+  background-size: 200% 200%;
+  animation: riseFade 0.6s ease 0.05s both,
+    gradientDrift 18s ease-in-out infinite alternate;
+  box-shadow: 0 10px 30px rgba(37, 62, 47, 0.22);
+}
+
+.kicker {
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  font-size: 0.75rem;
+  font-weight: 700;
+  opacity: 0.9;
+  margin-bottom: 0.6rem;
+}
+
+.lesson h1 {
+  font-size: 2.15rem;
+  line-height: 1.2;
+  font-weight: 800;
+  margin-bottom: 0.7rem;
+  color: #ffffff;
+}
+
+.lesson .subtitle {
+  font-size: 1.05rem;
+  opacity: 0.92;
+  max-width: 38rem;
+}
+
+.lesson .meta {
+  margin-top: 1.1rem;
+  font-size: 0.85rem;
+  opacity: 0.85;
+}
+
+/* ---------- Main content & sections ---------- */
+
+main {
+  animation: riseFade 0.6s ease 0.25s both;
+  min-width: 0;
+}
+
+section {
+  margin-bottom: 3rem;
+}
+
+section h2 {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: #1f1c17;
+  border-bottom: 3px solid #2b8a3e;
+  padding-bottom: 0.5rem;
+  margin-bottom: 1.25rem;
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.secno {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.9rem;
+  height: 1.9rem;
+  padding: 0 0.4rem;
+  border-radius: 8px;
+  background: #2b8a3e;
+  color: #ffffff;
+  font-size: 1rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+
+section h3 {
+  font-size: 1.18rem;
+  font-weight: 700;
+  color: #0b7285;
+  margin: 1.75rem 0 0.75rem;
+}
+
+section h4 {
+  font-size: 1.02rem;
+  font-weight: 700;
+  color: #2b2822;
+  margin: 1.4rem 0 0.5rem;
+}
+
+section p,
+section ul,
+section ol {
+  margin-bottom: 1rem;
+}
+
+section ul,
+section ol {
+  padding-left: 1.5rem;
+}
+
+section li {
+  margin-bottom: 0.4rem;
+}
+
+blockquote {
+  border-left: 4px solid #cfc7b6;
+  padding: 0.25rem 0 0.25rem 1.1rem;
+  margin: 1.25rem 0;
+  color: #5d5747;
+  font-style: italic;
+}
+
+/* ---------- Inline code ---------- */
+
+code {
+  font-family: "Cascadia Code", Consolas, "SF Mono", Menlo, monospace;
+  font-size: 0.9em;
+  background: #e7f3e8;
+  color: #1f6f31;
+  padding: 0.12em 0.42em;
+  border-radius: 5px;
+}
+
+/* ---------- Code blocks: terminal-dark with traffic-light dots ---------- */
+
+pre {
+  position: relative;
+  background: #171a21;
+  color: #d6dae3;
+  border-radius: 12px;
+  padding: 2.7rem 1.3rem 1.3rem;
+  margin: 1.25rem 0 1.5rem;
+  overflow-x: auto;
+  font-size: 0.86rem;
+  line-height: 1.65;
+  box-shadow: 0 4px 14px rgba(23, 26, 33, 0.25);
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+pre:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 22px rgba(23, 26, 33, 0.38);
+}
+
+/* one real dot + two more drawn purely with box-shadow = macOS traffic lights */
+pre::before {
+  content: "";
+  position: absolute;
+  top: 1rem;
+  left: 1.2rem;
+  width: 0.72rem;
+  height: 0.72rem;
+  border-radius: 50%;
+  background: #ff5f57;
+  box-shadow: 1.3rem 0 0 #febc2e, 2.6rem 0 0 #28c840;
+}
+
+pre code {
+  background: none;
+  color: inherit;
+  padding: 0;
+  border-radius: 0;
+  font-size: inherit;
+}
+
+/* comments inside code samples */
+pre .c {
+  color: #8b93a1;
+  font-style: italic;
+}
+
+/* key output lines — warm highlight */
+pre .hi {
+  background: #3a2c15;
+  color: #ffc078;
+  border-radius: 4px;
+  padding: 0.05em 0.3em;
+}
+
+/* ASCII diagrams: same terminal look, but no traffic lights */
+pre.diagram {
+  padding: 1.3rem;
+}
+
+pre.diagram::before {
+  content: none;
+}
+
+/* ---------- Callout cards ---------- */
+
+.tryit,
+.note,
+.warn,
+.demo {
+  border-radius: 10px;
+  padding: 1rem 1.2rem;
+  margin: 1.4rem 0;
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.tryit:hover,
+.note:hover,
+.warn:hover,
+.demo:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(43, 40, 34, 0.12);
+}
+
+.tryit::before,
+.note::before,
+.warn::before,
+.demo::before {
+  display: block;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-size: 0.72rem;
+  font-weight: 800;
+  margin-bottom: 0.4rem;
+}
+
+.tryit > :last-child,
+.note > :last-child,
+.warn > :last-child,
+.demo > :last-child {
+  margin-bottom: 0;
+}
+
+.tryit {
+  background: #eef7ec;
+  border-left: 4px solid #2b8a3e;
+}
+
+.tryit::before {
+  content: "Try it now";
+  color: #2b8a3e;
+}
+
+.note {
+  background: #e9f2fb;
+  border-left: 4px solid #1971c2;
+}
+
+.note::before {
+  content: "Note";
+  color: #1971c2;
+}
+
+.warn {
+  background: #fbecec;
+  border-left: 4px solid #c92a2a;
+}
+
+.warn::before {
+  content: "Watch out";
+  color: #c92a2a;
+}
+
+.demo {
+  background: #fdf0e7;
+  border-left: 4px solid #e8590c;
+}
+
+.demo::before {
+  content: "Demo — for learning only";
+  color: #e8590c;
+}
+
+/* ---------- Tables ---------- */
+
+.tablewrap {
+  overflow-x: auto;
+  margin: 1.4rem 0;
+  border: 1px solid #eae4d8;
+  border-radius: 10px;
+}
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+  font-size: 0.92rem;
+  line-height: 1.5;
+}
+
+thead th {
+  background: #eef3ea;
+  color: #3c5a3f;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-size: 0.75rem;
+  text-align: left;
+  padding: 0.7rem 0.9rem;
+  border-bottom: 2px solid #d8e2d4;
+  white-space: nowrap;
+}
+
+tbody td {
+  padding: 0.65rem 0.9rem;
+  border-bottom: 1px solid #f0ebe0;
+  vertical-align: top;
+}
+
+tbody tr:nth-child(even) {
+  background: #f6f3ec;
+}
+
+tbody tr:hover {
+  background: #eef5ee;
+}
+
+tbody tr:last-child td {
+  border-bottom: none;
+}
+
+/* ---------- Collapsible answer cards (violet accent) ---------- */
+
+details {
+  background: #f4f1fb;
+  border: 1px solid #e2dbf5;
+  border-left: 4px solid #5f3dc4;
+  border-radius: 10px;
+  padding: 1rem 1.2rem;
+  margin: 1.4rem 0;
+}
+
+details summary {
+  cursor: pointer;
+  font-weight: 700;
+  color: #5f3dc4;
+  list-style-position: outside;
+}
+
+details summary:hover {
+  color: #4a2fa3;
+}
+
+details[open] > *:not(summary) {
+  animation: fadeSlideIn 0.35s ease both;
+}
+
+details[open] summary {
+  margin-bottom: 0.8rem;
+}
+
+/* ---------- "Next up" footer card ---------- */
+
+footer.next {
+  color: #ffffff;
+  border-radius: 16px;
+  padding: 2rem 2.25rem;
+  margin-top: 3rem;
+  background: #257b3e; /* solid fallback — must stay directly before gradient */
+  background: linear-gradient(135deg, #5f3dc4 0%, #0b7285 50%, #257b3e 100%);
+  background-size: 200% 200%;
+  animation: gradientDrift 18s ease-in-out infinite alternate;
+  box-shadow: 0 10px 30px rgba(47, 42, 76, 0.22);
+}
+
+footer.next h2 {
+  font-size: 1.4rem;
+  font-weight: 800;
+  margin-bottom: 0.5rem;
+  color: #ffffff;
+}
+
+footer.next p {
+  opacity: 0.92;
+}
+
+footer.next a {
+  color: #ffffff;
+  font-weight: 700;
+}
+
+footer.next .kicker {
+  margin-bottom: 0.4rem;
+}
+
+.lesson-footer {
+  margin-top: 1.5rem;
+  font-size: 0.85rem;
+  color: #8a8271;
+  text-align: center;
+}
+
+/* ---------- Animations ---------- */
+
+@keyframes riseFade {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes gradientDrift {
+  from {
+    background-position: 0% 0%;
+  }
+  to {
+    background-position: 100% 100%;
+  }
+}
+
+/* ---------- Narrow screens: TOC collapses above content ---------- */
+
+@media (max-width: 62rem) {
+  .page {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1.75rem;
+    padding: 1.5rem 1rem 3rem;
+  }
+
+  .toc {
+    position: static;
+    max-height: none;
+  }
+
+  .prevnext {
+    flex-direction: row;
+  }
+
+  .prevnext a {
+    flex: 1;
+  }
+
+  .lesson {
+    padding: 1.9rem 1.5rem;
+  }
+
+  .lesson h1 {
+    font-size: 1.7rem;
+  }
+
+  footer.next {
+    padding: 1.6rem 1.5rem;
+  }
+}
+
+/* ---------- Dark mode (explicit literal overrides, no variables) ---------- */
+
+@media (prefers-color-scheme: dark) {
+  body {
+    background: #1b1917;
+    color: #e6e1d7;
+  }
+
+  a {
+    color: #77c98a;
+  }
+
+  a:hover {
+    color: #96dba6;
+  }
+
+  strong {
+    color: #f4f0e8;
+  }
+
+  hr {
+    border-top-color: #383430;
+  }
+
+  .toc {
+    background: #23211e;
+    border-color: #383430;
+  }
+
+  .toc-title {
+    color: #9c9484;
+  }
+
+  .toc nav a {
+    color: #beb7a8;
+  }
+
+  .toc nav a:hover {
+    color: #77c98a;
+    background: #2b2926;
+  }
+
+  .prevnext {
+    border-top-color: #383430;
+  }
+
+  .prevnext a {
+    color: #77c98a;
+    background: #22291f;
+    border-color: #3a4a38;
+  }
+
+  .prevnext a.disabled {
+    color: #787161;
+    background: #242220;
+    border-color: #383430;
+  }
+
+  section h2 {
+    color: #f4f0e8;
+    border-bottom-color: #3f9e54;
+  }
+
+  .secno {
+    background: #3f9e54;
+    color: #10130f;
+  }
+
+  section h3 {
+    color: #4fc3d9;
+  }
+
+  section h4 {
+    color: #e6e1d7;
+  }
+
+  blockquote {
+    border-left-color: #4a453d;
+    color: #b1a996;
+  }
+
+  code {
+    background: #22301f;
+    color: #96dba6;
+  }
+
+  pre {
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.45);
+  }
+
+  pre:hover {
+    box-shadow: 0 8px 22px rgba(0, 0, 0, 0.6);
+  }
+
+  pre code {
+    background: none;
+    color: inherit;
+  }
+
+  .tryit {
+    background: #1e2a1f;
+    border-left-color: #3f9e54;
+  }
+
+  .tryit::before {
+    color: #77c98a;
+  }
+
+  .note {
+    background: #1c2530;
+    border-left-color: #3b8fd9;
+  }
+
+  .note::before {
+    color: #74c0fc;
+  }
+
+  .warn {
+    background: #2e1e1e;
+    border-left-color: #d9534f;
+  }
+
+  .warn::before {
+    color: #ff8787;
+  }
+
+  .demo {
+    background: #2e2318;
+    border-left-color: #f0761f;
+  }
+
+  .demo::before {
+    color: #ffa94d;
+  }
+
+  .tryit:hover,
+  .note:hover,
+  .warn:hover,
+  .demo:hover {
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45);
+  }
+
+  .tablewrap {
+    border-color: #383430;
+  }
+
+  thead th {
+    background: #232a22;
+    color: #a6c9a9;
+    border-bottom-color: #35402f;
+  }
+
+  tbody td {
+    border-bottom-color: #2c2926;
+  }
+
+  tbody tr:nth-child(even) {
+    background: #211f1c;
+  }
+
+  tbody tr:hover {
+    background: #22291f;
+  }
+
+  details {
+    background: #241f31;
+    border-color: #38304f;
+    border-left-color: #8a6ff0;
+  }
+
+  details summary {
+    color: #b197fc;
+  }
+
+  details summary:hover {
+    color: #c8b3ff;
+  }
+
+  .lesson-footer {
+    color: #9c9484;
+  }
+}
+
+/* ---------- Reduced motion: kill every animation and transition ---------- */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}

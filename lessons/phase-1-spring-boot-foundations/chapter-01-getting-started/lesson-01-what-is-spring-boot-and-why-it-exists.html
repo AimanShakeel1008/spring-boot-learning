@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Lesson 01 — What Is Spring Boot and Why It Exists</title>
+  <link rel="stylesheet" href="../../assets/lesson.css">
+</head>
+<body>
+<div class="page">
+
+  <aside class="toc">
+    <p class="toc-title">On this page</p>
+    <nav>
+      <a href="#problem">1 · The Problem</a>
+      <a href="#analogy">2 · Real-World Analogy</a>
+      <a href="#concept">3 · The Concept Explained</a>
+      <a href="#wrong">4 · The Wrong Way</a>
+      <a href="#right">5 · The Right Way</a>
+      <a href="#applied">6 · Applied to Our Project</a>
+      <a href="#gotchas">7 · Gotchas &amp; Mistakes</a>
+      <a href="#tradeoffs">8 · Tradeoffs</a>
+      <a href="#takeaways">9 · Key Takeaways</a>
+      <a href="#challenge">10 · Coding Challenge</a>
+      <a href="#next">11 · What Is Next</a>
+    </nav>
+    <div class="prevnext">
+      <a class="prev" href="../chapter-00-setup/lesson-00-getting-your-machine-ready.html">← Lesson 00</a>
+      <a class="next" href="lesson-02-project-setup-and-structure.html">Lesson 02 →</a>
+    </div>
+  </aside>
+
+  <main>
+
+    <header class="lesson">
+      <p class="kicker">Phase 1 · Chapter 01 — Getting Started · Lesson 01</p>
+      <h1>What Is Spring Boot and Why It Exists</h1>
+      <p class="subtitle">From the raw servlet era through Spring Framework to Spring Boot — the whole road, because you cannot judge a cure without understanding the disease.</p>
+      <p class="meta">Files created: none — this is a concept lesson; the project is scaffolded in Lesson 02 · Files modified: none · Prerequisites: Lesson 00 (terminal, JDK, Maven, Git, version pinning)</p>
+    </header>
+
+    <section id="problem">
+      <h2><span class="secno">1</span>The Problem</h2>
+      <p>Picture a Java developer in 2013 — let's call her Maya — assigned a tiny task: build a web page that returns a list of products. She knows Java well. She estimates an afternoon.</p>
+      <p>Day one goes to infrastructure. She must install and configure a separate server program to host her code, learn its folder conventions, and write an XML configuration file describing her application to it. Day two goes to libraries: her project needs roughly thirty of them, hand-picked, and their versions must be mutually compatible — she picks a wrong pair and gets a crash so cryptic that the community has a nickname for the whole genre of problem: <em>JAR hell</em>. Day three goes to configuration: pages of setup text that say nothing about products or shops, just wiring — where's the database, how to translate objects to text, which class handles which URL. On day four she finally writes the ten lines of actual business logic. Elapsed time for an afternoon's task: most of a week. And every future change to the wiring means editing config, rebuilding, redeploying into the external server, restarting, and praying.</p>
+      <p>Here is the detail that should offend you: <strong>every Java team in the world was doing this same week of setup, making the same thirty decisions, writing nearly identical configuration</strong> — before any of them wrote a line that made their product different from anyone else's. Thousands of teams, thousands of identical weeks. When everyone hand-builds the same thing every time, the thing is begging to be standardized. Spring Boot, released in 2014, is that standardization — and this lesson walks the whole road that led to it, because you cannot judge a cure without understanding the disease.</p>
+    </section>
+
+    <section id="analogy">
+      <h2><span class="secno">2</span>Real-World Analogy</h2>
+      <p>Three ways to open a pizza shop:</p>
+      <p><strong>Way 1 — build everything with your bare hands.</strong> Buy land. Lay bricks. Run the plumbing and electrical yourself. Design the kitchen from a blank page. Two years later you sell your first pizza — and most of your effort went into things every shop on earth needs identically. <em>This is the raw servlet era: all infrastructure, hand-made, before any business.</em></p>
+      <p><strong>Way 2 — hire a brilliant contractor with an enormous catalog.</strong> The contractor has quality parts for everything and will assemble whatever you specify. But you must specify <em>everything</em>: which of 40 oven models, which fridge, which tile, which door hinge — four hundred decisions, and some parts don't fit together, which you discover only after installation. The result is excellent; the road there is exhausting. <em>This is Spring Framework: superb pieces, but you make every choice and every choice can conflict.</em></p>
+      <p><strong>Way 3 — buy the franchise kit.</strong> The franchise has already made the four hundred decisions — a proven oven, a standard layout, a default menu — assembled from the same contractor's catalog as Way 2. Your shop arrives pre-fitted and opens in a week. Crucially: <strong>nothing is welded shut.</strong> Hate the default oven? Swap it — the kit accommodates you and adjusts around your choice. You only spend decision-effort where your shop is genuinely <em>different</em>. <em>This is Spring Boot: Spring Framework, pre-assembled with sensible, overridable defaults.</em></p>
+      <p>Mapping every part: the land and utilities = the server infrastructure; the contractor's catalog = Spring Framework's modules; the four hundred decisions = configuration; parts that don't fit = dependency version conflicts; the franchise's proven choices = opinionated defaults; the pre-fitted kitchen arriving on a truck = the embedded server inside your application; "swap anything" = every default being overridable.</p>
+    </section>
+
+    <section id="concept">
+      <h2><span class="secno">3</span>The Concept Explained</h2>
+      <p>We build the story in dependency order — every term defined before it's used.</p>
+
+      <h3>3.1 Server, web application, and HTTP — the stage the story happens on</h3>
+      <p><strong>A server</strong>, in plain language, is a program that waits for requests and answers them. It never initiates; it responds. Why such a thing exists: when one program (say, a browser on your phone) needs something another computer has (say, product data), <em>something</em> on that other computer must be listening for the question and able to answer it. A concrete picture: a hotel receptionist — sits at the desk all day, phone rings, answers, resolves, waits for the next call. The word "server" also loosely means the physical machine such programs run on; in this course, unless said otherwise, we mean the program.</p>
+      <p><strong>A web application</strong> is a program whose users interact with it over the internet through a browser or app, instead of installing it on their own machines. Why it exists: one copy, running centrally, serving millions — no installation, instant updates. Example: you never installed Amazon; your browser just talks to it. Our E-Commerce system is a web application.</p>
+      <p><strong>HTTP</strong> is the agreed message format for that conversation: the <strong>request</strong> (what the caller sends: "GET me the product list") and the <strong>response</strong> (what the server returns: a status like <code>200 OK</code> plus the data). Analogy: the standard layout of a business letter — addressee, request, return address — so any two parties can correspond without prior arrangement. That's genuinely all we need today; <strong>Lesson 11 is entirely devoted to HTTP</strong> and will go deep.</p>
+      <p>One more foundation word: <strong>deployment</strong> — the act of taking your finished program and putting it where it will actually run, started and reachable by users. Cooking is development; getting the dish onto the customer's table is deployment.</p>
+
+      <h3>3.2 The servlet era — Java's first answer</h3>
+      <p><strong>Plain definition:</strong> a <strong>servlet</strong> is a Java class written to handle one HTTP request and produce one response.</p>
+      <p><strong>Why it existed:</strong> in the late 1990s the web exploded, and Java needed a standard way to generate web pages with real logic — check the user, read data, build the page. The servlet was that standard: "receive request in, hand response back" as a Java method you fill in.</p>
+      <p><strong>But a servlet cannot run by itself.</strong> Someone must sit on the network, accept connections, parse the raw HTTP text into a usable object, figure out <em>which</em> servlet handles <em>this</em> URL, invoke it, and ship the response back. That someone is a <strong>servlet container</strong> — a server program purpose-built to host servlets and do all that plumbing. The most famous one, then and now: <strong>Apache Tomcat</strong> (free, open-source). Analogy: the servlet is a chef who can cook one dish when handed an order slip; the container is the entire restaurant around him — the host, the waiters, the order system. A chef with no restaurant cooks for nobody.</p>
+      <p><strong>The workflow this forced on developers:</strong></p>
+      <ol>
+        <li>Install Tomcat on your machine — separate download, separate configuration, its own folder conventions to learn.</li>
+        <li>Write your servlet classes.</li>
+        <li>Describe your application to Tomcat in a file called <code>web.xml</code>, written in <strong>XML</strong> — a text format for structured configuration where every piece of data sits inside named brackets, <code>&lt;like&gt;&lt;this&gt;example&lt;/this&gt;&lt;/like&gt;</code>. Which class handles which URL, in brackets, by hand.</li>
+        <li>Package everything into a <strong>WAR</strong> file (<em>Web Application Archive</em> — a zip with a mandated internal layout that containers understand) and copy it into Tomcat's special folder. For contrast, remember the plain <strong>JAR</strong> (<em>Java Archive</em>) from the Maven world: a zip of compiled bytecode — Java's ordinary shipping box. A WAR is the special web variant that only makes sense <em>inside</em> a container.</li>
+        <li>Restart or reload Tomcat. Repeat steps 4–5 for <strong>every single change.</strong></li>
+      </ol>
+      <p>And the code itself was ceremony-ridden. <strong>Boilerplate</strong> — plain definition: repetitive code you must write that expresses nothing about your actual problem, pure ceremony demanded by the machinery. Why the term matters: boilerplate isn't just ugly, it <em>buries</em> your logic — the three meaningful lines hide inside ninety lines of parsing, casting, opening, and closing, and bugs love to hide in ceremony that nobody reads carefully. You'll see real servlet boilerplate in Section 4.</p>
+
+      <h3>3.3 What a framework is — and Spring's arrival</h3>
+      <p><strong>Plain definition:</strong> a <strong>framework</strong> is a large body of pre-written code that provides the skeleton of an application; it runs <em>your</em> code at the right moments, rather than you running it.</p>
+      <p><strong>Why frameworks exist:</strong> every web application needs the same 80% — accept requests, route them, talk to a database, handle errors, secure things. Rebuilding that 80% per project is Maya's wasted week, multiplied by every team on earth. A framework ships the 80% finished; you supply the 20% that makes your product <em>yours</em>.</p>
+      <p><strong>The distinction that makes the word precise:</strong> with a <strong>library</strong>, <em>your</em> code is in charge and calls the library when it wants (you call the taxi). With a <strong>framework</strong>, the <em>framework</em> is in charge and calls your code at the right moments (you build a room inside an existing hotel, and the hotel decides when guests arrive at your door). Hold onto that inversion — "the framework calls you" — because Lesson 04 reveals it as the deepest idea in all of Spring.</p>
+      <p><strong>The history:</strong> by 2002, Java's official enterprise stack (then called J2EE) had become infamously heavy — mountains of mandatory XML and rigid, invasive rules. A developer named <strong>Rod Johnson</strong> published a book arguing this was all needlessly complex, and shipped working lighter-weight code with it. That code grew into the <strong>Spring Framework</strong>, first released in 2004. Its promise: your classes stay <em>plain Java objects</em> — ordinary classes with no framework bloodline — and Spring arranges the infrastructure around them. Its core idea, the engine under everything: <strong>Spring creates and connects your objects for you, instead of your code constructing everything itself.</strong> That single idea gets Lesson 04 entirely to itself; today it's enough to know it exists and that developers found it liberating. Spring won — through the 2000s it became the de-facto standard for Java business software.</p>
+
+      <h3>3.4 How Spring grew its own disease</h3>
+      <p>Spring solved J2EE's pain, then — over a decade of success and growth — accumulated three of its own:</p>
+      <p><strong>Pain 1 — decision overload.</strong> Spring became a family of modules: web, data, security, messaging, and more. Every project began with dozens of choices <em>before any business code</em>: which modules, which supporting libraries, which versions.</p>
+      <p><strong>Pain 2 — version compatibility, a.k.a. JAR hell.</strong> Remember from Lesson 00: a <em>dependency</em> is a library your project declares it needs, and each arrives as a JAR. A real Spring project needed 30+, and <strong>they had to be mutually compatible</strong> — library A built against version 1 of library C breaks when library B drags in version 2. Concretely: your code calls a method that existed in C v1; at runtime, C v2 is on the classpath and the method is gone; the crash message names none of the real culprits. Developers maintained compatibility spreadsheets. By hand.</p>
+      <p><strong>Pain 3 — configuration before code, and still the deployment dance.</strong> Even with everything chosen, you wrote pages of wiring-config: how to connect the database, how to translate objects to text for responses, which class serves which URL. And you <em>still</em> installed Tomcat separately and deployed WARs into it, every change, forever.</p>
+      <p>Notice what all three pains have in common: <strong>almost every team was making almost the same choices.</strong> Ninety percent of projects wanted the same web setup, the same JSON handling, the same database wiring pattern. Millions of hours spent hand-writing configuration that was nearly identical across the industry. When everyone writes the same thing, the thing should be a <em>default</em>.</p>
+
+      <h3>3.5 Spring Boot (2014) — stop asking, start assuming</h3>
+      <p><strong>Plain definition:</strong> <strong>Spring Boot</strong> is Spring Framework plus a layer that configures it for you, using sensible defaults you can override.</p>
+      <p><strong>Why it exists:</strong> to delete the wasted week — the decisions, the version spreadsheet, the config pages, the external server — and get you from empty folder to running application in minutes, without giving up any of Spring's power.</p>
+      <p>It delivers this with four mechanisms, each of which we now open fully:</p>
+      <p><strong>Gift 1 — Starters.</strong> A <strong>starter</strong> is a special dependency that represents a <em>job to be done</em> rather than a single library. You declare <code>spring-boot-starter-web</code> — meaning "I am building a web application" — and it pulls in the whole correct bundle: the web module, the JSON translator, the embedded server, every supporting JAR, <strong>all in versions tested together by the Spring team</strong>. Pain 1 (choice overload) and Pain 2 (JAR hell) die together: you choose <em>jobs</em>, not libraries, and compatibility becomes Spring's spreadsheet instead of yours. Our project will use a handful: web, data, validation, security — each introduced when its lesson arrives.</p>
+      <p><strong>Gift 2 — Auto-configuration.</strong> At startup, Spring Boot <em>inspects what your application has</em> and configures accordingly. This is the cleverest mechanism and gets its own deep-dive in 3.7.</p>
+      <p><strong>Gift 3 — The embedded server.</strong> Old world: install Tomcat, deploy your WAR <em>into</em> it — application inside server. <strong>Spring Boot flips it: Tomcat ships inside your application</strong> — server inside application, just another dependency the web starter pulls in. When your app starts, it starts its own Tomcat on port 8080 (a <em>port</em> being a numbered door on your machine, so many programs can share one network connection — full treatment with HTTP in Lesson 11). The consequence: your entire application becomes <strong>one self-contained runnable JAR</strong> — an <em>executable JAR</em>, code plus server plus everything, that runs anywhere with the single command:</p>
+      <pre><code>java -jar app.jar</code></pre>
+      <p>No install-Tomcat step. No deploy-into step. No WAR. The deployment dance from 3.2 collapses into one command — and this self-containedness is precisely what makes modern practices like containers (Phase 3) natural.</p>
+      <p><strong>Gift 4 — Opinionated defaults.</strong> Deep enough to deserve its own section:</p>
+
+      <h3>3.6 "Opinionated defaults" — the superpower, unpacked</h3>
+      <p><strong>Plain definition:</strong> for every configuration question, Spring Boot ships a pre-chosen, reasonable answer — an <em>opinion</em> — that applies automatically unless you say otherwise.</p>
+      <p><strong>Why it's called opinionated:</strong> the framework doesn't neutrally present 40 oven models; it <em>has an opinion</em>: "port 8080 unless you say otherwise; settings live in <code>application.yml</code>; JSON is the response format; this connection-pool is best." Like a great chef's tasting menu versus a 400-item diner menu — the chef has opinions, and they're good ones.</p>
+      <p><strong>Why opinions beat open-endedness, mechanically:</strong></p>
+      <ol>
+        <li><strong>Decisions have a cost</strong>, and 400 low-stakes decisions before any real work is a tax on every project. Defaults refund that tax.</li>
+        <li><strong>The default is usually better than your guess</strong> — each opinion encodes years of community experience about what works in production.</li>
+        <li><strong>Uniformity compounds:</strong> because most teams accept most defaults, every Spring Boot project looks familiar — new teammates orient in minutes, and any problem you hit has been hit (and answered online) by thousands before you.</li>
+      </ol>
+      <p><strong>The clause that makes it a superpower instead of a cage: every opinion is overridable.</strong> Want port 9090? One line in a settings file. Want a different JSON library? Declare it; Boot notices and steps aside (mechanics next section). You write down <strong>only your disagreements</strong> — which is why Boot configuration is 10 lines where old Spring was 400. Zero disagreements? Zero lines.</p>
+      <p>You'll also meet the phrase <strong>convention over configuration</strong> for this philosophy — "follow the convention and you configure nothing; configure only where you deviate."</p>
+      <p><strong>A worked example of one default, end to end:</strong> the moment our Lesson-02 project includes the web starter, Boot decides: embedded Tomcat, port 8080, JSON responses, standard error page, standard text-to-object translation for requests. Questions Maya-2013 spent days on — answered before we open the editor, every answer awaiting our veto.</p>
+
+      <h3>3.7 Auto-configuration under the hood — no magic allowed</h3>
+      <p>The sentence "Boot configures things automatically" is exactly the kind of sentence this course refuses to leave alone. Step by step, what happens:</p>
+      <p>First, one prerequisite term, and it's an old friend. The <strong>classpath</strong> is the list of places — folders and JAR files — where the JVM looks for compiled code while running your program. It is PATH's twin from Lesson 00: PATH is where the <em>terminal</em> finds <em>programs</em>; classpath is where the <em>JVM</em> finds <em>code</em>. Maven builds the classpath for you out of exactly the dependencies you declared. Key consequence: <strong>the classpath is a complete inventory of what your application has</strong> — and that inventory is precisely what auto-configuration reads.</p>
+      <p>The startup sequence:</p>
+      <ol>
+        <li><strong>Your app starts</strong> (Lesson 03 shows the exact line that triggers this).</li>
+        <li><strong>Boot loads its recipe list.</strong> Inside Spring Boot's own JARs sits a text file listing every <em>auto-configuration candidate</em> — think of it as a book of ~150 recipes: one for "web server", one for "database connection", one for "JSON translation", one for nearly everything Boot can set up. (In recent versions this list lives at <code>META-INF/spring/....AutoConfiguration.imports</code> inside the auto-configure JAR — a detail you can verify by literally unzipping the JAR, which is a fun exercise once we have a project.)</li>
+        <li><strong>Every recipe is guarded by conditions.</strong> A recipe does not simply run; it runs <em>only if its conditions hold</em>. The three condition families that matter:
+          <ul>
+            <li><strong>"Only if the classpath contains X."</strong> The database recipe fires only if a database library is actually among your dependencies. This is why the classpath-as-inventory idea is the heart of the whole mechanism: <em>your dependency list is the questionnaire, and you filled it out just by declaring starters.</em></li>
+            <li><strong>"Only if the user hasn't provided their own."</strong> Before creating its default JSON translator, Boot checks whether <em>you</em> already defined one. You did? Recipe skips. <strong>This single check is the mechanical guarantee behind "every opinion is overridable"</strong> — your version always wins, silently, no flag required. (What "you defined one" precisely means involves Spring's object-management from Lesson 04; for now: if you supplied yours, Boot backs off.)</li>
+            <li><strong>"Only if a setting says so / doesn't forbid it."</strong> Some recipes read your settings file and activate or shape themselves accordingly.</li>
+          </ul>
+        </li>
+        <li><strong>Surviving recipes execute</strong>, each creating and wiring the objects for its concern: the Tomcat recipe builds and starts the embedded server; the JSON recipe sets up translation; and so on. (These managed objects have a proper Spring name and lifecycle — that's Lesson 04's territory.)</li>
+        <li><strong>Result: a fully configured application</strong> where every piece exists either because a starter you chose implied it, or because you defined it yourself and Boot yielded.</li>
+      </ol>
+      <p><strong>Trace one concrete cause-and-effect:</strong> in Lesson 02 we declare <code>spring-boot-starter-web</code> → Maven puts Tomcat's JARs and the JSON library on the classpath → at startup, the "embedded web server" recipe's condition ("Tomcat on classpath?") passes → the recipe builds Tomcat, port 8080, and starts it. We never wrote "give me a web server." <strong>We declared a dependency, and the configuration followed from it.</strong> That's the entire trick: configuration inferred from inventory, with your explicit choices always trumping.</p>
+      <p><strong>And when you need to see the decisions:</strong> Boot can print a <em>condition evaluation report</em> — every recipe, applied or skipped, with the reason — when started in debug mode. We'll produce one ourselves in Lesson 03 and read it together. Auto-configuration isn't a black box; it's a rule engine with an audit log.</p>
+
+      <h3>3.8 Spring Boot versus Spring Framework — the honest difference</h3>
+      <p>The single most common beginner confusion, settled:</p>
+      <ul>
+        <li><strong>Spring Framework</strong> is the actual machinery: object management, web handling, data access, transactions. Every real capability lives here.</li>
+        <li><strong>Spring Boot</strong> is the assembly-and-defaults layer on top: starters, auto-configuration, the embedded server, opinionated defaults, plus production conveniences (self-monitoring endpoints among them — Phase 3's observability chapter uses these heavily).</li>
+      </ul>
+      <p><strong>Boot did not replace Framework; Boot <em>ships</em> Framework, pre-assembled.</strong> Every Spring Boot application <em>is</em> a Spring Framework application — engine and car. When we write our project, the annotations and classes in our code are overwhelmingly <em>Framework</em> features; Boot's contribution is that everything around them configured itself.</p>
+      <p>Honestly, both directions: could you use Framework without Boot? Yes — teams did for a decade, and older codebases still run that way; you'd hand-write the configuration Boot infers. Any reason to, on a new project? Essentially never — you'd be declining free, overridable, industry-tested setup. Which is why "Spring project" and "Spring Boot project" are near-synonyms for anything started in the last decade, and why this course teaches Spring <em>through</em> Boot from day one.</p>
+
+      <h3>3.9 Where Spring Boot 4.x sits — and what it means for us</h3>
+      <p>Our pinned <strong>Spring Boot 4.1.x</strong> is built on <strong>Spring Framework 7</strong> — each Boot generation is welded to a Framework generation and inseparable from it (Boot 3.x ↔ Framework 6, Boot 4.x ↔ Framework 7). What the 4.x generation means for us, practically:</p>
+      <ul>
+        <li><strong>It is the current stable line</strong> (4.1.0 shipped June 2026), and the entire 3.x line reached open-source end-of-life on 2026-06-30 — new projects build on 4.x, which is exactly what we do.</li>
+        <li><strong>Modern Java is the floor:</strong> Boot 4 requires Java 17 minimum; our Java 21 sits comfortably inside its supported range.</li>
+        <li><strong>History you'll trip over in old tutorials #1:</strong> years ago, Java's enterprise add-on packages were renamed wholesale from <code>javax.*</code> to <code>jakarta.*</code> (legal/stewardship reasons; the full story is told with entities in Lesson 17). That migration happened back in Boot 3.0 and is <em>settled</em> — but the internet remains full of Boot 2-era code showing <code>javax.*</code> imports that will not compile for us. Old code + <code>javax.</code> = old tutorial; adjust accordingly.</li>
+        <li><strong>History you'll trip over #2:</strong> Boot 4 reorganized and renamed some starters and modules versus 3.x. So a 2023 blog post may name a starter that's since been rearranged. Course discipline, stated once and applied always: <strong>every starter name, property key, and annotation we use gets checked against the official Spring Boot 4.x documentation when we first use it</strong> — and where I state one from memory, I flag it for verification. Between an old tutorial, my memory, and your machine: your machine wins, official current docs second, everything else third.</li>
+      </ul>
+    </section>
+
+    <section id="wrong">
+      <h2><span class="secno">4</span>The Wrong Way</h2>
+      <div class="warn">
+        <p><strong>WRONG APPROACH:</strong> build a modern web application as a raw servlet, the pre-Spring way.</p>
+      </div>
+      <p>Goal: return <code>Hello from the shop!</code> when a browser asks for <code>/hello</code>. First the Java (this is <em>illustration of the old world</em> — it belongs in no project of ours):</p>
+      <pre><code><span class="c">// HelloServlet.java - the pre-Spring way. Package/import section already tells a story:</span>
+<span class="c">// we must import the servlet machinery and extend a framework class just to say hello.</span>
+import jakarta.servlet.http.HttpServlet;          <span class="c">// the base class every servlet must extend</span>
+import jakarta.servlet.http.HttpServletRequest;   <span class="c">// object representing the incoming request</span>
+import jakarta.servlet.http.HttpServletResponse;  <span class="c">// object representing the outgoing response</span>
+import java.io.IOException;                       <span class="c">// checked exception we're forced to declare</span>
+import java.io.PrintWriter;                       <span class="c">// the pen we write the response with</span>
+
+<span class="c">// Our class IS-A HttpServlet - our code physically inherits from the web machinery,</span>
+<span class="c">// meaning it cannot even compile, let alone be tested, without the servlet world present.</span>
+public class HelloServlet extends HttpServlet {
+
+    <span class="c">// The container calls this method for HTTP GET requests. We override it to inject our logic.</span>
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
+            throws IOException {                           <span class="c">// ceremony: declare the exception</span>
+        response.setContentType("text/plain");             <span class="c">// ceremony: declare the response format by hand</span>
+        response.setCharacterEncoding("UTF-8");            <span class="c">// ceremony: declare text encoding by hand</span>
+        PrintWriter out = response.getWriter();            <span class="c">// ceremony: obtain the "pen"</span>
+        <span class="hi">out.println("Hello from the shop!");               // &lt;-- THE ONE LINE THAT IS OUR ACTUAL LOGIC</span>
+        out.close();                                       <span class="c">// ceremony: put the pen away</span>
+    }
+}</code></pre>
+      <p>And the class alone does nothing — Tomcat must be told it exists, in <code>web.xml</code>:</p>
+      <pre><code><span class="c">&lt;!-- web.xml - the XML registration file the container demands --&gt;</span>
+&lt;web-app xmlns="https://jakarta.ee/xml/ns/jakartaee" version="6.0"&gt;
+    &lt;servlet&gt;
+        &lt;servlet-name&gt;helloServlet&lt;/servlet-name&gt;            <span class="c">&lt;!-- an internal nickname... --&gt;</span>
+        &lt;servlet-class&gt;HelloServlet&lt;/servlet-class&gt;          <span class="c">&lt;!-- ...bound to the class, as a string: typo = runtime failure --&gt;</span>
+    &lt;/servlet&gt;
+    &lt;servlet-mapping&gt;
+        &lt;servlet-name&gt;helloServlet&lt;/servlet-name&gt;            <span class="c">&lt;!-- the nickname again... --&gt;</span>
+        &lt;url-pattern&gt;/hello&lt;/url-pattern&gt;                    <span class="c">&lt;!-- ...bound to the URL --&gt;</span>
+    &lt;/servlet-mapping&gt;
+&lt;/web-app&gt;</code></pre>
+      <p><strong>What goes wrong:</strong> count the ceremony. One meaningful line of logic needed ~15 lines of Java ritual, plus an XML file where class names are <em>strings</em> (misspell one — no compile error, just a runtime failure when someone visits the URL). Our class <em>inherits from the web machinery</em>, so it can't be unit-tested without simulating a container. Nothing here scales: every new URL means another class + another XML stanza; JSON, database, security are each another library hunt and another config file. And to see even this run, the full ritual: install Tomcat → package a WAR → copy into Tomcat's folder → start Tomcat → check the logs for silent failures. Every code change repeats the package-copy-restart loop.</p>
+      <p><strong>If this ran, the output would be (prediction):</strong> after the setup ritual — realistically an afternoon the first time — visiting <code>http://localhost:8080/hello</code> shows:</p>
+      <pre><code>Hello from the shop!</code></pre>
+      <p>It <em>works</em>. That's the trap — this approach functions; it just taxes every hour of your career. The one line of hello costs an afternoon of scaffolding, and the tax repeats on every change, every feature, every project, forever.</p>
+    </section>
+
+    <section id="right">
+      <h2><span class="secno">5</span>The Right Way</h2>
+      <div class="tryit">
+        <p><strong>CORRECT APPROACH:</strong> the same goal inside Spring Boot.</p>
+      </div>
+      <p>Two files carry the equivalent of everything above. First, in Maven's recipe file (<code>pom.xml</code> — fully dissected in Lesson 02), one dependency declaring the <em>job</em>:</p>
+      <pre><code><span class="c">&lt;!-- pom.xml (fragment) - "I am building a web application." That's the whole sentence. --&gt;</span>
+&lt;dependency&gt;
+    &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;       <span class="c">&lt;!-- who publishes it: the Spring Boot project --&gt;</span>
+    &lt;artifactId&gt;spring-boot-starter-web&lt;/artifactId&gt;  <span class="c">&lt;!-- which starter: the web-application job --&gt;</span>
+    <span class="c">&lt;!-- no version line: the Boot parent manages versions - Lesson 02 shows exactly how --&gt;</span>
+&lt;/dependency&gt;</code></pre>
+      <p>Then the application itself:</p>
+      <pre><code><span class="c">// DemoApplication.java - a complete, runnable Spring Boot web application.</span>
+package com.example.demo;                                          <span class="c">// where this class lives in the code's namespace</span>
+
+import org.springframework.boot.SpringApplication;                  <span class="c">// the class whose run() boots everything</span>
+import org.springframework.boot.autoconfigure.SpringBootApplication; <span class="c">// the annotation that marks this as a Boot app</span>
+
+<span class="c">// First annotation of the course, so first: what an ANNOTATION is. It's a label starting</span>
+<span class="c">// with @ that you attach to code. It doesn't run; it's read - by frameworks and tools - as</span>
+<span class="c">// an instruction about the code it sits on. Like a sticky note on a folder: the folder's</span>
+<span class="c">// contents are unchanged, but whoever processes the folder acts on the note.</span>
+<span class="c">// This particular note tells Spring Boot: "this class is the front door of the application -</span>
+<span class="c">// start here, scan from here, auto-configure everything." It's actually three annotations</span>
+<span class="c">// rolled into one, and Lesson 03 unpacks all three.</span>
+@SpringBootApplication
+public class DemoApplication {
+
+    <span class="c">// Plain old Java main() - the standard entry point of ANY Java program, nothing Spring about it.</span>
+    public static void main(String[] args) {
+        <span class="c">// The ignition: this one call runs the entire Section 3.7 sequence -</span>
+        <span class="c">// load recipes, evaluate conditions, build what survives, start embedded Tomcat.</span>
+        SpringApplication.run(DemoApplication.class, args);
+    }
+}</code></pre>
+      <p>Note what's absent: no XML, no server install, no inheritance from web machinery — <code>DemoApplication</code> is a plain class with a plain <code>main</code>, plus one sticky note. (The <code>/hello</code> URL itself takes one small extra class with two annotations — but URL handling is Lesson 12's feature, and this course never bolts a future lesson's feature on early. Today's point stands without it: the <em>platform</em> that took an afternoon now takes eleven lines.)</p>
+      <p><strong>Step-by-step walkthrough — what happens when this runs:</strong></p>
+      <ol>
+        <li><code>java</code> starts the JVM, which calls <code>main</code>, which calls <code>SpringApplication.run(...)</code> — ordinary Java so far.</li>
+        <li>Boot loads its recipe book and interrogates the classpath: <em>web starter present?</em> — yes, Maven put Tomcat and the JSON library there because of our one <code>pom.xml</code> declaration.</li>
+        <li>Conditions evaluated: web-server recipe passes ("Tomcat on classpath, user defined no server of their own") → embedded Tomcat is created and started on default port 8080. Dozens of other recipes pass or skip the same way.</li>
+        <li>The application logs its startup and sits listening — a living server, born from one dependency plus one annotation.</li>
+      </ol>
+      <p><strong>Expected output (prediction — version numbers shown as our pins; exact patch digits and timings will differ):</strong></p>
+      <pre><code>  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v4.1.x)
+
+... INFO ... : Starting DemoApplication using Java 21.0.x
+... INFO ... : Tomcat initialized with port 8080 (http)
+<span class="hi">... INFO ... : Tomcat started on port 8080 (http) with context path '/'</span>
+... INFO ... : Started DemoApplication in 1.8 seconds (process running for 2.2)</code></pre>
+      <p>Read those log lines like a story: the banner announces Boot and its version (check it against our pin!), then <em>our Java 21</em>, then — the line that should make Section 3's whole history click — <strong><code>Tomcat started on port 8080</code></strong>. The server that used to be a separate install-and-deploy-into world is now just something our application <em>mentions in passing while starting</em>.</p>
+      <div class="tryit">
+        <p><strong>How to run it:</strong> this is the one lesson where the run comes <em>next session</em> — Lesson 02 scaffolds our real E-Commerce project (this demo class's exact twin, properly named), and the command will be <code>mvn spring-boot:run</code> from the project folder. <strong>Check it matches:</strong> when you run it in Lesson 02, put this prediction side-by-side with your real startup logs — the banner, the Boot version against our pin, the Tomcat line, the port. Differences are the lesson, and the machine is always right.</p>
+      </div>
+    </section>
+
+    <section id="applied">
+      <h2><span class="secno">6</span>Applied to Our Project (or a Labelled Demo)</h2>
+      <p><strong>This is a pure-concept lesson — it teaches history and mental models, not a writable Spring Boot feature — so it changes no project code, and that is stated plainly rather than forced.</strong> There is deliberately no premature scaffolding here: creating the project <em>is</em> Lesson 02's entire subject, done with full understanding of every option, and this course never implements a future lesson's feature early.</p>
+      <p>What this lesson <em>does</em> deposit in the project's world: the mental model that every later file stands on. When Lesson 02's <code>pom.xml</code> declares starters, you'll know they're jobs-not-libraries and why no versions appear. When Lesson 03 unpacks <code>@SpringBootApplication</code>, you'll know what the sticky note is <em>for</em>. When startup logs scroll by, you'll see recipes passing conditions, not magic.</p>
+      <p><strong>Repository state:</strong> unchanged and healthy — documents only, nothing to build yet; the stay-runnable invariant is trivially intact. (Prediction: <code>git status</code> before the commit below shows only this lesson file, the updated <code>glossary.md</code>, and <code>README.md</code> as changes.)</p>
+    </section>
+
+    <section id="gotchas">
+      <h2><span class="secno">7</span>Gotchas and Common Mistakes</h2>
+      <ul>
+        <li><strong>Believing "Spring Boot replaced Spring Framework."</strong> It's the most natural reading of the names, and it's wrong: Boot is Framework <em>plus</em> assembly — every Boot app is a Framework app. Why it bites: you'll misread docs and job descriptions, and miss that most annotations you use daily are Framework features. Anchor: engine (Framework) and car (Boot).</li>
+        <li><strong>Treating auto-configuration as magic and never asking why something got configured.</strong> It feels like magic, so beginners stop asking — then can't debug when a default isn't what they wanted. It's a rule engine: recipes + conditions + your-version-wins. When surprised, ask "what's on my classpath, and what did I define myself?" — and remember the condition report exists (we read one in Lesson 03).</li>
+        <li><strong>Copying from pre-Boot or Boot-2-era tutorials.</strong> A decade of internet answers shows <code>web.xml</code>, hand-configured servers, <code>javax.*</code> imports, or renamed starters. Why it bites: that code fails confusingly on Boot 4. Tell-tales of an outdated source: <code>javax.</code> imports, XML config for things we never configure, "first install Tomcat." Trust: your machine, then current official docs, then everything else.</li>
+        <li><strong>Fearing that defaults mean lost control.</strong> Beginners hear "opinionated" and imagine a straitjacket, then over-configure things Boot already handles — recreating the 400-line world Boot exists to delete. Every opinion is overridable, and the override mechanism (yours-wins) is built into the conditions themselves. Write down disagreements only.</li>
+        <li><strong>Assuming the embedded server is a toy.</strong> "Real deployments surely need a real separate Tomcat?" No — it's the same Tomcat, inside your JAR, and embedded is the modern production norm (it's exactly what containers in Phase 3 want). The WAR-into-external-server pattern is the legacy path, not the grown-up one.</li>
+      </ul>
+    </section>
+
+    <section id="tradeoffs">
+      <h2><span class="secno">8</span>Tradeoffs and When Not to Use This</h2>
+      <ul>
+        <li><strong>Defaults can hide understanding — the honest cost of Boot.</strong> Old Spring forced you to write the wiring, so you <em>knew</em> the wiring; Boot infers it, so you can ship apps while understanding nothing underneath — until the first non-default need or subtle failure, where the bill arrives with interest. This course's whole design answers that: we use Boot <em>and</em> open every hood (3.7 today; the condition report in Lesson 03).</li>
+        <li><strong>Opinions fit the common case, and you might not be it.</strong> The further your needs drift from mainstream web-app shapes, the more overriding you do, and the thinner Boot's value gets. For the overwhelming majority — including E-Commerce, the <em>definitionally</em> common case — the opinions fit superbly.</li>
+        <li><strong>Startup work isn't free.</strong> Recipe evaluation and runtime configuration cost startup time and memory — irrelevant for a long-running server, relevant for tiny instant-start processes. Later tooling addresses exactly this (ahead-of-time processing and native compilation — Lesson 100).</li>
+        <li><strong>When would you genuinely not use Spring Boot?</strong> Small command-line utilities (plain Java suffices); teams standardized on ecosystems with different tradeoffs (lighter/faster-boot Java frameworks exist — worth knowing <em>of</em> after mastering one of them); maintaining a legacy pre-Boot codebase (you adapt to what's there). Choosing Boot for a new Java business system, though, is the boring, correct, industry-default choice — and boring-correct is exactly what infrastructure should be.</li>
+        <li><strong>"Near-synonymous with modern Java backend" cuts both ways:</strong> enormous ecosystem, every question pre-answered online — and enough market dominance that alternatives get less attention than they deserve. After this course you'll be equipped to evaluate them on merits, which is the only trustworthy position to compare <em>from</em>.</li>
+      </ul>
+    </section>
+
+    <section id="takeaways">
+      <h2><span class="secno">9</span>Key Takeaways</h2>
+      <ul>
+        <li>A servlet is Java's original unit of web request handling, and it demanded a separately installed servlet container like Tomcat plus XML registration and a package-deploy-restart ritual for every change — infrastructure pain that had nothing to do with any product's actual logic.</li>
+        <li>The Spring Framework (2004) replaced the heavyweight enterprise Java of its day with plain objects and the idea that the framework creates and connects your objects for you — then spent a decade accumulating its own disease of decision overload, version JAR-hell, and configuration-before-code.</li>
+        <li>Spring Boot (2014) is Spring Framework pre-assembled, not replaced: starters turn library-picking into job-naming, the embedded server turns deployment into <code>java -jar</code>, and opinionated-but-overridable defaults mean you write down only your disagreements.</li>
+        <li>Auto-configuration is a rule engine, not magic: at startup Boot evaluates ~150 candidate recipes against conditions — chiefly "is the library on the classpath?" and "did the user define their own?" — so configuration follows from your dependency inventory, and your explicit choices always win.</li>
+        <li>Our pinned Spring Boot 4.1.x rides on Spring Framework 7 as the current stable generation, which means old tutorials showing <code>javax.*</code> imports or pre-4.x starter names will mislead you — when sources disagree, your machine wins, current official docs come second, everything else third.</li>
+      </ul>
+    </section>
+
+    <section id="challenge">
+      <h2><span class="secno">10</span>Coding Challenge with Hidden Answer</h2>
+      <p>Three reasoning challenges — auto-configuration mechanics, the Boot/Framework boundary, and history-reading. Reason on paper before revealing.</p>
+      <p><strong>Challenge 1 — the mystery of the uninvited database.</strong> A teammate adds a database-access starter to a Boot project's <code>pom.xml</code> (planning to use it "later"), rebuilds, restarts — and the app now <strong>fails at startup</strong>, complaining it cannot configure a database connection. She protests: "I never configured a database! I never even mentioned one outside the dependency list!" Using Section 3.7's mechanics, explain precisely why the app behaved differently, why her protest is actually the explanation, and name two different routes to make startup succeed.</p>
+      <p><strong>Challenge 2 — the interview question.</strong> An interviewer asks: "Is <code>@SpringBootApplication</code> part of Spring Framework or Spring Boot? And when your controller handles a web request, whose machinery is doing the handling?" Answer both, with the engine/car model.</p>
+      <p><strong>Challenge 3 — carbon-dating a tutorial.</strong> You find a tutorial: <em>step 1 — install Apache Tomcat; step 2 — configure <code>web.xml</code>; step 3 — import <code>javax.servlet.http.HttpServlet</code>; step 4 — build a WAR and copy it to Tomcat's folder.</em> Date its era, cite the tell-tales, and say which single Boot mechanism deletes each step.</p>
+      <details>
+        <summary>Click to reveal the answer</summary>
+        <p><strong>Challenge 1:</strong> her dependency list <em>is</em> configuration input — that's the whole trick of auto-configuration. Adding the starter put database libraries on the classpath; at startup, the datasource recipe's first condition ("database library on classpath?") flipped from fail to pass; the recipe then ran and needed to know <em>which</em> database to connect to — no address/settings existed — so it failed loudly. Her protest ("I only added a dependency") is literally the mechanism: <strong>the classpath is the questionnaire.</strong> Two routes out: (a) finish the story — provide the database settings (or an embedded database like H2, whose recipe can self-configure completely — exactly our Chapter 4 path); or (b) retract the answer — remove the starter until actually needed (deferrable: dependencies should arrive in the lesson/feature that uses them — this course's own rule). <em>(Also acceptable: explicitly excluding that auto-configuration recipe — a real mechanism you'll meet later.)</em></p>
+        <p><strong>Challenge 2:</strong> <code>@SpringBootApplication</code> is <strong>Spring Boot's</strong> — it's the sticky note meaning "auto-configure from here," and auto-configuration is Boot's layer. The request handling is <strong>Spring Framework's</strong> — web machinery is core Framework; Boot only pre-assembled it. Model: the car's ignition button (Boot) starts things, but the engine doing the actual work at speed (Framework) is what's running. Every Boot app is a Framework app wearing Boot's assembly.</p>
+        <p><strong>Challenge 3:</strong> pre-Spring-Boot servlet era — as a <em>fresh recommendation</em>, pre-2014; the <code>javax.servlet</code> import specifically pre-dates the <code>jakarta</code> rename (so pre-Boot-3-era, before ~2022). Tell-tales → Boot's deletions: <em>install Tomcat</em> → embedded server (Tomcat ships inside the app); <em><code>web.xml</code></em> → annotations + auto-configuration (no XML registration; URL mapping via annotation, Lesson 12); <em><code>javax.*</code></em> → <code>jakarta.*</code> (settled since Boot 3.0); <em>WAR copied into Tomcat</em> → executable JAR, <code>java -jar</code>. Bonus mark for noting the code might still <em>work</em> — the old path functions; it just pays the permanent tax Section 4 demonstrated.</p>
+      </details>
+    </section>
+
+    <section id="next">
+      <h2><span class="secno">11</span>What Is Next</h2>
+      <p>You now know <em>what</em> Spring Boot is and <em>why</em> every piece of it exists. Lesson 02 makes it real: we scaffold the actual E-Commerce project — walking through Spring Initializr option by option, dissecting <code>pom.xml</code> line by line, explaining every generated file and folder (and what breaks if it's deleted) — and you run <code>mvn spring-boot:run</code> and watch the predicted startup banner appear on your own machine for the first time.</p>
+    </section>
+
+    <footer class="next">
+      <p class="kicker">Next up</p>
+      <h2>Lesson 02 — Project Setup and Structure</h2>
+      <p>Scaffolding the real E-Commerce project: Spring Initializr option by option, <code>pom.xml</code> line by line, and your first real startup banner.</p>
+      <p><a href="lesson-02-project-setup-and-structure.html">Continue to Lesson 02 →</a></p>
+    </footer>
+
+    <p class="lesson-footer">Lesson 01 of 121 — Phase 1, Chapter 1 (Getting Started), Lesson 1 of 3.</p>
+
+  </main>
+
+</div>
+</body>
+</html>

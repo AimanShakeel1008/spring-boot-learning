@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Chapter 0 Summary — Setup and First Run</title>
+  <link rel="stylesheet" href="../../assets/lesson.css">
+</head>
+<body>
+<div class="page">
+
+  <aside class="toc">
+    <p class="toc-title">On this page</p>
+    <nav>
+      <a href="#built">1 · What We Built</a>
+      <a href="#diagram">2 · System State Diagram</a>
+      <a href="#story">3 · The Story So Far</a>
+      <a href="#glance">4 · Lessons at a Glance</a>
+      <a href="#connect">5 · How Concepts Connect</a>
+      <a href="#comeback">6 · Concepts That Come Back</a>
+      <a href="#checklist">7 · Self-Assessment</a>
+      <a href="#boss">8 · Boss Challenge</a>
+    </nav>
+    <div class="prevnext">
+      <a class="prev" href="lesson-00-getting-your-machine-ready.html">← Lesson 00</a>
+      <a class="next" href="../chapter-01-getting-started/lesson-01-what-is-spring-boot-and-why-it-exists.html">Lesson 01 →</a>
+    </div>
+  </aside>
+
+  <main>
+
+    <header class="lesson">
+      <p class="kicker">Phase 1 · Chapter 00 — Setup · Chapter Summary</p>
+      <h1>Chapter 0 Summary — Setup and First Run</h1>
+      <p class="subtitle">The workshop is built: JDK 21, Maven, IntelliJ, Git, GitHub — all installed, verified, and pinned.</p>
+    </header>
+
+    <section id="built">
+      <h2><span class="secno">1</span>What We Built</h2>
+      <p>No application code yet — Chapter 0 built the <em>workshop</em>, and the repository's living documents:</p>
+      <div class="tablewrap">
+        <table>
+          <thead>
+            <tr><th>File / tool</th><th>Purpose</th></tr>
+          </thead>
+          <tbody>
+            <tr><td><strong>JDK 21 (Eclipse Temurin)</strong> — installed &amp; verified</td><td>The compiler + JVM: nothing compiles or runs without it. Verified with <code>java -version</code>.</td></tr>
+            <tr><td><strong>Maven</strong> — installed &amp; verified</td><td>The build tool that fetches dependencies, compiles, tests, and packages with one command. Verified with <code>mvn -version</code>.</td></tr>
+            <tr><td><strong>IntelliJ IDEA Community</strong> — installed</td><td>The IDE: a code editor that understands Java. Verified by reaching the welcome screen.</td></tr>
+            <tr><td><strong>Git + GitHub</strong> — installed, configured, connected</td><td>Permanent local history + off-machine copy. Verified with <code>git --version</code> and <code>git log --oneline</code>.</td></tr>
+            <tr><td><code>lessons/.../lesson-00-getting-your-machine-ready.html</code></td><td>The full written lesson.</td></tr>
+            <tr><td><code>README.md</code></td><td>The repository's front page — grows with every capability.</td></tr>
+            <tr><td><code>glossary.md</code></td><td>Every defined term with its lesson of origin — 28 terms and counting.</td></tr>
+            <tr><td><code>troubleshooting.md</code></td><td>Setup errors decoded: PATH problems, wrong Java, JAVA_HOME, winget, git identity and push auth.</td></tr>
+            <tr><td><code>.env.example</code></td><td>The secrets-by-name-only template, in place from day one so no secret can ever reach Git history.</td></tr>
+            <tr><td><code>.gitignore</code></td><td>Written before the first commit: local-only course files, build output, IDE folders, and real secrets can never be staged.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="diagram">
+      <h2><span class="secno">2</span>System State Diagram</h2>
+      <pre class="diagram"><code>                    YOUR MACHINE (Windows 11)
+   ┌───────────────────────────────────────────────────────┐
+   │                                                       │
+   │   PowerShell ──finds via PATH──► java.exe  (JDK 21)   │
+   │        │                         mvn.cmd  (Maven)     │
+   │        │                         git.exe  (Git)       │
+   │        │                                              │
+   │   IntelliJ IDEA Community (ready, no project yet)     │
+   │                                                       │
+   │   d:\Projects\spring-boot-learning\   [Git repository]│
+   │      ├─ lessons/            (curriculum archive)      │
+   │      ├─ README.md  glossary.md  troubleshooting.md    │
+   │      ├─ .env.example  .gitignore                      │
+   │      └─ (application code: none yet)                  │
+   └──────────────────────────┬────────────────────────────┘
+                              │ git push / git pull
+                              ▼
+                    GITHUB (remote "origin")
+              synchronized copy of the repository</code></pre>
+    </section>
+
+    <section id="story">
+      <h2><span class="secno">3</span>The Story So Far</h2>
+      <p>Every real system's story starts before its first line of code, in decisions about tools and versions that will quietly shape everything after. Ours began by refusing the classic beginner trap — "download whatever, verify nothing" — and instead installing four tools deliberately: the JDK that makes Java possible, Maven that will assemble every build for the next hundred-plus lessons, an IDE to write in, and Git to make every step reversible.</p>
+      <p>Two decisions matter most in hindsight. First, <strong>everything was verified with a command whose output was predicted in advance</strong> — the habit of "never trust, always check against reality" that this entire course runs on. Second, <strong><code>.gitignore</code> existed before the first commit</strong>, which means the repository was born structurally incapable of leaking secrets or committing junk. Neither decision produced anything demo-able today; both will pay rent in every chapter that follows.</p>
+      <p>The versions are pinned — Java 21, Spring Boot 4.1.x, Maven — so from here on, when a lesson predicts an output, your machine can confirm or refute it on equal terms. The kitchen is built. Next, we find out what we're cooking and why the recipe (Spring Boot) exists at all.</p>
+    </section>
+
+    <section id="glance">
+      <h2><span class="secno">4</span>All Lessons at a Glance</h2>
+      <div class="tablewrap">
+        <table>
+          <thead>
+            <tr><th>Lesson</th><th>Title</th><th>Core concept</th><th>Key tool / command</th><th>Output demonstrated</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>00</td>
+              <td>Getting Your Machine Ready</td>
+              <td>The toolchain: compile-run model, PATH, version control, version pinning</td>
+              <td><code>java -version</code>, <code>mvn -version</code>, <code>git --version</code>, <code>git log</code></td>
+              <td>Each tool's verified version banner (predictions confirmed by the learner's own machine)</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section id="connect">
+      <h2><span class="secno">5</span>How the Concepts Connect</h2>
+      <pre class="diagram"><code> source code (.java, text)                        version pinning
+       │  compiler (javac) ── inside the ──┐      (Java 21 + Boot 4.1.x)
+       ▼                        JDK        │            │ makes every
+   bytecode (.class)                       │            ▼ prediction checkable
+       │  JVM (java) ──────────────────────┘      predicted output ⇄ real output
+       ▼                                                   ▲
+   running program                                         │ produced by commands
+                                                           │ typed into…
+   Maven ──(uses JAVA_HOME to find JDK)── builds it   the TERMINAL, which finds
+   IDE   ──(writes the source code)                   every tool via the PATH
+   Git   ──(snapshots everything)── push ──► GitHub (off-site copy)
+                  ▲
+           .gitignore decides what may NEVER enter history (secrets, build output)</code></pre>
+    </section>
+
+    <section id="comeback">
+      <h2><span class="secno">6</span>Concepts That Will Come Back</h2>
+      <ul>
+        <li><strong>The prediction-then-verify loop</strong> — every single lesson from here on shows predicted output that you confirm or refute by running the real thing; when they disagree, the machine wins.</li>
+        <li><strong>PATH and environment variables</strong> — return almost immediately as the mechanism for configuration and secrets (Chapter 5's profiles and the 12-factor principle stand on them).</li>
+        <li><strong>The JVM and bytecode</strong> — resurface when we unpack what <code>java -jar</code> really does at startup (Lesson 02) and again for virtual threads and native images in Phase 3.</li>
+        <li><strong>Maven</strong> — gets its full anatomy lesson in Lesson 02 and then appears in literally every lesson that builds anything.</li>
+        <li><strong>The secrets-never-in-git convention</strong> (<code>.gitignore</code> + <code>.env.example</code>) — becomes load-bearing when the database password (Chapter 4), JWT secrets (Chapter 10), and AI provider keys (Phase 4) arrive.</li>
+      </ul>
+    </section>
+
+    <section id="checklist">
+      <h2><span class="secno">7</span>Self-Assessment Checklist</h2>
+      <ul>
+        <li>☐ I can explain the two-step journey from a <code>.java</code> text file to a running program, naming what the compiler produces and what the JVM does with it.</li>
+        <li>☐ I can explain why <code>java -version</code> works from any folder, and what to try first when a just-installed tool is "not recognized."</li>
+        <li>☐ I can explain the difference between Git and GitHub in one sentence each, and what a commit is.</li>
+        <li>☐ I can explain why <code>.gitignore</code> had to exist <em>before</em> the first commit, and what kind of files it protects history from.</li>
+        <li>☐ I can state this course's pinned versions and explain what pinning buys us.</li>
+      </ul>
+    </section>
+
+    <section id="boss">
+      <h2><span class="secno">8</span>Chapter Boss Challenge</h2>
+      <p><strong>Scenario:</strong> your friend wants to join you on this course, on their own Windows laptop. They know basic Java syntax and nothing else. Without pointing them at any download page, <strong>write them a setup runbook</strong>: (a) the ordered list of what to install, one sentence per item on <em>why</em> it's needed; (b) the exact verification command for each and what to look for in its output; (c) the three mistakes most likely to bite them, with the first fix to try; (d) the one-time Git/GitHub sequence, with a one-line comment per command — and the explanation of why <code>.gitignore</code> comes when it does in that sequence.</p>
+      <details>
+        <summary>Click to reveal the answer</summary>
+        <p><strong>(a) Install, in order:</strong></p>
+        <ol>
+          <li><strong>JDK 21 (Eclipse Temurin)</strong> — the compiler and JVM; without it Java neither compiles nor runs.</li>
+          <li><strong>Maven</strong> — the build tool that fetches dependencies and assembles the app with one command.</li>
+          <li><strong>IntelliJ IDEA Community Edition</strong> — the free IDE; flags errors while typing instead of at build time.</li>
+          <li><strong>Git</strong> — permanent, versioned history of the project folder; makes every experiment reversible.</li>
+          <li><strong>A GitHub account + one empty repository</strong> — the off-machine copy of that history.</li>
+        </ol>
+        <p><strong>(b) Verify — new terminal window after each install:</strong></p>
+        <ul>
+          <li><code>java -version</code> → the version line must say <strong>21</strong>.</li>
+          <li><code>mvn -version</code> → Maven <strong>3.9.x or newer</strong>, and its <code>Java version:</code> line must also say <strong>21</strong> (this checks Maven found the <em>right</em> Java).</li>
+          <li>IntelliJ → launching to the welcome screen is the verification.</li>
+          <li><code>git --version</code> → any modern version prints.</li>
+          <li>After the sequence in (d): <code>git log --oneline</code> → exactly one commit line.</li>
+        </ul>
+        <p><strong>(c) Three likely mistakes:</strong></p>
+        <ol>
+          <li><em>Verifying in a terminal opened before the install</em> → "not recognized." First fix: close and reopen the terminal.</li>
+          <li><em>An older Java already on the machine wins the PATH race</em> → wrong version prints. First fix: <code>where.exe java</code> to see the order, then remove or reorder.</li>
+          <li><em>Downloading IntelliJ Ultimate (the paid trial shown first)</em> instead of Community. First fix: scroll down; get Community.</li>
+        </ol>
+        <p><strong>(d) One-time sequence, from the new course folder:</strong></p>
+        <pre><code>git init                                          <span class="c"># start the repository (Git begins watching this folder)</span>
+<span class="c"># create .gitignore NOW - before anything is staged</span>
+git add .                                         <span class="c"># stage all files EXCEPT what .gitignore excludes</span>
+git commit -m "chore: initial course setup"       <span class="c"># first permanent snapshot</span>
+git branch -M main                                <span class="c"># name the history line "main"</span>
+git remote add origin https://github.com/&lt;user&gt;/&lt;repo&gt;.git   <span class="c"># point at the empty GitHub repo</span>
+git push -u origin main                           <span class="c"># upload history; browser sign-in appears once</span></code></pre>
+        <p><strong>Why <code>.gitignore</code> sits between <code>init</code> and the first <code>add</code>:</strong> <code>git add .</code> stages everything not excluded, and history is permanent — a secret or junk file staged into commit #1 stays retrievable forever, even after deletion. The ignore rules must therefore exist <em>before</em> the first staging, so forbidden files never get their one chance to enter.</p>
+        <p><em>(Also correct to add: <code>git config --global user.name/user.email</code> before the first commit — Git refuses to commit anonymously.)</em></p>
+      </details>
+    </section>
+
+    <footer class="next">
+      <p class="kicker">Next up</p>
+      <h2>Lesson 01 — What Is Spring Boot and Why It Exists</h2>
+      <p>Chapter 0 of Phase 1 — complete. Next: the question this entire course answers.</p>
+      <p><a href="../chapter-01-getting-started/lesson-01-what-is-spring-boot-and-why-it-exists.html">Continue to Lesson 01 →</a></p>
+    </footer>
+
+    <p class="lesson-footer">Chapter 0 of Phase 1 — complete.</p>
+
+  </main>
+
+</div>
+</body>
+</html>
