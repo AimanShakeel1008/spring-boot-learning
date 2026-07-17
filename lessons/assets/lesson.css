@@ -536,6 +536,150 @@ footer.next .kicker {
   text-align: center;
 }
 
+/* ---------- Interactive simulations ---------- */
+
+.sim {
+  background: #ffffff;
+  border: 1px solid #cfe3e8;
+  border-top: 4px solid #0b7285;
+  border-radius: 12px;
+  padding: 1.2rem 1.3rem 1.3rem;
+  margin: 1.6rem 0;
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.sim:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(11, 114, 133, 0.14);
+}
+
+.sim::before {
+  content: "Interactive simulation — click around";
+  display: block;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: #0b7285;
+  margin-bottom: 0.5rem;
+}
+
+.sim-hint {
+  font-size: 0.88rem;
+  color: #6f6a60;
+  margin-bottom: 0.9rem;
+}
+
+.sim-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.sim-btn {
+  font-family: inherit;
+  font-size: 0.88rem;
+  font-weight: 600;
+  padding: 0.4rem 0.9rem;
+  border-radius: 8px;
+  border: 1px solid #cfc7b6;
+  background: #f6f3ec;
+  color: #55503f;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease,
+    background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.sim-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 3px 10px rgba(43, 40, 34, 0.15);
+}
+
+.sim-btn.active {
+  background: #0b7285;
+  border-color: #0b7285;
+  color: #ffffff;
+}
+
+.sim-btn.go {
+  background: #2b8a3e;
+  border-color: #2b8a3e;
+  color: #ffffff;
+}
+
+.sim-btn.go:hover {
+  background: #237032;
+}
+
+/* the simulated terminal/log output area */
+.sim-console {
+  background: #171a21;
+  color: #d6dae3;
+  border-radius: 10px;
+  padding: 1rem 1.1rem;
+  font-family: "Cascadia Code", Consolas, "SF Mono", Menlo, monospace;
+  font-size: 0.83rem;
+  line-height: 1.65;
+  min-height: 3rem;
+  white-space: pre-wrap;
+  overflow-x: auto;
+}
+
+.sim-console .ok {
+  color: #7ce38b;
+}
+
+.sim-console .skip {
+  color: #8b93a1;
+  font-style: italic;
+}
+
+.sim-console .bad {
+  color: #ff8787;
+}
+
+.sim-console .hi {
+  color: #ffc078;
+}
+
+/* the simulated package/file tree */
+.sim-tree {
+  font-family: "Cascadia Code", Consolas, "SF Mono", Menlo, monospace;
+  font-size: 0.85rem;
+  line-height: 1.7;
+  background: #f6f3ec;
+  border: 1px solid #eae4d8;
+  border-radius: 10px;
+  padding: 1rem 1.1rem;
+  margin-bottom: 1rem;
+  white-space: pre;
+  overflow-x: auto;
+  color: #55503f;
+}
+
+.sim-tree .scanned {
+  color: #2b8a3e;
+  font-weight: 700;
+}
+
+.sim-tree .invisible {
+  color: #a29a89;
+  font-style: italic;
+}
+
+.sim-tree .mainclass {
+  color: #0b7285;
+  font-weight: 700;
+}
+
+.sim-note {
+  font-size: 0.82rem;
+  color: #8a8271;
+  margin-top: 0.8rem;
+  margin-bottom: 0;
+}
+
 /* ---------- Animations ---------- */
 
 @keyframes riseFade {
@@ -783,6 +927,76 @@ footer.next .kicker {
   }
 
   .lesson-footer {
+    color: #9c9484;
+  }
+}
+
+/* ---------- Dark mode: interactive simulations ---------- */
+
+@media (prefers-color-scheme: dark) {
+  .sim {
+    background: #23211e;
+    border-color: #2f3e42;
+    border-top-color: #2b98ad;
+  }
+
+  .sim:hover {
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45);
+  }
+
+  .sim::before {
+    color: #4fc3d9;
+  }
+
+  .sim-hint {
+    color: #9c9484;
+  }
+
+  .sim-btn {
+    background: #2b2926;
+    border-color: #4a453d;
+    color: #beb7a8;
+  }
+
+  .sim-btn:hover {
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.4);
+  }
+
+  .sim-btn.active {
+    background: #0e8ba1;
+    border-color: #0e8ba1;
+    color: #ffffff;
+  }
+
+  .sim-btn.go {
+    background: #3f9e54;
+    border-color: #3f9e54;
+    color: #10130f;
+  }
+
+  .sim-btn.go:hover {
+    background: #4cb662;
+  }
+
+  .sim-tree {
+    background: #211f1c;
+    border-color: #383430;
+    color: #beb7a8;
+  }
+
+  .sim-tree .scanned {
+    color: #77c98a;
+  }
+
+  .sim-tree .invisible {
+    color: #787161;
+  }
+
+  .sim-tree .mainclass {
+    color: #4fc3d9;
+  }
+
+  .sim-note {
     color: #9c9484;
   }
 }

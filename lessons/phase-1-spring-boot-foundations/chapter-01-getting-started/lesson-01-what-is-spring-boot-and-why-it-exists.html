@@ -134,6 +134,79 @@
         <li><strong>Result: a fully configured application</strong> where every piece exists either because a starter you chose implied it, or because you defined it yourself and Boot yielded.</li>
       </ol>
       <p><strong>Trace one concrete cause-and-effect:</strong> in Lesson 02 we declare <code>spring-boot-starter-web</code> → Maven puts Tomcat's JARs and the JSON library on the classpath → at startup, the "embedded web server" recipe's condition ("Tomcat on classpath?") passes → the recipe builds Tomcat, port 8080, and starts it. We never wrote "give me a web server." <strong>We declared a dependency, and the configuration followed from it.</strong> That's the entire trick: configuration inferred from inventory, with your explicit choices always trumping.</p>
+      <div class="sim">
+        <p class="sim-hint">The classpath is the questionnaire — so answer it. Toggle what your <code>pom.xml</code> puts on the classpath (and whether you supplied your own translator), then watch which recipes pass their conditions and what the startup log becomes.</p>
+        <div class="sim-controls">
+          <button type="button" class="sim-btn active" id="sim1-web">webmvc starter (Tomcat + JSON)</button>
+          <button type="button" class="sim-btn" id="sim1-db">database starter (JDBC)</button>
+          <button type="button" class="sim-btn" id="sim1-sec">security starter</button>
+          <button type="button" class="sim-btn" id="sim1-json">I defined my own JSON translator</button>
+        </div>
+        <div class="sim-console" id="sim1-out" aria-live="polite"></div>
+        <p class="sim-note">A model of the mechanism, not the real thing — the authority is always the real run (<code>mvn spring-boot:run</code>, Lesson 02) and the <code>--debug</code> condition report (Lesson 03).</p>
+      </div>
+      <script>
+      (function () {
+        var state = { web: true, db: false, sec: false, json: false };
+        var out = document.getElementById("sim1-out");
+        var btns = {
+          web: document.getElementById("sim1-web"),
+          db: document.getElementById("sim1-db"),
+          sec: document.getElementById("sim1-sec"),
+          json: document.getElementById("sim1-json")
+        };
+        function span(cls, text) { return '<span class="' + cls + '">' + text + "</span>"; }
+        function render() {
+          var l = [];
+          l.push(" :: Spring Boot ::                (v4.1.x)");
+          l.push("");
+          l.push("Evaluating auto-configuration recipes against the classpath:");
+          l.push(state.web
+            ? span("ok", "  [PASS] embedded web server  — Tomcat classes found on classpath")
+            : span("skip", "  [skip] embedded web server  — no web library on classpath"));
+          if (!state.web) {
+            l.push(span("skip", "  [skip] JSON translation     — no web layer to translate for"));
+          } else if (state.json) {
+            l.push(span("skip", "  [skip] JSON translation     — you defined your own; Boot backs off (your version wins)"));
+          } else {
+            l.push(span("ok", "  [PASS] JSON translation     — web present, no user-defined translator"));
+          }
+          l.push(state.db
+            ? span("ok", "  [PASS] database connection  — database library found on classpath…")
+            : span("skip", "  [skip] database connection  — no database library on classpath"));
+          l.push(state.sec
+            ? span("ok", "  [PASS] security             — security library found on classpath")
+            : span("skip", "  [skip] security             — no security library on classpath"));
+          l.push("");
+          if (state.db) {
+            l.push(span("bad", "*** APPLICATION FAILED TO START ***"));
+            l.push(span("bad", "Failed to configure a DataSource: the recipe passed, then needed to know"));
+            l.push(span("bad", "WHICH database to connect to — and no address or settings exist."));
+            l.push(span("skip", "(This is Challenge 1: adding the dependency IS configuration input.)"));
+          } else if (state.web) {
+            if (state.sec) {
+              l.push(span("hi", "Using generated security password: 3f2a…  (every URL now requires login)"));
+            }
+            l.push(span("ok", "Tomcat started on port 8080 (http) with context path '/'"));
+            l.push(span("ok", "Started DemoApplication in 1.8 seconds (process running for 2.2)"));
+          } else {
+            l.push("Started DemoApplication in 0.6 seconds");
+            l.push(span("skip", "…and the process immediately exited: with no web server recipe fired,"));
+            l.push(span("skip", "nothing stays alive listening. A server is a program that refuses to finish."));
+          }
+          out.innerHTML = l.join("\n");
+        }
+        function wire(key) {
+          btns[key].addEventListener("click", function () {
+            state[key] = !state[key];
+            btns[key].classList.toggle("active", state[key]);
+            render();
+          });
+        }
+        wire("web"); wire("db"); wire("sec"); wire("json");
+        render();
+      })();
+      </script>
       <p><strong>And when you need to see the decisions:</strong> Boot can print a <em>condition evaluation report</em> — every recipe, applied or skipped, with the reason — when started in debug mode. We'll produce one ourselves in Lesson 03 and read it together. Auto-configuration isn't a black box; it's a rule engine with an audit log.</p>
 
       <h3>3.8 Spring Boot versus Spring Framework — the honest difference</h3>

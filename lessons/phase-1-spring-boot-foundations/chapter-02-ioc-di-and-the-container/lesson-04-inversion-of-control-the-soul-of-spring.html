@@ -216,6 +216,80 @@ mvn test</code></pre>
         <p><strong>Check it matches.</strong> You should see <code>Tests run: 7</code> and <code>BUILD SUCCESS</code> (the 4 tests from Chapter 1 plus the 3 new ones here). If the count or result differs, the machine is right — send me what you saw and we'll trace it.</p>
       </div>
       <p>Notice what we did <em>not</em> need for any of this: Spring. The injection was done by hand in the test. That's deliberate — it proves the principle stands on its own. Starting next lesson, Spring takes over the hand-wiring and does it automatically for the whole app.</p>
+      <div class="sim">
+        <p class="sim-hint">Be the injector. Pick which <code>ReceiptSender</code> gets handed into the constructor, then place an order on each service. The loosely-coupled one obeys your choice; the tightly-coupled one cannot — its sender is welded inside.</p>
+        <div class="sim-controls">
+          <button type="button" class="sim-btn active" id="sim3-email">inject EmailReceiptSender</button>
+          <button type="button" class="sim-btn" id="sim3-sms">inject SmsReceiptSender</button>
+          <button type="button" class="sim-btn" id="sim3-fake">inject RecordingReceiptSender (test fake)</button>
+        </div>
+        <div class="sim-controls">
+          <button type="button" class="sim-btn go" id="sim3-loose">loose.placeOrder(…)</button>
+          <button type="button" class="sim-btn go" id="sim3-tight">tight.placeOrder(…)</button>
+          <button type="button" class="sim-btn" id="sim3-clear">clear console</button>
+        </div>
+        <div class="sim-console" id="sim3-out" aria-live="polite">(console — place an order)</div>
+        <p class="sim-note">A model of the mechanism, not the real thing — the real proof is <code>mvn test</code> on the <code>demos/ioc</code> classes (predicted: 7 green).</p>
+      </div>
+      <script>
+      (function () {
+        var sender = "email";
+        var orderNo = 0;
+        var lines = [];
+        var out = document.getElementById("sim3-out");
+        var senderBtns = {
+          email: document.getElementById("sim3-email"),
+          sms: document.getElementById("sim3-sms"),
+          fake: document.getElementById("sim3-fake")
+        };
+        function span(cls, text) { return '<span class="' + cls + '">' + text + "</span>"; }
+        function show() { out.innerHTML = lines.join("\n"); }
+        function pick(key) {
+          sender = key;
+          for (var k in senderBtns) { senderBtns[k].classList.toggle("active", k === key); }
+        }
+        senderBtns.email.addEventListener("click", function () { pick("email"); });
+        senderBtns.sms.addEventListener("click", function () { pick("sms"); });
+        senderBtns.fake.addEventListener("click", function () { pick("fake"); });
+        document.getElementById("sim3-loose").addEventListener("click", function () {
+          orderNo++;
+          var id = "ORD-" + orderNo;
+          lines.push('loose = new LooselyCoupledOrderService(' +
+            (sender === "email" ? "new EmailReceiptSender()" :
+             sender === "sms" ? "new SmsReceiptSender()" : "recordingFake") +
+            ');  loose.placeOrder("' + id + '", "amy@example.com")');
+          if (sender === "email") {
+            lines.push(span("hi", "[EmailReceiptSender] EMAIL receipt for order " + id + " sent to amy@example.com"));
+            lines.push(span("ok", 'returned: "EMAIL receipt for order ' + id + '"'));
+          } else if (sender === "sms") {
+            lines.push(span("hi", "[SmsReceiptSender] SMS receipt for order " + id));
+            lines.push(span("ok", 'returned: "SMS receipt for order ' + id + '"') +
+              span("skip", "   ← the service was NOT edited; only the injection changed"));
+          } else {
+            lines.push(span("skip", "(console silent — nothing real happened, fully offline)"));
+            lines.push(span("ok", 'fake recorded: send("' + id + '", "amy@example.com") — a test can now assert this'));
+          }
+          lines.push("");
+          show();
+        });
+        document.getElementById("sim3-tight").addEventListener("click", function () {
+          orderNo++;
+          var id = "ORD-" + orderNo;
+          lines.push('tight = new TightlyCoupledOrderService();  tight.placeOrder("' + id + '", "amy@example.com")');
+          lines.push(span("hi", "[EmailReceiptSender] EMAIL receipt for order " + id + " sent to amy@example.com"));
+          lines.push(sender === "email"
+            ? span("skip", "email again — but only by coincidence: your selection never reaches this class")
+            : span("bad", "your selected sender was IGNORED — new EmailReceiptSender() is welded inside the class"));
+          lines.push("");
+          show();
+        });
+        document.getElementById("sim3-clear").addEventListener("click", function () {
+          lines = [];
+          orderNo = 0;
+          out.innerHTML = "(console — place an order)";
+        });
+      })();
+      </script>
     </section>
 
     <section id="applied">

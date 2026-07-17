@@ -107,6 +107,74 @@
      controller       service         demos          &lt;-- all SCANNED (children)
 
    com.myshop.anything                                &lt;-- NOT scanned (sibling, outside)</code></pre>
+      <div class="sim">
+        <p class="sim-hint">Move the main class and watch the scan boundary move with it. Green = discovered as a bean; gray italic = invisible to Spring. Then read the consequences below the tree.</p>
+        <div class="sim-controls">
+          <button type="button" class="sim-btn active" id="sim2-top">main class in com.ecommerce (top level)</button>
+          <button type="button" class="sim-btn" id="sim2-sub">buried in com.ecommerce.app</button>
+          <button type="button" class="sim-btn" id="sim2-fix">in .app + scanBasePackages="com.ecommerce"</button>
+        </div>
+        <div class="sim-tree" id="sim2-tree"></div>
+        <div class="sim-console" id="sim2-out" aria-live="polite"></div>
+        <p class="sim-note">A model of the mechanism — the real proof is the challenge in Section 10: make the move, run, watch the banner vanish, then bring it back.</p>
+      </div>
+      <script>
+      (function () {
+        var mode = "top";
+        var tree = document.getElementById("sim2-tree");
+        var out = document.getElementById("sim2-out");
+        var btns = {
+          top: document.getElementById("sim2-top"),
+          sub: document.getElementById("sim2-sub"),
+          fix: document.getElementById("sim2-fix")
+        };
+        function span(cls, text) { return '<span class="' + cls + '">' + text + "</span>"; }
+        function render() {
+          var scanRoot = (mode === "sub") ? "com.ecommerce.app" : "com.ecommerce";
+          var found = (mode !== "sub");
+          var t = [];
+          t.push("com/");
+          t.push("├─ ecommerce/" + (mode === "top"
+            ? "                       " + span("mainclass", "◄ scan starts here")
+            : (mode === "fix" ? "                       " + span("mainclass", "◄ scanBasePackages points here") : "")));
+          if (mode === "top") {
+            t.push("│  ├─ " + span("mainclass", "EcommerceApplication  @SpringBootApplication"));
+          }
+          t.push("│  ├─ controller/" + span(found ? "scanned" : "invisible",
+            "ProductController  @RestController  " + (found ? "✓ scanned" : "✗ invisible")));
+          t.push("│  ├─ demos/" + span(found ? "scanned" : "invisible",
+            "ContextInspectorDemo  @Component  " + (found ? "✓ scanned" : "✗ invisible")));
+          if (mode !== "top") {
+            t.push("│  └─ app/");
+            t.push("│     └─ " + span("mainclass", "EcommerceApplication  @SpringBootApplication"
+              + (mode === "sub" ? "  ◄ scan starts HERE, only downward" : "")));
+          }
+          t.push("└─ myshop/" + span("invisible", "PaymentService  @Service  ✗ invisible (outside com.ecommerce entirely)"));
+          tree.innerHTML = t.join("\n");
+          var c = [];
+          c.push("Started EcommerceApplication in 1.7 seconds   " + span("skip", "← startup looks healthy in ALL three cases"));
+          c.push("");
+          c.push(found
+            ? span("ok", "GET /products      → 200 OK  (ProductController was registered, its URL exists)")
+            : span("bad", 'GET /products      → 404 Not Found  { "path": "/products" }  — never registered as a bean'));
+          c.push(found
+            ? span("ok", "[Lesson 03 demo] banner prints — ContextInspectorDemo became a bean")
+            : span("bad", "demo banner: silent — @Component was never read, run(...) never called"));
+          c.push(span("skip", "com.myshop.PaymentService: invisible in every case — no scan rooted at"));
+          c.push(span("skip", "com.ecommerce can reach a package outside com.ecommerce."));
+          out.innerHTML = c.join("\n");
+        }
+        function select(key) {
+          mode = key;
+          for (var k in btns) { btns[k].classList.toggle("active", k === key); }
+          render();
+        }
+        btns.top.addEventListener("click", function () { select("top"); });
+        btns.sub.addEventListener("click", function () { select("sub"); });
+        btns.fix.addEventListener("click", function () { select("fix"); });
+        render();
+      })();
+      </script>
       <p><strong>(3) <code>@EnableAutoConfiguration</code></strong> — Lesson 01's auto-configuration rule engine, switched on. When Spring reads this label, it pulls in roughly 150 candidate configuration "recipes" that ship inside Spring Boot, and for each one checks its conditions — mostly <em>"is the relevant library on the classpath?"</em> and <em>"did the developer already configure this themselves?"</em> Every recipe whose conditions pass gets applied. Because our <code>pom.xml</code> put <code>spring-boot-starter-webmvc</code> on the classpath, the web recipes pass their conditions, and <em>that</em> is how an embedded Tomcat and the whole web layer get configured <strong>without you writing a line of setup</strong>. Remove that starter and those recipes would silently switch off — nothing to configure a web server <em>for</em>.</p>
       <p>In one breath: <strong><code>@SpringBootApplication</code> = "this class holds config (<code>@Configuration</code>), find all my beans from here down (<code>@ComponentScan</code>), and auto-configure everything my libraries imply (<code>@EnableAutoConfiguration</code>)."</strong> Three jobs, one label.</p>
       <div class="note">
