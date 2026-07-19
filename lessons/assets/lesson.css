@@ -536,6 +536,207 @@ footer.next .kicker {
   text-align: center;
 }
 
+/* ---------- Figures: inline SVG diagrams ---------- */
+
+figure.fig {
+  margin: 1.6rem 0;
+}
+
+figure.fig svg {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+figure.fig text {
+  font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+}
+
+figure.fig figcaption {
+  font-size: 0.85rem;
+  color: #8a8271;
+  text-align: center;
+  margin-top: 0.7rem;
+}
+
+/* SVG element classes — literal colors only, dark overrides below */
+.fig-box {
+  fill: #ffffff;
+  stroke: #b9b2a2;
+  stroke-width: 1.5;
+}
+
+.fig-box-green {
+  fill: #eef7ec;
+  stroke: #2b8a3e;
+  stroke-width: 2;
+}
+
+.fig-box-teal {
+  fill: #e7f3f5;
+  stroke: #0b7285;
+  stroke-width: 2;
+}
+
+.fig-h {
+  font-size: 15px;
+  font-weight: 700;
+  fill: #2b2822;
+}
+
+.fig-h-green {
+  font-size: 15px;
+  font-weight: 700;
+  fill: #2b8a3e;
+}
+
+.fig-label-green {
+  font-size: 13.5px;
+  font-weight: 700;
+  fill: #2b8a3e;
+}
+
+.fig-label-teal {
+  font-size: 13.5px;
+  font-weight: 700;
+  fill: #0b7285;
+}
+
+.fig-small {
+  font-size: 11.5px;
+  fill: #6f6a60;
+}
+
+.fig-caption-accent {
+  font-size: 12.5px;
+  font-weight: 700;
+  fill: #2b8a3e;
+}
+
+.fig-vs-circle {
+  fill: #faf7f2;
+  stroke: #b9b2a2;
+  stroke-width: 1.5;
+}
+
+.fig-vs-text {
+  font-size: 12px;
+  font-weight: 800;
+  fill: #8a8271;
+}
+
+.fig-mono {
+  font-family: "Cascadia Code", Consolas, "SF Mono", Menlo, monospace;
+  font-size: 13px;
+  font-weight: 700;
+  fill: #2b2822;
+}
+
+.fig-mono-small {
+  font-family: "Cascadia Code", Consolas, "SF Mono", Menlo, monospace;
+  font-size: 11px;
+  fill: #6f6a60;
+}
+
+.fig-arrow {
+  stroke: #6f6a60;
+  stroke-width: 2;
+  fill: none;
+}
+
+.fig-arrowhead {
+  fill: #6f6a60;
+}
+
+.fig-arrow-green {
+  stroke: #2b8a3e;
+  stroke-width: 2;
+  fill: none;
+}
+
+.fig-arrowhead-green {
+  fill: #2b8a3e;
+}
+
+@media (prefers-color-scheme: dark) {
+  figure.fig figcaption {
+    color: #9c9484;
+  }
+
+  .fig-box {
+    fill: #23211e;
+    stroke: #4a453d;
+  }
+
+  .fig-box-green {
+    fill: #1e2a20;
+    stroke: #3f9e54;
+  }
+
+  .fig-box-teal {
+    fill: #1b2a2e;
+    stroke: #2b98ad;
+  }
+
+  .fig-h {
+    fill: #e6e1d7;
+  }
+
+  .fig-h-green {
+    fill: #77c98a;
+  }
+
+  .fig-label-green {
+    fill: #77c98a;
+  }
+
+  .fig-label-teal {
+    fill: #4fc3d9;
+  }
+
+  .fig-small {
+    fill: #9c9484;
+  }
+
+  .fig-caption-accent {
+    fill: #77c98a;
+  }
+
+  .fig-vs-circle {
+    fill: #1b1917;
+    stroke: #4a453d;
+  }
+
+  .fig-vs-text {
+    fill: #9c9484;
+  }
+
+  .fig-mono {
+    fill: #e6e1d7;
+  }
+
+  .fig-mono-small {
+    fill: #9c9484;
+  }
+
+  .fig-arrow {
+    stroke: #9c9484;
+  }
+
+  .fig-arrowhead {
+    fill: #9c9484;
+  }
+
+  .fig-arrow-green {
+    stroke: #77c98a;
+  }
+
+  .fig-arrowhead-green {
+    fill: #77c98a;
+  }
+}
+
 /* ---------- Interactive simulations ---------- */
 
 .sim {

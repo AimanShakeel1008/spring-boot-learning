@@ -196,17 +196,36 @@
         <li><strong><code>SpringApplication.run(...)</code> returns the <code>ApplicationContext</code>.</strong> That single line you wrote in Lesson 02 doesn't just have a side-effect of starting things — it hands back the finished container as its return value. We've been ignoring that return value. Today's demo catches it and looks inside.</li>
         <li><strong>Everything you'll build lives inside it.</strong> Every controller, service, and repository you write in the coming chapters becomes a bean <em>in this context</em>. When you hear "Spring wires your beans together," the wiring happens here, in this object, at startup.</li>
       </ul>
-      <pre class="diagram"><code>   your JVM process
-   ┌───────────────────────────────────────────────┐
-   │  ApplicationContext  (the container / "brain")  │
-   │   ┌─────────┐  ┌─────────┐  ┌───────────────┐   │
-   │   │ your    │  │ your    │  │ ~200 framework│   │
-   │   │ beans   │  │ config  │  │ beans Spring  │   │
-   │   │ (soon)  │  │ beans   │  │ made for you  │   │
-   │   └─────────┘  └─────────┘  └───────────────┘   │
-   │                                                 │
-   │   embedded Tomcat  ── listening on :8080 ──────►│  (to the outside world)
-   └───────────────────────────────────────────────┘</code></pre>
+      <figure class="fig">
+        <svg viewBox="0 0 780 336" role="img" aria-label="Inside the JVM process sits the ApplicationContext container, holding your beans, your configuration beans, and about 200 framework beans built by auto-configuration; an embedded Tomcat inside the container listens on port 8080 to the outside world.">
+          <!-- JVM process -->
+          <rect x="20" y="24" width="600" height="292" rx="12" class="fig-box"/>
+          <text x="36" y="46" class="fig-small">your JVM process</text>
+          <!-- ApplicationContext -->
+          <rect x="44" y="58" width="552" height="176" rx="10" class="fig-box"/>
+          <text x="320" y="84" text-anchor="middle" class="fig-label-teal">ApplicationContext — the container / "brain"</text>
+          <!-- your beans -->
+          <rect x="64" y="104" width="160" height="96" rx="10" class="fig-box-green"/>
+          <text x="144" y="146" text-anchor="middle" class="fig-label-green">your beans</text>
+          <text x="144" y="164" text-anchor="middle" class="fig-small">(none yet)</text>
+          <!-- your config beans -->
+          <rect x="244" y="104" width="160" height="96" rx="10" class="fig-box-green"/>
+          <text x="324" y="146" text-anchor="middle" class="fig-label-green">your config beans</text>
+          <text x="324" y="164" text-anchor="middle" class="fig-small">(@Bean methods)</text>
+          <!-- framework beans -->
+          <rect x="424" y="104" width="152" height="96" rx="10" class="fig-box-teal"/>
+          <text x="500" y="146" text-anchor="middle" class="fig-label-teal">framework beans</text>
+          <text x="500" y="164" text-anchor="middle" class="fig-small">~200, auto-config</text>
+          <!-- embedded Tomcat -->
+          <rect x="44" y="252" width="552" height="46" rx="10" class="fig-box-teal"/>
+          <text x="320" y="280" text-anchor="middle" class="fig-label-teal">embedded Tomcat — listening on :8080</text>
+          <!-- arrow to outside -->
+          <path class="fig-arrow" d="M596,275 H752"/>
+          <polygon class="fig-arrowhead" points="752,269 764,275 752,281"/>
+          <text x="690" y="264" text-anchor="middle" class="fig-small">browser / curl</text>
+        </svg>
+        <figcaption>The <code>ApplicationContext</code> is the running application's assembled state. Green is <em>your</em> beans; teal is the framework's — already ~200 of them before you write a single one. The embedded Tomcat inside it is what faces the outside world on port 8080.</figcaption>
+      </figure>
       <p>Right now, in <em>our</em> app, the "your beans" box is nearly empty (we haven't written any yet), but the container is already holding around two hundred beans that Spring and its auto-configuration created for the web layer. In the demo below, you'll print that exact number.</p>
     </section>
 

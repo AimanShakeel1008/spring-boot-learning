@@ -119,6 +119,38 @@ EmailReceiptSender  SmsReceiptSender   (the "how"s, interchangeable)</code></pre
       <div class="note">
         <p><strong>New term — Dependency Injection (DI).</strong> <strong>Dependency Injection</strong> is the concrete <em>technique</em> that carries out that principle: the dependencies an object needs are <em>given to it</em> ("injected"), typically through its constructor, rather than created inside it. "Dependency" = a thing this object needs to do its job (the sender). "Injection" = handing it in from outside. So IoC is the <em>idea</em> ("don't fetch your own collaborators"); DI is the <em>mechanism</em> ("they're passed into your constructor"). DI is the most common way to achieve IoC, which is why the two terms travel together.</p>
       </div>
+      <figure class="fig">
+        <svg viewBox="0 0 780 236" role="img" aria-label="Two panels. Left, tight coupling: the OrderService reaches out and builds its own EmailReceiptSender with new, so control points outward from the object. Right, Inversion of Control: the container pushes a ReceiptSender into the OrderService, so control is inverted and the dependency is injected.">
+          <!-- LEFT: tight coupling -->
+          <text x="190" y="26" text-anchor="middle" class="fig-h">TIGHT COUPLING</text>
+          <rect x="30" y="64" width="140" height="72" rx="10" class="fig-box-green"/>
+          <text x="100" y="104" text-anchor="middle" class="fig-label-green">OrderService</text>
+          <rect x="210" y="64" width="150" height="72" rx="10" class="fig-box"/>
+          <text x="285" y="96" text-anchor="middle" class="fig-mono-small">EmailReceipt</text>
+          <text x="285" y="112" text-anchor="middle" class="fig-mono-small">Sender</text>
+          <text x="190" y="56" text-anchor="middle" class="fig-mono-small">new EmailReceiptSender()</text>
+          <path class="fig-arrow-green" d="M170,100 H202"/>
+          <polygon class="fig-arrowhead-green" points="202,94 214,100 202,106"/>
+          <text x="190" y="176" text-anchor="middle" class="fig-small">control points OUT — the object grabs its own collaborator</text>
+          <text x="190" y="194" text-anchor="middle" class="fig-caption-accent">→ welded, untestable</text>
+          <!-- VS -->
+          <circle cx="390" cy="100" r="20" class="fig-vs-circle"/>
+          <text x="390" y="104" text-anchor="middle" class="fig-vs-text">VS</text>
+          <!-- RIGHT: inversion of control -->
+          <text x="590" y="26" text-anchor="middle" class="fig-h-green">INVERSION OF CONTROL</text>
+          <rect x="430" y="64" width="150" height="72" rx="10" class="fig-box-teal"/>
+          <text x="505" y="98" text-anchor="middle" class="fig-label-teal">Container</text>
+          <text x="505" y="116" text-anchor="middle" class="fig-small">ApplicationContext</text>
+          <rect x="620" y="64" width="140" height="72" rx="10" class="fig-box-green"/>
+          <text x="690" y="104" text-anchor="middle" class="fig-label-green">OrderService</text>
+          <text x="590" y="56" text-anchor="middle" class="fig-mono-small">injects ReceiptSender</text>
+          <path class="fig-arrow" d="M580,100 H612"/>
+          <polygon class="fig-arrowhead" points="612,94 624,100 612,106"/>
+          <text x="590" y="176" text-anchor="middle" class="fig-small">control INVERTED — the dependency is pushed in</text>
+          <text x="590" y="194" text-anchor="middle" class="fig-caption-accent">→ swappable, testable</text>
+        </svg>
+        <figcaption>The whole idea in one picture. Green is <em>your</em> object; teal is the framework. Left, the service reaches out and constructs its own dependency; right, the container hands the dependency in — the arrow of control has turned around.</figcaption>
+      </figure>
       <p>Crucial point for building real intuition: <strong>none of this needs Spring.</strong> In the demo for this lesson we do the injecting <em>by hand</em> — plain Java, we write the <code>new</code> in the test and pass it in. That already gives us swap-ability and testability. So what does Spring actually add? Spring is the <strong>tireless automatic supplier</strong>: in a real app you have hundreds of objects, each needing several others, forming a huge web. Wiring that web by hand — newing everything in the right order and passing each into the next — is enormous, error-prone boilerplate. Spring reads which objects need which, builds them all once, and injects each into the others <em>for</em> you. <strong>Spring doesn't invent DI; it automates DI at scale.</strong> Understanding that the principle stands on its own, and Spring is "merely" the machine that automates it, is exactly the mental model that stops Spring from feeling like magic.</p>
 
       <h3>3.5 What a bean really is, and the container that makes them</h3>

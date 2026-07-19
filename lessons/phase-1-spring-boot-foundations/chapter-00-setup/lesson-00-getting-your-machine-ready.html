@@ -91,8 +91,39 @@ operable program or batch file.</code></pre>
         <li>A translator program called a <strong>compiler</strong> reads it and produces a new file, <code>Hello.class</code>, containing a compact intermediate instruction format called <strong>bytecode</strong>. Bytecode is not for your processor — it is for step 3.</li>
         <li>A program called the <strong>JVM</strong> — <em>Java Virtual Machine</em> — reads the bytecode and drives your actual processor with it, live, while your program runs.</li>
       </ol>
-      <pre class="diagram"><code>Hello.java  ──(compiler: javac)──►  Hello.class  ──(JVM: java)──►  program runs
-(text you wrote)                    (bytecode)                     (on YOUR processor)</code></pre>
+      <figure class="fig">
+        <svg viewBox="0 0 780 300" role="img" aria-label="A pipeline: your Hello.java source is compiled by javac into portable Hello.class bytecode; then each platform's own JVM — Windows, macOS, or Linux — runs that same bytecode, so one compiled file runs everywhere.">
+          <!-- source (your code) -->
+          <rect x="20" y="118" width="160" height="64" rx="10" class="fig-box-green"/>
+          <text x="100" y="146" text-anchor="middle" class="fig-mono">Hello.java</text>
+          <text x="100" y="166" text-anchor="middle" class="fig-small">text you wrote</text>
+          <!-- compile arrow -->
+          <text x="242" y="140" text-anchor="middle" class="fig-mono-small">javac (compile)</text>
+          <path class="fig-arrow" d="M180,150 H296"/>
+          <polygon class="fig-arrowhead" points="296,144 308,150 296,156"/>
+          <!-- bytecode artifact -->
+          <rect x="312" y="118" width="170" height="64" rx="10" class="fig-box"/>
+          <text x="397" y="146" text-anchor="middle" class="fig-mono">Hello.class</text>
+          <text x="397" y="166" text-anchor="middle" class="fig-small">bytecode — portable</text>
+          <!-- fan-out bus to three JVMs -->
+          <text x="558" y="34" text-anchor="middle" class="fig-small">each platform ships its OWN JVM</text>
+          <path class="fig-arrow" d="M482,150 H540 M540,64 V236 M540,64 H600 M540,150 H600 M540,236 H600"/>
+          <polygon class="fig-arrowhead" points="600,58 612,64 600,70"/>
+          <polygon class="fig-arrowhead" points="600,144 612,150 600,156"/>
+          <polygon class="fig-arrowhead" points="600,230 612,236 600,242"/>
+          <!-- three JVMs (infrastructure) -->
+          <rect x="614" y="42" width="150" height="44" rx="10" class="fig-box-teal"/>
+          <text x="689" y="60" text-anchor="middle" class="fig-label-teal">Windows JVM</text>
+          <text x="689" y="77" text-anchor="middle" class="fig-small">runs on Windows</text>
+          <rect x="614" y="128" width="150" height="44" rx="10" class="fig-box-teal"/>
+          <text x="689" y="146" text-anchor="middle" class="fig-label-teal">macOS JVM</text>
+          <text x="689" y="163" text-anchor="middle" class="fig-small">runs on a Mac</text>
+          <rect x="614" y="214" width="150" height="44" rx="10" class="fig-box-teal"/>
+          <text x="689" y="232" text-anchor="middle" class="fig-label-teal">Linux JVM</text>
+          <text x="689" y="249" text-anchor="middle" class="fig-small">runs on a server</text>
+        </svg>
+        <figcaption>Java's two-step journey and its payoff. Green is <em>your</em> code; teal is infrastructure you didn't write. You compile <strong>once</strong> to bytecode, and every platform's own JVM runs that same file — "write once, run anywhere."</figcaption>
+      </figure>
       <p><strong>Why the two-step design?</strong> Because it buys portability. Windows, Mac, and Linux processors and operating systems all differ — but each has its own JVM that speaks its local dialect. Your bytecode is <em>universal</em>; the JVM is the local interpreter. Write once on Windows, run unchanged on a Linux server. That is Java's founding promise, and it is exactly why Java rules server-side business software, where code written on laptops must run in data centers.</p>
       <p><strong>What would go wrong without it:</strong> you would compile a different program for every kind of machine, and shipping software to a server that differs from your laptop would be a gamble every single time.</p>
       <p><strong>The names:</strong></p>

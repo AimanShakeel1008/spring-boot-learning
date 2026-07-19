@@ -101,6 +101,38 @@
       <p><strong>Gift 3 — The embedded server.</strong> Old world: install Tomcat, deploy your WAR <em>into</em> it — application inside server. <strong>Spring Boot flips it: Tomcat ships inside your application</strong> — server inside application, just another dependency the web starter pulls in. When your app starts, it starts its own Tomcat on port 8080 (a <em>port</em> being a numbered door on your machine, so many programs can share one network connection — full treatment with HTTP in Lesson 11). The consequence: your entire application becomes <strong>one self-contained runnable JAR</strong> — an <em>executable JAR</em>, code plus server plus everything, that runs anywhere with the single command:</p>
       <pre><code>java -jar app.jar</code></pre>
       <p>No install-Tomcat step. No deploy-into step. No WAR. The deployment dance from 3.2 collapses into one command — and this self-containedness is precisely what makes modern practices like containers (Phase 3) natural.</p>
+      <figure class="fig">
+        <svg viewBox="0 0 760 320" role="img" aria-label="Diagram comparing the old world, where your application is deployed into an externally installed Tomcat server, with Spring Boot, where an embedded Tomcat lives inside your application's executable JAR.">
+          <!-- panel titles -->
+          <text x="182" y="28" text-anchor="middle" class="fig-h">THE OLD WORLD</text>
+          <text x="182" y="47" text-anchor="middle" class="fig-small">your app deployed INTO an external server</text>
+          <text x="578" y="28" text-anchor="middle" class="fig-h-green">SPRING BOOT</text>
+          <text x="578" y="47" text-anchor="middle" class="fig-small">the server embedded INSIDE your app</text>
+
+          <!-- left: Tomcat (outer, the server) containing your app (inner, green) -->
+          <rect x="25" y="64" width="315" height="200" rx="12" class="fig-box"/>
+          <text x="182" y="92" text-anchor="middle" class="fig-h">Apache Tomcat</text>
+          <text x="182" y="110" text-anchor="middle" class="fig-small">installed &amp; managed separately — it owns port 8080</text>
+          <rect x="55" y="128" width="255" height="104" rx="10" class="fig-box-green"/>
+          <text x="182" y="170" text-anchor="middle" class="fig-label-green">Your application (WAR)</text>
+          <text x="182" y="190" text-anchor="middle" class="fig-small">copied into Tomcat's special folder</text>
+          <text x="182" y="292" text-anchor="middle" class="fig-small">every change: package WAR → copy → restart Tomcat</text>
+
+          <!-- versus badge -->
+          <circle cx="380" cy="164" r="20" class="fig-vs-circle"/>
+          <text x="380" y="168" text-anchor="middle" class="fig-vs-text">VS</text>
+
+          <!-- right: your app (outer, green) containing embedded Tomcat (inner, teal) -->
+          <rect x="420" y="64" width="315" height="200" rx="12" class="fig-box-green"/>
+          <text x="578" y="92" text-anchor="middle" class="fig-h-green">Your application</text>
+          <text x="578" y="110" text-anchor="middle" class="fig-small">one self-contained executable JAR</text>
+          <rect x="450" y="128" width="255" height="104" rx="10" class="fig-box-teal"/>
+          <text x="578" y="170" text-anchor="middle" class="fig-label-teal">Embedded Tomcat</text>
+          <text x="578" y="190" text-anchor="middle" class="fig-small">just a dependency — starts itself on port 8080</text>
+          <text x="578" y="292" text-anchor="middle" class="fig-caption-accent">deployment: java -jar app.jar</text>
+        </svg>
+        <figcaption>The flip that defines Spring Boot deployment: the containment reverses. Green is <em>your</em> code; the neutral/teal boxes are the server. Old world — your app lives inside the server's world; Spring Boot — the server is just a part shipped inside yours.</figcaption>
+      </figure>
       <p><strong>Gift 4 — Opinionated defaults.</strong> Deep enough to deserve its own section:</p>
 
       <h3>3.6 "Opinionated defaults" — the superpower, unpacked</h3>
