@@ -96,11 +96,24 @@
         <p><strong>New term — interface (as a dependency).</strong> An <strong>interface</strong> in Java is a named list of abilities with no bodies — a pure promise of <em>what</em> can be done, saying nothing about <em>how</em>. <code>ReceiptSender</code> with a single <code>send(...)</code> method is an interface: it promises "you can send a receipt" without committing to email, SMS, or anything else. Why does this help? Because if your service depends on the interface <code>ReceiptSender</code> rather than the class <code>EmailReceiptSender</code>, it depends only on the stable <em>what</em>. Any class that keeps the promise — <code>EmailReceiptSender</code>, <code>SmsReceiptSender</code>, a fake test sender — can stand in, and the service neither knows nor cares which. This is called <strong>programming to an interface</strong>: point your dependencies at the promise (the "what"), not the implementation (the "how").</p>
       </div>
       <p>So we split one class into two ideas:</p>
-      <pre class="diagram"><code>   ReceiptSender  (interface, the "what")   &lt;-- the service depends on THIS
-        ▲
-        │ implements
-   ┌────┴──────────┐
-EmailReceiptSender  SmsReceiptSender   (the "how"s, interchangeable)</code></pre>
+      <figure class="fig">
+        <svg viewBox="0 0 780 200" role="img" aria-label="A hierarchy: the ReceiptSender interface — the 'what' — sits on top, and two implementations, EmailReceiptSender and SmsReceiptSender — the 'how's — implement it below. The service depends on the interface, so any implementation can stand in.">
+          <rect x="290" y="24" width="200" height="60" rx="10" class="fig-box-green"/>
+          <text x="390" y="52" text-anchor="middle" class="fig-label-green">ReceiptSender</text>
+          <text x="390" y="70" text-anchor="middle" class="fig-small">interface — the "what"</text>
+          <!-- implements arrows pointing UP to the interface -->
+          <path class="fig-arrow" d="M250,128 V108 M530,128 V108 M250,108 H530 M390,108 V96"/>
+          <polygon class="fig-arrowhead" points="384,96 396,96 390,84"/>
+          <text x="458" y="104" text-anchor="middle" class="fig-mono-small">implements</text>
+          <rect x="150" y="128" width="200" height="60" rx="10" class="fig-box-green"/>
+          <text x="250" y="156" text-anchor="middle" class="fig-mono">EmailReceiptSender</text>
+          <text x="250" y="174" text-anchor="middle" class="fig-small">a "how"</text>
+          <rect x="430" y="128" width="200" height="60" rx="10" class="fig-box-green"/>
+          <text x="530" y="156" text-anchor="middle" class="fig-mono">SmsReceiptSender</text>
+          <text x="530" y="174" text-anchor="middle" class="fig-small">another "how"</text>
+        </svg>
+        <figcaption>Program to the promise, not the implementation. All three are <em>your</em> classes (green): the service depends only on the <code>ReceiptSender</code> interface — the "what" — so any class that keeps the promise, the "how"s below, can be swapped in.</figcaption>
+      </figure>
       <p>The service will now say "I need a <code>ReceiptSender</code>" and be satisfied by <em>any</em> of them. But one question remains, and it's the important one: <strong>if the service no longer builds its own sender, who does, and how does the service get one?</strong></p>
 
       <h3>3.4 Inversion of Control and Dependency Injection</h3>

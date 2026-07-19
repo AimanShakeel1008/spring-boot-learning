@@ -139,12 +139,38 @@
       <h3>3.4 The Maven lifecycle — what <code>mvn &lt;word&gt;</code> actually does</h3>
       <p><strong>Plain definition:</strong> Maven's build is a fixed sequence of stages called <strong>phases</strong>; the word after <code>mvn</code> names the phase to reach, and <em>every earlier phase in the sequence runs first, automatically</em>.</p>
       <p>The phases that matter to us, in their fixed order:</p>
-      <pre class="diagram"><code>validate → compile → test → package → verify → install
-             │          │        │                  │
-             │          │        │                  └─ copy the built JAR into ~/.m2 (so OTHER local projects could depend on it)
-             │          │        └─ produce the JAR in target/
-             │          └─ run every test; ANY failure STOPS the build here
-             └─ compile all source code to bytecode</code></pre>
+      <figure class="fig">
+        <svg viewBox="0 0 780 168" role="img" aria-label="The Maven build lifecycle as a conveyor belt: validate, compile, test, package, verify, install, in order. Asking for a phase runs every earlier phase first. Compile turns source into bytecode, the test phase runs tests and a failure stops the build, package builds the JAR, and install copies it into the local .m2 cache.">
+          <!-- phase boxes -->
+          <rect x="28" y="34" width="104" height="52" rx="9" class="fig-box"/>
+          <text x="80" y="64" text-anchor="middle" class="fig-mono">validate</text>
+          <rect x="152" y="34" width="104" height="52" rx="9" class="fig-box"/>
+          <text x="204" y="64" text-anchor="middle" class="fig-mono">compile</text>
+          <rect x="276" y="34" width="104" height="52" rx="9" class="fig-box"/>
+          <text x="328" y="64" text-anchor="middle" class="fig-mono">test</text>
+          <rect x="400" y="34" width="104" height="52" rx="9" class="fig-box"/>
+          <text x="452" y="64" text-anchor="middle" class="fig-mono">package</text>
+          <rect x="524" y="34" width="104" height="52" rx="9" class="fig-box"/>
+          <text x="576" y="64" text-anchor="middle" class="fig-mono">verify</text>
+          <rect x="648" y="34" width="104" height="52" rx="9" class="fig-box"/>
+          <text x="700" y="64" text-anchor="middle" class="fig-mono">install</text>
+          <!-- belt arrows -->
+          <path class="fig-arrow" d="M132,60 H144 M256,60 H268 M380,60 H392 M504,60 H516 M628,60 H640"/>
+          <polygon class="fig-arrowhead" points="144,54 152,60 144,66"/>
+          <polygon class="fig-arrowhead" points="268,54 276,60 268,66"/>
+          <polygon class="fig-arrowhead" points="392,54 400,60 392,66"/>
+          <polygon class="fig-arrowhead" points="516,54 524,60 516,66"/>
+          <polygon class="fig-arrowhead" points="640,54 648,60 640,66"/>
+          <!-- callouts -->
+          <path class="fig-arrow" d="M204,86 V104 M452,86 V104"/>
+          <text x="204" y="120" text-anchor="middle" class="fig-small">source → bytecode</text>
+          <text x="452" y="120" text-anchor="middle" class="fig-small">JAR built in target/</text>
+          <path class="fig-arrow" d="M328,86 V136 M700,86 V136"/>
+          <text x="328" y="152" text-anchor="middle" class="fig-caption-accent">runs tests — a failure STOPS the belt</text>
+          <text x="700" y="152" text-anchor="middle" class="fig-small">JAR copied into ~/.m2</text>
+        </svg>
+        <figcaption>Maven's build is one conveyor belt. Asking for any phase runs every earlier phase first — so <code>mvn package</code> also compiles and tests — and a failing test halts the belt before anything is packaged.</figcaption>
+      </figure>
       <p>So <code>mvn package</code> means compile <strong>and</strong> test <strong>and</strong> package — you can't package code whose tests fail; the conveyor belt halts. (<code>clean</code> — delete all previous build output — lives on a separate tiny track, which is why you say <code>mvn clean package</code>: "scrub, then run the belt through package." And now Lesson 00's mystery command <code>mvn clean install</code> decodes itself: scrub, then belt-through-install.)</p>
       <p><strong>Plugins and goals.</strong> Everything Maven does is performed by <strong>plugins</strong> — add-on modules, each contributing specific abilities. One concrete ability a plugin offers is a <strong>goal</strong>, written <code>plugin:goal</code>. Phases are really just slots that plugin goals attach to. Our pom registers one plugin explicitly: the <strong>spring-boot-maven-plugin</strong>, which does two things we care about: (1) attaches to <code>package</code> to <em>repackage</em> the plain thin JAR into Lesson 01's self-contained executable JAR — dependencies and Tomcat inside; (2) offers the goal <code>spring-boot:run</code> — compile-and-launch in one command, our daily driver for development.</p>
 
@@ -188,6 +214,34 @@
       <p><strong>Stage 1 — the JVM wakes (milliseconds).</strong> <code>java -jar target\ecommerce-0.0.1-SNAPSHOT.jar</code> starts the JVM (Lesson 00's bytecode-runner) and hands it the JAR. Inside every JAR is a <strong>manifest</strong> (<code>META-INF/MANIFEST.MF</code>) — a small "shipping label" text file of facts about the archive, including the crucial one: which class holds <code>main()</code>. Our executable JAR's label (written by the spring-boot-maven-plugin during repackaging) points first to Boot's tiny built-in <em>launcher</em>, which knows how to load the dependency JARs nested inside our JAR — that nesting is the executable JAR's trick — and then calls <strong>our</strong> <code>EcommerceApplication.main()</code>.</p>
       <p><strong>Stage 2 — Spring Boot boots (a second or two).</strong> <code>main()</code> calls <code>SpringApplication.run(...)</code> — and Lesson 01 §3.7 plays out for real: banner printed; classpath interrogated; ~150 auto-configuration recipes' conditions evaluated (web machinery present → web recipes pass; no database library → all database recipes skip silently); surviving recipes build and wire the needed objects (proper name and lifecycle: Lesson 04). The web recipe creates embedded Tomcat, which <strong>binds</strong> port 8080 — <em>binding</em> meaning claiming that numbered door from the operating system: "traffic knocking on 8080 is mine." (One door, one owner — a second program binding 8080 is refused, which is exactly the <code>Port 8080 was already in use</code> error in <code>troubleshooting.md</code>.) The log announces <code>Tomcat started on port 8080</code> then <code>Started EcommerceApplication in ...s</code> — and the process does <em>not</em> exit like a normal Java program: the server thread stays alive, parked, listening. That's what "running a server" <em>is</em>: a program deliberately not finishing.</p>
       <p><strong>Stage 3 — the first request (milliseconds, later).</strong> You browse to <code>http://localhost:8080/</code>. <strong>localhost</strong> is the standard name every machine has for <em>itself</em> — the request never touches the internet; your browser knocks on your own machine's door 8080. Tomcat accepts the connection, parses raw HTTP text into a structured request, and hands it to Spring's web machinery, which checks its routing table: <em>which code claimed URL <code>/</code>?</em> Today: nobody — we wrote no request-handling code (that's Lesson 12's feature, never bolted on early). So Spring answers with HTTP's standard code for "no such thing here" — <strong>404 Not Found</strong> — dressed, for browsers, in Boot's built-in plain error page, the famous <strong>Whitelabel Error Page</strong> ("white label" = generic/unbranded). Read properly, that page is a <em>handshake</em>, not a failure: JVM up, Spring configured, Tomcat listening, routing consulted, honest answer returned. The whole pipeline works end to end — there's simply no content yet. (For non-browser callers, the same 404 arrives as structured JSON — you'll see both today.)</p>
+      <figure class="fig">
+        <svg viewBox="0 0 780 150" role="img" aria-label="The runtime journey from command to first response: java -jar starts the JVM, your main() runs, SpringApplication.run() evaluates about 150 auto-configuration recipes against their conditions, the embedded Tomcat binds port 8080, and the app listens — so a request to slash returns a 404 handshake because no code claims that URL yet.">
+          <rect x="20" y="40" width="132" height="84" rx="10" class="fig-box"/>
+          <text x="86" y="78" text-anchor="middle" class="fig-mono">java -jar</text>
+          <text x="86" y="96" text-anchor="middle" class="fig-small">app.jar</text>
+          <text x="86" y="112" text-anchor="middle" class="fig-small">(the trigger)</text>
+          <rect x="172" y="40" width="132" height="84" rx="10" class="fig-box-green"/>
+          <text x="238" y="84" text-anchor="middle" class="fig-label-green">main() runs</text>
+          <text x="238" y="102" text-anchor="middle" class="fig-small">your entry point</text>
+          <rect x="324" y="40" width="132" height="84" rx="10" class="fig-box-teal"/>
+          <text x="390" y="74" text-anchor="middle" class="fig-mono">run()</text>
+          <text x="390" y="92" text-anchor="middle" class="fig-small">~150 recipes</text>
+          <text x="390" y="108" text-anchor="middle" class="fig-small">vs conditions</text>
+          <rect x="476" y="40" width="132" height="84" rx="10" class="fig-box-teal"/>
+          <text x="542" y="80" text-anchor="middle" class="fig-label-teal">Tomcat binds</text>
+          <text x="542" y="98" text-anchor="middle" class="fig-small">:8080 (embedded)</text>
+          <rect x="628" y="40" width="132" height="84" rx="10" class="fig-box"/>
+          <text x="694" y="74" text-anchor="middle" class="fig-mono">GET /</text>
+          <text x="694" y="92" text-anchor="middle" class="fig-small">→ 404</text>
+          <text x="694" y="108" text-anchor="middle" class="fig-small">the handshake</text>
+          <path class="fig-arrow" d="M152,82 H164 M304,82 H316 M456,82 H468 M608,82 H620"/>
+          <polygon class="fig-arrowhead" points="164,76 172,82 164,88"/>
+          <polygon class="fig-arrowhead" points="316,76 324,82 316,88"/>
+          <polygon class="fig-arrowhead" points="468,76 476,82 468,88"/>
+          <polygon class="fig-arrowhead" points="620,76 628,82 620,88"/>
+        </svg>
+        <figcaption>From command to first response, with no black boxes. Neutral = the command and the outside request; green = <em>your</em> code (<code>main()</code>); teal = the framework doing the work. Today's 404 at <code>/</code> is the pipeline proving itself alive, not an error — no code claims that URL yet.</figcaption>
+      </figure>
     </section>
 
     <section id="wrong">

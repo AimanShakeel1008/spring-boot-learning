@@ -92,6 +92,32 @@
         <li><code>@ComponentScan</code></li>
         <li><code>@EnableAutoConfiguration</code></li>
       </ol>
+      <figure class="fig">
+        <svg viewBox="0 0 780 232" role="img" aria-label="@SpringBootApplication is one label that bundles three annotations: @Configuration (this class may define beans), @ComponentScan (find beans from here downward), and @EnableAutoConfiguration (auto-configure from the classpath).">
+          <rect x="280" y="20" width="220" height="56" rx="10" class="fig-box-teal"/>
+          <text x="390" y="44" text-anchor="middle" class="fig-mono">@SpringBootApplication</text>
+          <text x="390" y="62" text-anchor="middle" class="fig-small">one label = three jobs</text>
+          <!-- split bus -->
+          <path class="fig-arrow" d="M390,76 V104 M142,104 H634 M142,104 V124 M388,104 V124 M634,104 V124"/>
+          <polygon class="fig-arrowhead" points="136,116 148,116 142,124"/>
+          <polygon class="fig-arrowhead" points="382,116 394,116 388,124"/>
+          <polygon class="fig-arrowhead" points="628,116 640,116 634,124"/>
+          <!-- three parts -->
+          <rect x="28" y="124" width="228" height="92" rx="10" class="fig-box-teal"/>
+          <text x="142" y="158" text-anchor="middle" class="fig-mono">@Configuration</text>
+          <text x="142" y="178" text-anchor="middle" class="fig-small">this class may</text>
+          <text x="142" y="194" text-anchor="middle" class="fig-small">define beans</text>
+          <rect x="274" y="124" width="228" height="92" rx="10" class="fig-box-teal"/>
+          <text x="388" y="158" text-anchor="middle" class="fig-mono">@ComponentScan</text>
+          <text x="388" y="178" text-anchor="middle" class="fig-small">find beans from</text>
+          <text x="388" y="194" text-anchor="middle" class="fig-small">here downward</text>
+          <rect x="520" y="124" width="228" height="92" rx="10" class="fig-box-teal"/>
+          <text x="634" y="158" text-anchor="middle" class="fig-mono">@EnableAutoConfiguration</text>
+          <text x="634" y="178" text-anchor="middle" class="fig-small">auto-configure from</text>
+          <text x="634" y="194" text-anchor="middle" class="fig-small">the classpath</text>
+        </svg>
+        <figcaption>One label, three jobs. All four boxes are teal because <code>@SpringBootApplication</code> and its three parts are all Spring's own annotations — it is a convenience bundle of <code>@Configuration</code>, <code>@ComponentScan</code>, and <code>@EnableAutoConfiguration</code>.</figcaption>
+      </figure>
       <p>To explain them, one prerequisite term that Chapter 2 covers in full but that we must define now, because all three annotations revolve around it: the <strong>bean</strong>.</p>
       <div class="note">
         <p><strong>New term — bean.</strong> A <strong>bean</strong> is simply <em>an object that Spring creates and manages for you</em>, instead of you creating it yourself with <code>new</code>. In plain Java you write <code>PaymentService p = new PaymentService();</code> — <em>you</em> build the object, <em>you</em> keep track of it. In Spring, you instead let the framework build <code>PaymentService</code> once, hold onto it, and hand it to whoever needs it. That framework-managed object is called a bean. Why does this exist? Because in a big system, hundreds of objects need each other, and having every object build its own dependencies by hand becomes an unmaintainable tangle — Spring building and connecting them centrally is the cure (that whole story, "Inversion of Control," is Chapter 2). For today the one-line version is enough: <strong>a bean is an object Spring makes and looks after.</strong> The words "component," "service," "repository," and "controller" you'll meet later are all just <em>kinds of beans</em>.</p>

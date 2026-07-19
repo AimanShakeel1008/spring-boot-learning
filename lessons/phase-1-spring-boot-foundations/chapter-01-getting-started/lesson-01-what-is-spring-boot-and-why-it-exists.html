@@ -83,6 +83,35 @@
       <p><strong>Plain definition:</strong> a <strong>framework</strong> is a large body of pre-written code that provides the skeleton of an application; it runs <em>your</em> code at the right moments, rather than you running it.</p>
       <p><strong>Why frameworks exist:</strong> every web application needs the same 80% — accept requests, route them, talk to a database, handle errors, secure things. Rebuilding that 80% per project is Maya's wasted week, multiplied by every team on earth. A framework ships the 80% finished; you supply the 20% that makes your product <em>yours</em>.</p>
       <p><strong>The distinction that makes the word precise:</strong> with a <strong>library</strong>, <em>your</em> code is in charge and calls the library when it wants (you call the taxi). With a <strong>framework</strong>, the <em>framework</em> is in charge and calls your code at the right moments (you build a room inside an existing hotel, and the hotel decides when guests arrive at your door). Hold onto that inversion — "the framework calls you" — because Lesson 04 reveals it as the deepest idea in all of Spring.</p>
+      <figure class="fig">
+        <svg viewBox="0 0 780 210" role="img" aria-label="Library versus framework. With a library, your code is in charge and calls the library. With a framework, the framework is in charge and calls your code — the direction of control is reversed.">
+          <!-- LEFT: library -->
+          <text x="195" y="28" text-anchor="middle" class="fig-h">LIBRARY</text>
+          <rect x="30" y="70" width="150" height="72" rx="10" class="fig-box-green"/>
+          <text x="105" y="112" text-anchor="middle" class="fig-label-green">Your code</text>
+          <rect x="210" y="70" width="150" height="72" rx="10" class="fig-box"/>
+          <text x="285" y="112" text-anchor="middle" class="fig-h">A library</text>
+          <text x="195" y="60" text-anchor="middle" class="fig-mono-small">you call it</text>
+          <path class="fig-arrow-green" d="M180,106 H200"/>
+          <polygon class="fig-arrowhead-green" points="200,100 210,106 200,112"/>
+          <text x="195" y="176" text-anchor="middle" class="fig-small">your code is in charge — you decide when to call</text>
+          <!-- VS -->
+          <circle cx="390" cy="106" r="20" class="fig-vs-circle"/>
+          <text x="390" y="110" text-anchor="middle" class="fig-vs-text">VS</text>
+          <!-- RIGHT: framework -->
+          <text x="590" y="28" text-anchor="middle" class="fig-h-green">FRAMEWORK</text>
+          <rect x="430" y="70" width="150" height="72" rx="10" class="fig-box-teal"/>
+          <text x="505" y="112" text-anchor="middle" class="fig-label-teal">The framework</text>
+          <rect x="610" y="70" width="150" height="72" rx="10" class="fig-box-green"/>
+          <text x="685" y="112" text-anchor="middle" class="fig-label-green">Your code</text>
+          <text x="590" y="60" text-anchor="middle" class="fig-mono-small">it calls you</text>
+          <path class="fig-arrow" d="M580,106 H600"/>
+          <polygon class="fig-arrowhead" points="600,100 610,106 600,112"/>
+          <text x="590" y="176" text-anchor="middle" class="fig-small">the framework is in charge —</text>
+          <text x="590" y="193" text-anchor="middle" class="fig-caption-accent">"don't call us, we'll call you"</text>
+        </svg>
+        <figcaption>The inversion at the heart of Spring. Green is <em>your</em> code, teal is the framework. With a library your code drives and calls out; with a framework the framework drives and calls into your code — the arrow of control flips.</figcaption>
+      </figure>
       <p><strong>The history:</strong> by 2002, Java's official enterprise stack (then called J2EE) had become infamously heavy — mountains of mandatory XML and rigid, invasive rules. A developer named <strong>Rod Johnson</strong> published a book arguing this was all needlessly complex, and shipped working lighter-weight code with it. That code grew into the <strong>Spring Framework</strong>, first released in 2004. Its promise: your classes stay <em>plain Java objects</em> — ordinary classes with no framework bloodline — and Spring arranges the infrastructure around them. Its core idea, the engine under everything: <strong>Spring creates and connects your objects for you, instead of your code constructing everything itself.</strong> That single idea gets Lesson 04 entirely to itself; today it's enough to know it exists and that developers found it liberating. Spring won — through the 2000s it became the de-facto standard for Java business software.</p>
 
       <h3>3.4 How Spring grew its own disease</h3>
