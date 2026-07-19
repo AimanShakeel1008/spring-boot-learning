@@ -121,28 +121,109 @@ hr {
   gap: 0.5rem;
 }
 
-.prevnext a {
+/* Sidebar navigation: previous · course map · next.
+   Deliberate rhythm — a CARD, a slim PILL, a CARD — so the three never read as
+   three identical blocks. Each lesson card carries a small uppercase direction
+   label above the lesson name, plus an accent edge on the side it points to.
+   The hub link is a lighter ghost pill: different shape, different hue, so it
+   reads as "up and out", not as another step in the sequence. */
+
+.prevnext a.prev,
+.prevnext a.next {
   display: block;
   text-decoration: none;
-  font-weight: 600;
-  color: #2b8a3e;
-  background: #f0f7ef;
-  border: 1px solid #d6e8d6;
-  border-radius: 8px;
-  padding: 0.45rem 0.7rem;
-  transition: transform 0.18s ease, box-shadow 0.18s ease;
+  background: #f6f8f5;
+  border: 1px solid #dfe8dc;
+  border-radius: 10px;
+  padding: 0.55rem 0.75rem;
+  transition: transform 0.18s ease, box-shadow 0.18s ease,
+    background-color 0.18s ease;
 }
 
-.prevnext a:hover {
-  transform: translateX(4px);
-  box-shadow: 0 2px 8px rgba(43, 138, 62, 0.18);
+.prevnext a.prev {
+  border-left: 3px solid #2b8a3e;
+}
+
+.prevnext a.next {
+  border-right: 3px solid #2b8a3e;
+}
+
+.prevnext a.prev:hover,
+.prevnext a.next:hover {
+  background: #eef7ec;
+  box-shadow: 0 3px 12px rgba(43, 138, 62, 0.15);
+}
+
+.prevnext a.prev:hover {
+  transform: translateX(-3px);
+}
+
+.prevnext a.next:hover {
+  transform: translateX(3px);
+}
+
+.nav-dir {
+  display: block;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-size: 0.63rem;
+  font-weight: 800;
+  color: #8a8271;
+  margin-bottom: 0.15rem;
+}
+
+.nav-title {
+  display: block;
+  font-size: 0.82rem;
+  font-weight: 600;
+  line-height: 1.35;
+  color: #2b8a3e;
 }
 
 .prevnext a.disabled {
-  color: #a29a89;
+  pointer-events: none;
   background: #f5f2ea;
   border-color: #e8e2d5;
-  pointer-events: none;
+}
+
+.prevnext a.prev.disabled {
+  border-left-color: #d9d2c4;
+}
+
+.prevnext a.next.disabled {
+  border-right-color: #d9d2c4;
+}
+
+.prevnext a.disabled .nav-title {
+  color: #a29a89;
+}
+
+.prevnext a.disabled .nav-dir {
+  color: #b5ad9c;
+}
+
+/* the slim ghost pill in the middle */
+.prevnext a.hublink {
+  display: block;
+  text-align: center;
+  text-decoration: none;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  font-size: 0.65rem;
+  font-weight: 800;
+  color: #0b7285;
+  background: transparent;
+  border: 1px solid #cfe3e8;
+  border-radius: 999px;
+  padding: 0.42rem 0.6rem;
+  transition: background-color 0.18s ease, color 0.18s ease,
+    box-shadow 0.18s ease;
+}
+
+.prevnext a.hublink:hover {
+  background: #e7f3f5;
+  color: #095c6b;
+  box-shadow: 0 3px 10px rgba(11, 114, 133, 0.16);
 }
 
 /* ---------- Lesson header banner ---------- */
@@ -930,10 +1011,19 @@ figure.fig figcaption {
 
   .prevnext {
     flex-direction: row;
+    align-items: stretch;
   }
 
-  .prevnext a {
+  .prevnext a.prev,
+  .prevnext a.next {
     flex: 1;
+  }
+
+  /* the pill stays compact between the two cards instead of stretching */
+  .prevnext a.hublink {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
   }
 
   .lesson {
@@ -982,6 +1072,17 @@ figure.fig figcaption {
     color: #9c9484;
   }
 
+  .prevnext a.hublink {
+    color: #4fc3d9;
+    background: transparent;
+    border-color: #2f4e54;
+  }
+
+  .prevnext a.hublink:hover {
+    background: #1b2a2e;
+    color: #7fd8e8;
+  }
+
   .toc nav a {
     color: #beb7a8;
   }
@@ -995,16 +1096,52 @@ figure.fig figcaption {
     border-top-color: #383430;
   }
 
-  .prevnext a {
+  .prevnext a.prev,
+  .prevnext a.next {
+    background: #22271f;
+    border-color: #3a4436;
+  }
+
+  .prevnext a.prev {
+    border-left-color: #3f9e54;
+  }
+
+  .prevnext a.next {
+    border-right-color: #3f9e54;
+  }
+
+  .prevnext a.prev:hover,
+  .prevnext a.next:hover {
+    background: #262d22;
+  }
+
+  .nav-dir {
+    color: #9c9484;
+  }
+
+  .nav-title {
     color: #77c98a;
-    background: #22291f;
-    border-color: #3a4a38;
   }
 
   .prevnext a.disabled {
-    color: #787161;
     background: #242220;
     border-color: #383430;
+  }
+
+  .prevnext a.prev.disabled {
+    border-left-color: #4a453d;
+  }
+
+  .prevnext a.next.disabled {
+    border-right-color: #4a453d;
+  }
+
+  .prevnext a.disabled .nav-title {
+    color: #787161;
+  }
+
+  .prevnext a.disabled .nav-dir {
+    color: #6b6558;
   }
 
   section h2 {
