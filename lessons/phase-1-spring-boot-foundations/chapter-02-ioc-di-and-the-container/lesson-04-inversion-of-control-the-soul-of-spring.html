@@ -165,6 +165,13 @@
         <figcaption>The whole idea in one picture. Green is <em>your</em> object; teal is the framework. Left, the service reaches out and constructs its own dependency; right, the container hands the dependency in — the arrow of control has turned around.</figcaption>
       </figure>
       <p>Crucial point for building real intuition: <strong>none of this needs Spring.</strong> In the demo for this lesson we do the injecting <em>by hand</em> — plain Java, we write the <code>new</code> in the test and pass it in. That already gives us swap-ability and testability. So what does Spring actually add? Spring is the <strong>tireless automatic supplier</strong>: in a real app you have hundreds of objects, each needing several others, forming a huge web. Wiring that web by hand — newing everything in the right order and passing each into the next — is enormous, error-prone boilerplate. Spring reads which objects need which, builds them all once, and injects each into the others <em>for</em> you. <strong>Spring doesn't invent DI; it automates DI at scale.</strong> Understanding that the principle stands on its own, and Spring is "merely" the machine that automates it, is exactly the mental model that stops Spring from feeling like magic.</p>
+      <details class="check">
+        <summary>Check yourself: in one line each, what is the difference between Inversion of Control and Dependency Injection?</summary>
+        <p><strong>IoC is the principle</strong> — an object does not fetch or build its own collaborators; that control is handed to something outside. <strong>DI is the technique</strong> — those collaborators are passed <em>in</em> (usually through the constructor). IoC is the "why," DI is the "how"; DI is the most common way to achieve IoC, which is why the two travel together.</p>
+      </details>
+      <div class="realworld">
+        <p>Constructor injection is how nearly every class in a real Spring codebase receives its collaborators, and "explain Inversion of Control / Dependency Injection" is one of the most common Spring interview questions. The payoff you'll feel daily is testability: because dependencies are passed in, a unit test can inject a fake and check one class in complete isolation — exactly what <a href="../chapter-01-getting-started/lesson-03-the-main-application-class.html">Lesson 03</a>'s container makes automatic across the whole app.</p>
+      </div>
 
       <h3>3.5 What a bean really is, and the container that makes them</h3>
       <p>In Lesson 03 we gave "bean" a one-line meaning so we could keep moving. Now we can give it the full, honest definition, because you finally have the idea it rests on.</p>

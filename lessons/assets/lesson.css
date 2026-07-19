@@ -1202,6 +1202,334 @@ figure.fig figcaption {
   }
 }
 
+/* ---------- Syntax highlighting inside code blocks ----------
+   Code blocks are always dark (#171a21) in both themes, so these token
+   colours are theme-independent — no dark-mode override needed. Existing
+   .c (comment) and .hi (key output line) still apply. */
+
+pre .k  { color: #c792ea; }   /* keyword: public, class, void, return, new, import, package */
+pre .t  { color: #82aaff; }   /* type / class name: String, OrderService, List */
+pre .s  { color: #c3e88d; }   /* string literal */
+pre .n  { color: #f78c6c; }   /* number literal */
+pre .an { color: #ffcb6b; }   /* annotation: @Component, @Override */
+pre .fn { color: #82d2ce; }   /* method name at call/def site */
+
+/* ---------- Hover-to-define glossary terms ----------
+   Wrap a term's first mention: <span class="term" tabindex="0"
+   data-def="plain-language definition">bean</span>. Works on hover AND
+   keyboard focus, entirely offline, no JavaScript. */
+
+.term {
+  border-bottom: 1px dotted #2b8a3e;
+  cursor: help;
+  position: relative;
+}
+
+.term:hover::after,
+.term:focus::after {
+  content: attr(data-def);
+  position: absolute;
+  left: 0;
+  bottom: calc(100% + 9px);
+  width: 20rem;
+  max-width: 80vw;
+  background: #2b2822;
+  color: #faf7f2;
+  font-size: 0.82rem;
+  font-weight: 400;
+  font-style: normal;
+  line-height: 1.5;
+  text-align: left;
+  padding: 0.6rem 0.75rem;
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+  white-space: normal;
+  z-index: 30;
+}
+
+.term:hover::before,
+.term:focus::before {
+  content: "";
+  position: absolute;
+  left: 0.9rem;
+  bottom: calc(100% + 3px);
+  border: 6px solid transparent;
+  border-top-color: #2b2822;
+  z-index: 30;
+}
+
+/* ---------- "In the real world" callout (violet — distinct from the four base callouts) ---------- */
+
+.realworld {
+  background: #f4f1fb;
+  border-left: 4px solid #5f3dc4;
+  border-radius: 10px;
+  padding: 1rem 1.2rem;
+  margin: 1.4rem 0;
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.realworld:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(95, 61, 196, 0.14);
+}
+
+.realworld::before {
+  content: "In the real world";
+  display: block;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: #5f3dc4;
+  margin-bottom: 0.4rem;
+}
+
+.realworld > :last-child {
+  margin-bottom: 0;
+}
+
+/* ---------- Active-recall micro-check (a <details class="check"> — teal, to
+   distinguish it from the violet hidden-answer / challenge <details>) ---------- */
+
+details.check {
+  background: #e9f5f6;
+  border-color: #bfe0e5;
+  border-left-color: #0b7285;
+}
+
+details.check summary {
+  color: #0b7285;
+}
+
+details.check summary:hover {
+  color: #095c6b;
+}
+
+/* ---------- Course hub / index page ---------- */
+
+.hub {
+  max-width: 52rem;
+  margin: 0 auto;
+  padding: 2.5rem 1.5rem 4rem;
+  animation: riseFade 0.6s ease 0.15s both;
+}
+
+.hubgrid {
+  display: grid;
+  gap: 1.25rem;
+  margin: 1.5rem 0;
+}
+
+.hub-chapter {
+  background: #ffffff;
+  border: 1px solid #eae4d8;
+  border-radius: 12px;
+  padding: 1.1rem 1.3rem 0.6rem;
+}
+
+.hub-chapter h3 {
+  margin: 0 0 0.4rem;
+  color: #0b7285;
+  font-size: 1.1rem;
+}
+
+.hub-chapter .hub-sub {
+  font-size: 0.85rem;
+  color: #8a8271;
+  margin-bottom: 0.6rem;
+}
+
+.hub-lessons {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.hub-lesson {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.55rem 0;
+  border-bottom: 1px solid #f0ebe0;
+}
+
+.hub-lesson:last-child {
+  border-bottom: none;
+}
+
+.hub-lesson a {
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.hub-lesson a:hover {
+  text-decoration: underline;
+}
+
+.hub-lesson.locked span.hub-name {
+  color: #a29a89;
+}
+
+.badge {
+  flex-shrink: 0;
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  font-weight: 800;
+  padding: 0.16rem 0.55rem;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+.badge.done {
+  background: #e7f3e8;
+  color: #2b8a3e;
+}
+
+.badge.next {
+  background: #fff3bf;
+  color: #e8590c;
+}
+
+.badge.todo {
+  background: #f1f3f5;
+  color: #868e96;
+}
+
+@media (prefers-color-scheme: dark) {
+  .term {
+    border-bottom-color: #77c98a;
+  }
+
+  .realworld {
+    background: #241f31;
+    border-left-color: #8a6ff0;
+  }
+
+  .realworld::before {
+    color: #b197fc;
+  }
+
+  details.check {
+    background: #17282b;
+    border-color: #2f4e54;
+    border-left-color: #2b98ad;
+  }
+
+  details.check summary {
+    color: #4fc3d9;
+  }
+
+  .hub-chapter {
+    background: #23211e;
+    border-color: #383430;
+  }
+
+  .hub-chapter h3 {
+    color: #4fc3d9;
+  }
+
+  .hub-chapter .hub-sub {
+    color: #9c9484;
+  }
+
+  .hub-lesson {
+    border-bottom-color: #2c2926;
+  }
+
+  .hub-lesson.locked span.hub-name {
+    color: #787161;
+  }
+
+  .badge.done {
+    background: #1e2a20;
+    color: #77c98a;
+  }
+
+  .badge.next {
+    background: #3a2c15;
+    color: #ffa94d;
+  }
+
+  .badge.todo {
+    background: #2b2926;
+    color: #9c9484;
+  }
+}
+
+/* ---------- Print: clean study notes ---------- */
+
+@media print {
+  .toc,
+  .prevnext,
+  footer.next,
+  .sim-controls,
+  .sim-console {
+    display: none !important;
+  }
+
+  body {
+    background: #ffffff;
+    color: #000000;
+    font-size: 11pt;
+  }
+
+  .page {
+    display: block;
+    max-width: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .lesson {
+    background: #ffffff !important;
+    box-shadow: none;
+    border: 1px solid #000000;
+    animation: none;
+  }
+
+  .lesson .kicker,
+  .lesson h1,
+  .lesson .subtitle,
+  .lesson .meta {
+    color: #000000;
+  }
+
+  a {
+    color: #000000;
+    text-decoration: underline;
+  }
+
+  pre {
+    white-space: pre-wrap;
+    word-break: break-word;
+    box-shadow: none;
+  }
+
+  pre,
+  figure.fig,
+  table,
+  .tryit,
+  .note,
+  .warn,
+  .demo,
+  .realworld,
+  .sim,
+  details,
+  section h2 {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  section h2,
+  section h3 {
+    break-after: avoid;
+    page-break-after: avoid;
+  }
+}
+
 /* ---------- Reduced motion: kill every animation and transition ---------- */
 
 @media (prefers-reduced-motion: reduce) {

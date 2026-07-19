@@ -60,13 +60,13 @@
       <p>We build the story in dependency order — every term defined before it's used.</p>
 
       <h3>3.1 Server, web application, and HTTP — the stage the story happens on</h3>
-      <p><strong>A server</strong>, in plain language, is a program that waits for requests and answers them. It never initiates; it responds. Why such a thing exists: when one program (say, a browser on your phone) needs something another computer has (say, product data), <em>something</em> on that other computer must be listening for the question and able to answer it. A concrete picture: a hotel receptionist — sits at the desk all day, phone rings, answers, resolves, waits for the next call. The word "server" also loosely means the physical machine such programs run on; in this course, unless said otherwise, we mean the program.</p>
+      <p><strong class="term" tabindex="0" data-def="A program that waits for requests and answers them — it never initiates, only responds (think of a hotel receptionist).">A server</strong>, in plain language, is a program that waits for requests and answers them. It never initiates; it responds. Why such a thing exists: when one program (say, a browser on your phone) needs something another computer has (say, product data), <em>something</em> on that other computer must be listening for the question and able to answer it. A concrete picture: a hotel receptionist — sits at the desk all day, phone rings, answers, resolves, waits for the next call. The word "server" also loosely means the physical machine such programs run on; in this course, unless said otherwise, we mean the program.</p>
       <p><strong>A web application</strong> is a program whose users interact with it over the internet through a browser or app, instead of installing it on their own machines. Why it exists: one copy, running centrally, serving millions — no installation, instant updates. Example: you never installed Amazon; your browser just talks to it. Our E-Commerce system is a web application.</p>
-      <p><strong>HTTP</strong> is the agreed message format for that conversation: the <strong>request</strong> (what the caller sends: "GET me the product list") and the <strong>response</strong> (what the server returns: a status like <code>200 OK</code> plus the data). Analogy: the standard layout of a business letter — addressee, request, return address — so any two parties can correspond without prior arrangement. That's genuinely all we need today; <strong>Lesson 11 is entirely devoted to HTTP</strong> and will go deep.</p>
+      <p><strong class="term" tabindex="0" data-def="The message format for web conversations: a request (what the caller sends) and a response (a status code like 200 OK, plus data).">HTTP</strong> is the agreed message format for that conversation: the <strong>request</strong> (what the caller sends: "GET me the product list") and the <strong>response</strong> (what the server returns: a status like <code>200 OK</code> plus the data). Analogy: the standard layout of a business letter — addressee, request, return address — so any two parties can correspond without prior arrangement. That's genuinely all we need today; <strong>Lesson 11 is entirely devoted to HTTP</strong> and will go deep.</p>
       <p>One more foundation word: <strong>deployment</strong> — the act of taking your finished program and putting it where it will actually run, started and reachable by users. Cooking is development; getting the dish onto the customer's table is deployment.</p>
 
       <h3>3.2 The servlet era — Java's first answer</h3>
-      <p><strong>Plain definition:</strong> a <strong>servlet</strong> is a Java class written to handle one HTTP request and produce one response.</p>
+      <p><strong>Plain definition:</strong> a <strong class="term" tabindex="0" data-def="A Java class that handles a single HTTP request and produces one response; it needs a servlet container (like Tomcat) to run.">servlet</strong> is a Java class written to handle one HTTP request and produce one response.</p>
       <p><strong>Why it existed:</strong> in the late 1990s the web exploded, and Java needed a standard way to generate web pages with real logic — check the user, read data, build the page. The servlet was that standard: "receive request in, hand response back" as a Java method you fill in.</p>
       <p><strong>But a servlet cannot run by itself.</strong> Someone must sit on the network, accept connections, parse the raw HTTP text into a usable object, figure out <em>which</em> servlet handles <em>this</em> URL, invoke it, and ship the response back. That someone is a <strong>servlet container</strong> — a server program purpose-built to host servlets and do all that plumbing. The most famous one, then and now: <strong>Apache Tomcat</strong> (free, open-source). Analogy: the servlet is a chef who can cook one dish when handed an order slip; the container is the entire restaurant around him — the host, the waiters, the order system. A chef with no restaurant cooks for nobody.</p>
       <p><strong>The workflow this forced on developers:</strong></p>
@@ -80,7 +80,7 @@
       <p>And the code itself was ceremony-ridden. <strong>Boilerplate</strong> — plain definition: repetitive code you must write that expresses nothing about your actual problem, pure ceremony demanded by the machinery. Why the term matters: boilerplate isn't just ugly, it <em>buries</em> your logic — the three meaningful lines hide inside ninety lines of parsing, casting, opening, and closing, and bugs love to hide in ceremony that nobody reads carefully. You'll see real servlet boilerplate in Section 4.</p>
 
       <h3>3.3 What a framework is — and Spring's arrival</h3>
-      <p><strong>Plain definition:</strong> a <strong>framework</strong> is a large body of pre-written code that provides the skeleton of an application; it runs <em>your</em> code at the right moments, rather than you running it.</p>
+      <p><strong>Plain definition:</strong> a <strong class="term" tabindex="0" data-def="Pre-written code that provides an application's skeleton and calls your code at the right moments — the opposite of a library, which your code calls.">framework</strong> is a large body of pre-written code that provides the skeleton of an application; it runs <em>your</em> code at the right moments, rather than you running it.</p>
       <p><strong>Why frameworks exist:</strong> every web application needs the same 80% — accept requests, route them, talk to a database, handle errors, secure things. Rebuilding that 80% per project is Maya's wasted week, multiplied by every team on earth. A framework ships the 80% finished; you supply the 20% that makes your product <em>yours</em>.</p>
       <p><strong>The distinction that makes the word precise:</strong> with a <strong>library</strong>, <em>your</em> code is in charge and calls the library when it wants (you call the taxi). With a <strong>framework</strong>, the <em>framework</em> is in charge and calls your code at the right moments (you build a room inside an existing hotel, and the hotel decides when guests arrive at your door). Hold onto that inversion — "the framework calls you" — because Lesson 04 reveals it as the deepest idea in all of Spring.</p>
       <figure class="fig">
@@ -112,7 +112,7 @@
         </svg>
         <figcaption>The inversion at the heart of Spring. Green is <em>your</em> code, teal is the framework. With a library your code drives and calls out; with a framework the framework drives and calls into your code — the arrow of control flips.</figcaption>
       </figure>
-      <p><strong>The history:</strong> by 2002, Java's official enterprise stack (then called J2EE) had become infamously heavy — mountains of mandatory XML and rigid, invasive rules. A developer named <strong>Rod Johnson</strong> published a book arguing this was all needlessly complex, and shipped working lighter-weight code with it. That code grew into the <strong>Spring Framework</strong>, first released in 2004. Its promise: your classes stay <em>plain Java objects</em> — ordinary classes with no framework bloodline — and Spring arranges the infrastructure around them. Its core idea, the engine under everything: <strong>Spring creates and connects your objects for you, instead of your code constructing everything itself.</strong> That single idea gets Lesson 04 entirely to itself; today it's enough to know it exists and that developers found it liberating. Spring won — through the 2000s it became the de-facto standard for Java business software.</p>
+      <p><strong>The history:</strong> by 2002, Java's official enterprise stack (then called J2EE) had become infamously heavy — mountains of mandatory XML and rigid, invasive rules. A developer named <strong>Rod Johnson</strong> published a book arguing this was all needlessly complex, and shipped working lighter-weight code with it. That code grew into the <strong>Spring Framework</strong>, first released in 2004. Its promise: your classes stay <em>plain Java objects</em> — ordinary classes with no framework bloodline — and Spring arranges the infrastructure around them. Its core idea, the engine under everything: <strong>Spring creates and connects your objects for you, instead of your code constructing everything itself.</strong> That single idea gets <a href="../chapter-02-ioc-di-and-the-container/lesson-04-inversion-of-control-the-soul-of-spring.html">Lesson 04</a> entirely to itself; today it's enough to know it exists and that developers found it liberating. Spring won — through the 2000s it became the de-facto standard for Java business software.</p>
 
       <h3>3.4 How Spring grew its own disease</h3>
       <p>Spring solved J2EE's pain, then — over a decade of success and growth — accumulated three of its own:</p>
@@ -268,7 +268,11 @@
         render();
       })();
       </script>
-      <p><strong>And when you need to see the decisions:</strong> Boot can print a <em>condition evaluation report</em> — every recipe, applied or skipped, with the reason — when started in debug mode. We'll produce one ourselves in Lesson 03 and read it together. Auto-configuration isn't a black box; it's a rule engine with an audit log.</p>
+      <p><strong>And when you need to see the decisions:</strong> Boot can print a <em>condition evaluation report</em> — every recipe, applied or skipped, with the reason — when started in debug mode. We'll produce one ourselves in <a href="lesson-03-the-main-application-class.html">Lesson 03</a> and read it together. Auto-configuration isn't a black box; it's a rule engine with an audit log.</p>
+      <details class="check">
+        <summary>Check yourself: you add a database starter to a brand-new app that has no database settings, and startup now fails. Why?</summary>
+        <p>Adding the starter put a database library on the classpath, which flipped the datasource recipe's condition ("is a database library present?") from fail to pass. The recipe then ran and needed to know <em>which</em> database to connect to — but you gave it no settings — so it failed loudly. The classpath is the questionnaire: a dependency you added <em>is</em> configuration input. (Fixes: provide the settings, use an embedded database, or remove the starter until you actually need it.)</p>
+      </details>
 
       <h3>3.8 Spring Boot versus Spring Framework — the honest difference</h3>
       <p>The single most common beginner confusion, settled:</p>
@@ -278,6 +282,13 @@
       </ul>
       <p><strong>Boot did not replace Framework; Boot <em>ships</em> Framework, pre-assembled.</strong> Every Spring Boot application <em>is</em> a Spring Framework application — engine and car. When we write our project, the annotations and classes in our code are overwhelmingly <em>Framework</em> features; Boot's contribution is that everything around them configured itself.</p>
       <p>Honestly, both directions: could you use Framework without Boot? Yes — teams did for a decade, and older codebases still run that way; you'd hand-write the configuration Boot infers. Any reason to, on a new project? Essentially never — you'd be declining free, overridable, industry-tested setup. Which is why "Spring project" and "Spring Boot project" are near-synonyms for anything started in the last decade, and why this course teaches Spring <em>through</em> Boot from day one.</p>
+      <div class="realworld">
+        <p>"Spring" and "Spring Boot" get used almost interchangeably in job posts and on teams — practically every new Java backend since ~2015 is a Boot app. And a classic interview question is exactly the one this section answers: <em>"What's the difference between Spring and Spring Boot?"</em> The crisp answer that lands: the Spring Framework is the engine (object management, web, data); Spring Boot is the layer on top that auto-assembles it with sensible, overridable defaults, starters, and an embedded server — every Boot app <em>is</em> a Framework app.</p>
+      </div>
+      <details class="check">
+        <summary>Check yourself: your controller handles a web request. Is the request-handling machinery Spring Framework or Spring Boot?</summary>
+        <p>Spring <strong>Framework</strong>. Web request handling is core Framework machinery; Spring Boot only pre-assembled and auto-configured it. Boot's ignition (<code>@SpringBootApplication</code>, auto-configuration) starts the car — but the engine doing the actual work at speed is Framework.</p>
+      </details>
 
       <h3>3.9 Where Spring Boot 4.x sits — and what it means for us</h3>
       <p>Our pinned <strong>Spring Boot 4.1.x</strong> is built on <strong>Spring Framework 7</strong> — each Boot generation is welded to a Framework generation and inseparable from it (Boot 3.x ↔ Framework 6, Boot 4.x ↔ Framework 7). What the 4.x generation means for us, practically:</p>
@@ -350,10 +361,10 @@ public class HelloServlet extends HttpServlet {
 &lt;/dependency&gt;</code></pre>
       <p>Then the application itself:</p>
       <pre><code><span class="c">// DemoApplication.java - a complete, runnable Spring Boot web application.</span>
-package com.example.demo;                                          <span class="c">// where this class lives in the code's namespace</span>
+<span class="k">package</span> com.example.demo;                                          <span class="c">// where this class lives in the code's namespace</span>
 
-import org.springframework.boot.SpringApplication;                  <span class="c">// the class whose run() boots everything</span>
-import org.springframework.boot.autoconfigure.SpringBootApplication; <span class="c">// the annotation that marks this as a Boot app</span>
+<span class="k">import</span> org.springframework.boot.<span class="t">SpringApplication</span>;                  <span class="c">// the class whose run() boots everything</span>
+<span class="k">import</span> org.springframework.boot.autoconfigure.<span class="t">SpringBootApplication</span>; <span class="c">// the annotation that marks this as a Boot app</span>
 
 <span class="c">// First annotation of the course, so first: what an ANNOTATION is. It's a label starting</span>
 <span class="c">// with @ that you attach to code. It doesn't run; it's read - by frameworks and tools - as</span>
@@ -362,14 +373,14 @@ import org.springframework.boot.autoconfigure.SpringBootApplication; <span class
 <span class="c">// This particular note tells Spring Boot: "this class is the front door of the application -</span>
 <span class="c">// start here, scan from here, auto-configure everything." It's actually three annotations</span>
 <span class="c">// rolled into one, and Lesson 03 unpacks all three.</span>
-@SpringBootApplication
-public class DemoApplication {
+<span class="an">@SpringBootApplication</span>
+<span class="k">public class</span> <span class="t">DemoApplication</span> {
 
     <span class="c">// Plain old Java main() - the standard entry point of ANY Java program, nothing Spring about it.</span>
-    public static void main(String[] args) {
+    <span class="k">public static void</span> <span class="fn">main</span>(<span class="t">String</span>[] args) {
         <span class="c">// The ignition: this one call runs the entire Section 3.7 sequence -</span>
         <span class="c">// load recipes, evaluate conditions, build what survives, start embedded Tomcat.</span>
-        SpringApplication.run(DemoApplication.class, args);
+        <span class="t">SpringApplication</span>.<span class="fn">run</span>(<span class="t">DemoApplication</span>.<span class="k">class</span>, args);
     }
 }</code></pre>
       <p>Note what's absent: no XML, no server install, no inheritance from web machinery — <code>DemoApplication</code> is a plain class with a plain <code>main</code>, plus one sticky note. (The <code>/hello</code> URL itself takes one small extra class with two annotations — but URL handling is Lesson 12's feature, and this course never bolts a future lesson's feature on early. Today's point stands without it: the <em>platform</em> that took an afternoon now takes eleven lines.)</p>
