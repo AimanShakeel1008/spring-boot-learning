@@ -12,119 +12,525 @@
   <header class="lesson">
     <p class="kicker">Spring Boot &amp; Microservices — a beginner's course</p>
     <h1>Course Map</h1>
-    <p class="subtitle">One E-Commerce system, built up across four architectural phases. Every lesson is a standalone page — open any of them, and follow the prev/next links or come back here to jump around.</p>
-    <p class="meta">You are here: <strong>Phase 1 · Chapter 2 · Lesson 04</strong> — Inversion of Control.</p>
+    <p class="subtitle">One E-Commerce system, built from an empty folder and reshaped across four architectural phases. Every lesson is a standalone page — open any of them, follow the prev/next links, or come back here to jump around.</p>
+    <p class="meta">You are here: <strong>Phase 1 · Chapter 0 · Lesson 00</strong> — nothing built yet. The course starts by getting your machine ready.</p>
   </header>
 
-  <figure class="fig">
-    <svg viewBox="0 0 780 210" role="img" aria-label="The course roadmap: four phases along a track. Phase 1, the monolith foundations, is current (you are on Chapter 2). Phases 2 (microservices), 3 (production hardening), and 4 (AI with Spring AI) come next.">
-      <!-- track -->
-      <path class="fig-arrow" d="M100,96 H700"/>
-      <!-- you-are-here pin over Phase 1 -->
-      <text x="100" y="40" text-anchor="middle" class="fig-caption-accent">YOU ARE HERE</text>
-      <text x="100" y="56" text-anchor="middle" class="fig-small">Phase 1 · Chapter 2</text>
-      <polygon class="fig-arrowhead-green" points="92,60 108,60 100,70"/>
-      <!-- Phase 1 (current) -->
-      <circle cx="100" cy="96" r="30" class="fig-box-green"/>
-      <text x="100" y="102" text-anchor="middle" class="fig-h-green">1</text>
-      <text x="100" y="152" text-anchor="middle" class="fig-h">Monolith</text>
-      <text x="100" y="170" text-anchor="middle" class="fig-small">foundations</text>
-      <!-- Phase 2 -->
-      <circle cx="300" cy="96" r="30" class="fig-box"/>
-      <text x="300" y="102" text-anchor="middle" class="fig-h">2</text>
-      <text x="300" y="152" text-anchor="middle" class="fig-h">Microservices</text>
-      <text x="300" y="170" text-anchor="middle" class="fig-small">split it up</text>
-      <!-- Phase 3 -->
-      <circle cx="500" cy="96" r="30" class="fig-box"/>
-      <text x="500" y="102" text-anchor="middle" class="fig-h">3</text>
-      <text x="500" y="152" text-anchor="middle" class="fig-h">Production</text>
-      <text x="500" y="170" text-anchor="middle" class="fig-small">harden it</text>
-      <!-- Phase 4 -->
-      <circle cx="700" cy="96" r="30" class="fig-box"/>
-      <text x="700" y="102" text-anchor="middle" class="fig-h">4</text>
-      <text x="700" y="152" text-anchor="middle" class="fig-h">AI</text>
-      <text x="700" y="170" text-anchor="middle" class="fig-small">Spring AI</text>
+  <figure class="fig fig-narrow">
+    <svg viewBox="0 0 780 215" role="img" aria-label="The course roadmap: four phases along a single track. Phase 1, the monolith foundations, covers chapters 0 to 14 and lessons 00 to 79 and is where you are now. Phase 2 breaks the system into microservices across chapters 15 to 23. Phase 3 hardens it for production across chapters 24 to 29. Phase 4 adds an AI support assistant across chapters 30 to 35.">
+      <path class="fig-arrow" d="M95,100 H695"/>
+
+      <text x="95" y="34" text-anchor="middle" class="fig-caption-accent">YOU ARE HERE</text>
+      <text x="95" y="50" text-anchor="middle" class="fig-small">Chapter 0 · Lesson 00</text>
+      <polygon class="fig-arrowhead-green" points="87,56 103,56 95,66"/>
+
+      <circle cx="95" cy="100" r="30" class="fig-box-green"/>
+      <text x="95" y="107" text-anchor="middle" class="fig-h-green">1</text>
+      <text x="95" y="152" text-anchor="middle" class="fig-h">Monolith</text>
+      <text x="95" y="169" text-anchor="middle" class="fig-small">Lessons 00–79</text>
+      <text x="95" y="184" text-anchor="middle" class="fig-small">15 chapters</text>
+
+      <circle cx="295" cy="100" r="30" class="fig-box"/>
+      <text x="295" y="107" text-anchor="middle" class="fig-h">2</text>
+      <text x="295" y="152" text-anchor="middle" class="fig-h">Microservices</text>
+      <text x="295" y="169" text-anchor="middle" class="fig-small">Lessons 80–119</text>
+      <text x="295" y="184" text-anchor="middle" class="fig-small">9 chapters</text>
+
+      <circle cx="495" cy="100" r="30" class="fig-box"/>
+      <text x="495" y="107" text-anchor="middle" class="fig-h">3</text>
+      <text x="495" y="152" text-anchor="middle" class="fig-h">Production</text>
+      <text x="495" y="169" text-anchor="middle" class="fig-small">Lessons 120–146</text>
+      <text x="495" y="184" text-anchor="middle" class="fig-small">6 chapters</text>
+
+      <circle cx="695" cy="100" r="30" class="fig-box"/>
+      <text x="695" y="107" text-anchor="middle" class="fig-h">4</text>
+      <text x="695" y="152" text-anchor="middle" class="fig-h">AI Assistant</text>
+      <text x="695" y="169" text-anchor="middle" class="fig-small">Lessons 147–168</text>
+      <text x="695" y="184" text-anchor="middle" class="fig-small">6 chapters</text>
     </svg>
-    <figcaption>The four phases of the course. Green is where you are now — Phase 1, the monolith. Each later phase reshapes the <em>same</em> E-Commerce system rather than starting over.</figcaption>
+    <figcaption>The four phases. Green is where you are now — Phase 1, the monolith. Each later phase reshapes the <em>same</em> E-Commerce system rather than starting over, so nothing you build is ever thrown away.</figcaption>
   </figure>
+
+  <div class="hub-stats">
+    <div class="hub-stat"><span class="hub-stat-num">169</span><span class="hub-stat-label">lessons planned</span></div>
+    <div class="hub-stat"><span class="hub-stat-num">36</span><span class="hub-stat-label">chapters</span></div>
+    <div class="hub-stat"><span class="hub-stat-num">0</span><span class="hub-stat-label">completed</span></div>
+    <div class="hub-stat accent"><span class="hub-stat-num">Lesson 00</span><span class="hub-stat-label">up next</span></div>
+  </div>
+
+  <nav class="hub-jump" aria-label="Jump to a phase">
+    <a href="#phase-1">Phase 1 · Monolith</a>
+    <a href="#phase-2">Phase 2 · Microservices</a>
+    <a href="#phase-3">Phase 3 · Production</a>
+    <a href="#phase-4">Phase 4 · AI</a>
+  </nav>
+
+  <!-- ===================== PHASE 1 ===================== -->
+  <div class="hub-phase" id="phase-1">
+    <p class="hub-phase-kicker">Phase 1 · Chapters 0–14 · Lessons 00–79</p>
+    <h2>Spring Boot Foundations — the E-Commerce monolith</h2>
+    <p>One Spring Boot application, built from an empty folder up to something you can inspect, secure, test and package. Everything later in the course stands on this.</p>
+  </div>
 
   <div class="hubgrid">
 
-    <div class="hub-chapter">
-      <h3>Phase 1 · Chapter 0 — Setup &amp; First Run</h3>
-      <p class="hub-sub">Get the machine ready before any Spring concept.</p>
+    <div class="hub-chapter current">
+      <h3><span class="hub-range">L00</span>Chapter 0 — Setup &amp; First Run</h3>
+      <p class="hub-sub">Get the machine ready before any Spring concept arrives.</p>
       <ul class="hub-lessons">
-        <li class="hub-lesson">
-          <a class="hub-name" href="phase-1-spring-boot-foundations/chapter-00-setup/lesson-00-getting-your-machine-ready.html">Lesson 00 — Getting Your Machine Ready</a>
-          <span class="badge done">done</span>
-        </li>
-        <li class="hub-lesson">
-          <a class="hub-name" href="phase-1-spring-boot-foundations/chapter-00-setup/chapter-00-summary.html">Chapter 0 — Summary</a>
-          <span class="badge done">done</span>
-        </li>
+        <li class="hub-lesson locked"><span class="hub-name">Lesson 00 — Getting Your Machine Ready</span><span class="badge next">up next</span></li>
       </ul>
     </div>
 
     <div class="hub-chapter">
-      <h3>Phase 1 · Chapter 1 — Getting Started</h3>
-      <p class="hub-sub">What Spring Boot is, the project skeleton, and the main class.</p>
+      <h3><span class="hub-range">L01–03</span>Chapter 1 — Getting Started</h3>
+      <p class="hub-sub">What Spring Boot is, the project skeleton, and the class that starts it all.</p>
       <ul class="hub-lessons">
-        <li class="hub-lesson">
-          <a class="hub-name" href="phase-1-spring-boot-foundations/chapter-01-getting-started/lesson-01-what-is-spring-boot-and-why-it-exists.html">Lesson 01 — What Is Spring Boot and Why It Exists</a>
-          <span class="badge done">done</span>
-        </li>
-        <li class="hub-lesson">
-          <a class="hub-name" href="phase-1-spring-boot-foundations/chapter-01-getting-started/lesson-02-project-setup-and-structure.html">Lesson 02 — Project Setup and Structure</a>
-          <span class="badge done">done</span>
-        </li>
-        <li class="hub-lesson">
-          <a class="hub-name" href="phase-1-spring-boot-foundations/chapter-01-getting-started/lesson-03-the-main-application-class.html">Lesson 03 — The Main Application Class</a>
-          <span class="badge done">done</span>
-        </li>
-        <li class="hub-lesson">
-          <a class="hub-name" href="phase-1-spring-boot-foundations/chapter-01-getting-started/chapter-01-summary.html">Chapter 1 — Summary</a>
-          <span class="badge done">done</span>
-        </li>
+        <li class="hub-lesson locked"><span class="hub-name">Lesson 01 — What Is Spring Boot and Why It Exists</span><span class="badge todo">planned</span></li>
+        <li class="hub-lesson locked"><span class="hub-name">Lesson 02 — Project Setup and Structure</span><span class="badge todo">planned</span></li>
+        <li class="hub-lesson locked"><span class="hub-name">Lesson 03 — The Main Application Class</span><span class="badge todo">planned</span></li>
       </ul>
     </div>
 
     <div class="hub-chapter">
-      <h3>Phase 1 · Chapter 2 — IoC, DI, and the Container</h3>
-      <p class="hub-sub">The soul of Spring: how objects get created and connected.</p>
+      <h3><span class="hub-range">L04–10</span>Chapter 2 — IoC, DI, and the Container</h3>
+      <p class="hub-sub">How objects get created, found and connected — and what a bean really is.</p>
       <ul class="hub-lessons">
-        <li class="hub-lesson">
-          <a class="hub-name" href="phase-1-spring-boot-foundations/chapter-02-ioc-di-and-the-container/lesson-04-inversion-of-control-the-soul-of-spring.html">Lesson 04 — Inversion of Control, the Soul of Spring</a>
-          <span class="badge done">done</span>
-        </li>
-        <li class="hub-lesson locked">
-          <span class="hub-name">Lesson 05 — Stereotype Annotations &amp; Component Scanning</span>
-          <span class="badge next">up next</span>
-        </li>
+        <li class="hub-lesson locked"><span class="hub-name">Lesson 04 — Inversion of Control, the Soul of Spring</span><span class="badge todo">planned</span></li>
+        <li class="hub-lesson locked"><span class="hub-name">Lesson 05 — Stereotype Annotations and Component Scanning</span><span class="badge todo">planned</span></li>
+        <li class="hub-lesson locked"><span class="hub-name">Lesson 06 — The Three Injection Styles</span><span class="badge todo">planned</span></li>
+        <li class="hub-lesson locked"><span class="hub-name">Lesson 07 — Manual Bean Registration</span><span class="badge todo">planned</span></li>
+        <li class="hub-lesson locked"><span class="hub-name">Lesson 08 — Resolving Bean Conflicts</span><span class="badge todo">planned</span></li>
+        <li class="hub-lesson locked"><span class="hub-name">Lesson 09 — Bean Scopes</span><span class="badge todo">planned</span></li>
+        <li class="hub-lesson locked"><span class="hub-name">Lesson 10 — The Bean Lifecycle</span><span class="badge todo">planned</span></li>
       </ul>
     </div>
 
     <div class="hub-chapter">
-      <h3>Phases 2–4 — the road ahead</h3>
-      <p class="hub-sub">The same system, reshaped stage by stage.</p>
+      <h3><span class="hub-range">L11–13</span>Chapter 3 — AOP and Proxies</h3>
+      <p class="hub-sub">The machinery behind @Transactional, @Cacheable, @Async and method security — taught before anything quietly depends on it.</p>
       <ul class="hub-lessons">
-        <li class="hub-lesson locked">
-          <span class="hub-name">Phase 2 — Break the monolith into microservices</span>
-          <span class="badge todo">planned</span>
-        </li>
-        <li class="hub-lesson locked">
-          <span class="hub-name">Phase 3 — Harden for production (Kafka, Redis, security, observability)</span>
-          <span class="badge todo">planned</span>
-        </li>
-        <li class="hub-lesson locked">
-          <span class="hub-name">Phase 4 — AI Support Assistant with Spring AI</span>
-          <span class="badge todo">planned</span>
-        </li>
+        <li class="hub-lesson locked"><span class="hub-name">Lesson 11 — Cross-Cutting Concerns and the Problem AOP Solves</span><span class="badge todo">planned</span></li>
+        <li class="hub-lesson locked"><span class="hub-name">Lesson 12 — Spring AOP in Practice</span><span class="badge todo">planned</span></li>
+        <li class="hub-lesson locked"><span class="hub-name">Lesson 13 — How Proxies Really Work (and Where They Break)</span><span class="badge todo">planned</span></li>
+      </ul>
+    </div>
+
+    <div class="hub-chapter">
+      <h3><span class="hub-range">L14–20</span>Chapter 4 — HTTP and the Web Layer</h3>
+      <p class="hub-sub">The application starts answering real requests from the outside world.</p>
+      <ul class="hub-lessons">
+        <li class="hub-lesson locked"><span class="hub-name">Lesson 14 — HTTP Fundamentals for Backend Developers</span><span class="badge todo">planned</span></li>
+        <li class="hub-lesson locked"><span class="hub-name">Lesson 15 — @RestController and Request Mapping</span><span class="badge todo">planned</span></li>
+        <li class="hub-lesson locked"><span class="hub-name">Lesson 16 — ResponseEntity and Controlling the Response</span><span class="badge todo">planned</span></li>
+        <li class="hub-lesson locked"><span class="hub-name">Lesson 17 — DTOs: Shaping Your API's Input and Output</span><span class="badge todo">planned</span></li>
+        <li class="hub-lesson locked"><span class="hub-name">Lesson 18 — JSON Serialization with Jackson</span><span class="badge todo">planned</span></li>
+        <li class="hub-lesson locked"><span class="hub-name">Lesson 19 — The Request Pipeline: Filters and Interceptors</span><span class="badge todo">planned</span></li>
+        <li class="hub-lesson locked"><span class="hub-name">Lesson 20 — File Upload and Download</span><span class="badge todo">planned</span></li>
+      </ul>
+    </div>
+
+    <div class="hub-chapter">
+      <h3><span class="hub-range">L21–37</span>Chapter 5 — The Data Layer</h3>
+      <p class="hub-sub">Data that survives a restart — H2 first for zero setup, then PostgreSQL for real.</p>
+      <ul class="hub-lessons">
+        <li class="hub-lesson locked"><span class="hub-name">Lesson 21 — Database Fundamentals for Spring Developers</span><span class="badge todo">planned</span></li>
+        <li class="hub-lesson locked"><span class="hub-name">Lesson 22 — Configuring the Datasource on H2</span><span class="badge todo">planned</span></li>
+        <li class="hub-lesson locked"><span class="hub-name">Lesson 23 — JPA Entities: The Basics</span><span class="badge todo">planned</span></li>
+        <li class="hub-lesson locked"><span class="hub-name">Lesson 24 — Primary Key Strategies</span><span class="badge todo">planned</span></li>
+        <li class="hub-lesson locked"><span class="hub-name">Lesson 25 — Entity Relationships</span><span class="badge todo">planned</span></li>
+        <li class="hub-lesson locked"><span class="hub-name">Lesson 26 — Fetch Types and the N+1 Problem</span><span class="badge todo">planned</span></li>
+        <li class="hub-lesson locked"><span class="hub-name">Lesson 27 — Cascading and Value Objects</span><span class="badge todo">planned</span></li>
+        <li class="hub-lesson locked"><span class="hub-name">Lesson 28 — Spring Data JPA Repositories</span><span class="badge todo">planned</span></li>
+        <li class="hub-lesson locked"><span class="hub-name">Lesson 29 — Custom Queries</span><span class="badge todo">planned</span></li>
+        <li class="hub-lesson locked"><span class="hub-name">Lesson 30 — Pagination, Sorting, and Projections</span><span class="badge todo">planned</span></li>
+        <li class="hub-lesson locked"><span class="hub-name">Lesson 31 — Dynamic Queries: Specifications and Query by Example</span><span class="badge todo">planned</span></li>
+        <li class="hub-lesson locked"><span class="hub-name">Lesson 32 — Transactions: Atomicity and @Transactional</span><span class="badge todo">planned</span></li>
+        <li class="hub-lesson locked"><span class="hub-name">Lesson 33 — Isolation and Concurrency</span><span class="badge todo">planned</span></li>
+        <li class="hub-lesson locked"><span class="hub-name">Lesson 34 — Auditing and Soft Deletes</span><span class="badge todo">planned</span></li>
+        <li class="hub-lesson locked"><span class="hub-name">Lesson 35 — Switching to PostgreSQL with Docker Compose</span><span class="badge todo">planned</span></li>
+        <li class="hub-lesson locked"><span class="hub-name">Lesson 36 — Database Migrations with Flyway</span><span class="badge todo">planned</span></li>
+        <li class="hub-lesson locked"><span class="hub-name">Lesson 37 — Dropping Below the ORM: JdbcClient and Raw SQL</span><span class="badge todo">planned</span></li>
+      </ul>
+    </div>
+
+    <div class="hub-chapter">
+      <h3><span class="hub-range">L38–41</span>Chapter 6 — Configuration and Logging</h3>
+      <p class="hub-sub">Settings that change per environment, and logs you can actually read.</p>
+      <ul class="hub-lessons">
+        <li class="hub-lesson locked"><span class="hub-name">Lesson 38 — Reading Configuration</span><span class="badge todo">planned</span></li>
+        <li class="hub-lesson locked"><span class="hub-name">Lesson 39 — Profiles and Environment-Based Config</span><span class="badge todo">planned</span></li>
+        <li class="hub-lesson locked"><span class="hub-name">Lesson 40 — Where a Property Really Comes From: SpEL and Precedence</span><span class="badge todo">planned</span></li>
+        <li class="hub-lesson locked"><span class="hub-name">Lesson 41 — Logging with SLF4J and Logback</span><span class="badge todo">planned</span></li>
+      </ul>
+    </div>
+
+    <div class="hub-chapter">
+      <h3><span class="hub-range">L42–47</span>Chapter 7 — Validation, Errors, and Messages</h3>
+      <p class="hub-sub">Rejecting bad input politely, and failing in one consistent shape every time.</p>
+      <ul class="hub-lessons">
+        <li class="hub-lesson locked"><span class="hub-name">Lesson 42 — Bean Validation Basics</span><span class="badge todo">planned</span></li>
+        <li class="hub-lesson locked"><span class="hub-name">Lesson 43 — Custom Validators</span><span class="badge todo">planned</span></li>
+        <li class="hub-lesson locked"><span class="hub-name">Lesson 44 — Validation Groups, and @Valid versus @Validated</span><span class="badge todo">planned</span></li>
+        <li class="hub-lesson locked"><span class="hub-name">Lesson 45 — Centralized Exception Handling</span><span class="badge todo">planned</span></li>
+        <li class="hub-lesson locked"><span class="hub-name">Lesson 46 — A Consistent Error Contract</span><span class="badge todo">planned</span></li>
+        <li class="hub-lesson locked"><span class="hub-name">Lesson 47 — Internationalization: Messages for Humans</span><span class="badge todo">planned</span></li>
+      </ul>
+    </div>
+
+    <div class="hub-chapter">
+      <h3><span class="hub-range">L48–52</span>Chapter 8 — Service Layer and Mapping</h3>
+      <p class="hub-sub">Where the business logic actually lives, and how it stays out of the controller.</p>
+      <ul class="hub-lessons">
+        <li class="hub-lesson locked"><span class="hub-name">Lesson 48 — Service Layer Design</span><span class="badge todo">planned</span></li>
+        <li class="hub-lesson locked"><span class="hub-name">Lesson 49 — Entities versus DTOs, and Mapping</span><span class="badge todo">planned</span></li>
+        <li class="hub-lesson locked"><span class="hub-name">Lesson 50 — Scheduling Background Work with @Scheduled</span><span class="badge todo">planned</span></li>
+        <li class="hub-lesson locked"><span class="hub-name">Lesson 51 — Design Patterns in Spring, Part 1</span><span class="badge todo">planned</span></li>
+        <li class="hub-lesson locked"><span class="hub-name">Lesson 52 — Design Patterns in Spring, Part 2</span><span class="badge todo">planned</span></li>
+      </ul>
+    </div>
+
+    <div class="hub-chapter">
+      <h3><span class="hub-range">L53–54</span>Chapter 9 — API Design and Documentation</h3>
+      <p class="hub-sub">An API other people can discover, read and use without asking you.</p>
+      <ul class="hub-lessons">
+        <li class="hub-lesson locked"><span class="hub-name">Lesson 53 — API Documentation with OpenAPI and Swagger</span><span class="badge todo">planned</span></li>
+        <li class="hub-lesson locked"><span class="hub-name">Lesson 54 — Richer REST: HATEOAS and the Maturity Model</span><span class="badge todo">planned</span></li>
+      </ul>
+    </div>
+
+    <div class="hub-chapter">
+      <h3><span class="hub-range">L55–57</span>Chapter 10 — REST Clients</h3>
+      <p class="hub-sub">Our application as the caller for once, not the callee.</p>
+      <ul class="hub-lessons">
+        <li class="hub-lesson locked"><span class="hub-name">Lesson 55 — Calling External Services with RestClient</span><span class="badge todo">planned</span></li>
+        <li class="hub-lesson locked"><span class="hub-name">Lesson 56 — Declarative HTTP Clients</span><span class="badge todo">planned</span></li>
+        <li class="hub-lesson locked"><span class="hub-name">Lesson 57 — Resilient Outbound Calls</span><span class="badge todo">planned</span></li>
+      </ul>
+    </div>
+
+    <div class="hub-chapter">
+      <h3><span class="hub-range">L58–59</span>Chapter 11 — Real-Time Communication</h3>
+      <p class="hub-sub">Updates that arrive without the browser having to ask again and again.</p>
+      <ul class="hub-lessons">
+        <li class="hub-lesson locked"><span class="hub-name">Lesson 58 — Server-Sent Events: Pushing Updates over Plain HTTP</span><span class="badge todo">planned</span></li>
+        <li class="hub-lesson locked"><span class="hub-name">Lesson 59 — WebSocket and STOMP</span><span class="badge todo">planned</span></li>
+      </ul>
+    </div>
+
+    <div class="hub-chapter">
+      <h3><span class="hub-range">L60–68</span>Chapter 12 — Security</h3>
+      <p class="hub-sub">Who you are, what you may do, and everything that tries to get around both.</p>
+      <ul class="hub-lessons">
+        <li class="hub-lesson locked"><span class="hub-name">Lesson 60 — Spring Security Fundamentals</span><span class="badge todo">planned</span></li>
+        <li class="hub-lesson locked"><span class="hub-name">Lesson 61 — Users and Password Storage</span><span class="badge todo">planned</span></li>
+        <li class="hub-lesson locked"><span class="hub-name">Lesson 62 — Session-Based Authentication</span><span class="badge todo">planned</span></li>
+        <li class="hub-lesson locked"><span class="hub-name">Lesson 63 — JWT from Scratch</span><span class="badge todo">planned</span></li>
+        <li class="hub-lesson locked"><span class="hub-name">Lesson 64 — OAuth2 and OpenID Connect</span><span class="badge todo">planned</span></li>
+        <li class="hub-lesson locked"><span class="hub-name">Lesson 65 — Authorization</span><span class="badge todo">planned</span></li>
+        <li class="hub-lesson locked"><span class="hub-name">Lesson 66 — Row-Level Security</span><span class="badge todo">planned</span></li>
+        <li class="hub-lesson locked"><span class="hub-name">Lesson 67 — CORS</span><span class="badge todo">planned</span></li>
+        <li class="hub-lesson locked"><span class="hub-name">Lesson 68 — Security Hardening</span><span class="badge todo">planned</span></li>
+      </ul>
+    </div>
+
+    <div class="hub-chapter">
+      <h3><span class="hub-range">L69–77</span>Chapter 13 — Testing</h3>
+      <p class="hub-sub">Proof the system still works, runnable in seconds, every time you change something.</p>
+      <ul class="hub-lessons">
+        <li class="hub-lesson locked"><span class="hub-name">Lesson 69 — Testing Philosophy and the Test Pyramid</span><span class="badge todo">planned</span></li>
+        <li class="hub-lesson locked"><span class="hub-name">Lesson 70 — Unit Testing with JUnit 5</span><span class="badge todo">planned</span></li>
+        <li class="hub-lesson locked"><span class="hub-name">Lesson 71 — Mocking with Mockito</span><span class="badge todo">planned</span></li>
+        <li class="hub-lesson locked"><span class="hub-name">Lesson 72 — Controller Slice Tests</span><span class="badge todo">planned</span></li>
+        <li class="hub-lesson locked"><span class="hub-name">Lesson 73 — Repository Slice Tests</span><span class="badge todo">planned</span></li>
+        <li class="hub-lesson locked"><span class="hub-name">Lesson 74 — Full Integration Tests</span><span class="badge todo">planned</span></li>
+        <li class="hub-lesson locked"><span class="hub-name">Lesson 75 — Testcontainers: Testing Against the Real Thing</span><span class="badge todo">planned</span></li>
+        <li class="hub-lesson locked"><span class="hub-name">Lesson 76 — Testing Code That Calls Other Services</span><span class="badge todo">planned</span></li>
+        <li class="hub-lesson locked"><span class="hub-name">Lesson 77 — Testing Security</span><span class="badge todo">planned</span></li>
+      </ul>
+    </div>
+
+    <div class="hub-chapter">
+      <h3><span class="hub-range">L78–79</span>Chapter 14 — Operating the Monolith</h3>
+      <p class="hub-sub">Phase 1 closes with an app you can look inside, package, and shut down cleanly.</p>
+      <ul class="hub-lessons">
+        <li class="hub-lesson locked"><span class="hub-name">Lesson 78 — Spring Boot Actuator: Seeing Inside a Running App</span><span class="badge todo">planned</span></li>
+        <li class="hub-lesson locked"><span class="hub-name">Lesson 79 — Packaging and Running for Real</span><span class="badge todo">planned</span></li>
       </ul>
     </div>
 
   </div>
 
-  <p class="lesson-footer">Course map · Phase 1 in progress · new lessons appear here as they are written.</p>
+  <!-- ===================== PHASE 2 ===================== -->
+  <div class="hub-phase" id="phase-2">
+    <p class="hub-phase-kicker">Phase 2 · Chapters 15–23 · Lessons 80–119</p>
+    <h2>Microservices with Spring Cloud</h2>
+    <p>The same system, split into five services behind an API gateway — talking over HTTP and Kafka, secured across boundaries, cached, observed, and tested as a whole.</p>
+  </div>
+
+  <div class="hubgrid">
+
+    <div class="hub-chapter">
+      <h3><span class="hub-range">L80–84</span>Chapter 15 — The Microservices Transition</h3>
+      <p class="hub-sub">Whether to split at all, and the modular monolith you should probably try first.</p>
+      <ul class="hub-lessons">
+        <li class="hub-lesson locked"><span class="hub-name">Lesson 80 — Monolith versus Microservices: The Honest Conversation</span><span class="badge todo">planned</span></li>
+        <li class="hub-lesson locked"><span class="hub-name">Lesson 81 — The Modular Monolith with Spring Modulith</span><span class="badge todo">planned</span></li>
+        <li class="hub-lesson locked"><span class="hub-name">Lesson 82 — Decomposing Our Monolith</span><span class="badge todo">planned</span></li>
+        <li class="hub-lesson locked"><span class="hub-name">Lesson 83 — Microservices Architecture Principles</span><span class="badge todo">planned</span></li>
+        <li class="hub-lesson locked"><span class="hub-name">Lesson 84 — Distributed Systems Realities</span><span class="badge todo">planned</span></li>
+      </ul>
+    </div>
+
+    <div class="hub-chapter">
+      <h3><span class="hub-range">L85–92</span>Chapter 16 — Service Communication</h3>
+      <p class="hub-sub">How services find each other, call each other, and survive each other's failures.</p>
+      <ul class="hub-lessons">
+        <li class="hub-lesson locked"><span class="hub-name">Lesson 85 — Sharing Code Between Services Without Re-Coupling Them</span><span class="badge todo">planned</span></li>
+        <li class="hub-lesson locked"><span class="hub-name">Lesson 86 — Synchronous Communication with OpenFeign</span><span class="badge todo">planned</span></li>
+        <li class="hub-lesson locked"><span class="hub-name">Lesson 87 — API Gateway Routing with Spring Cloud Gateway</span><span class="badge todo">planned</span></li>
+        <li class="hub-lesson locked"><span class="hub-name">Lesson 88 — API Gateway Filters</span><span class="badge todo">planned</span></li>
+        <li class="hub-lesson locked"><span class="hub-name">Lesson 89 — Service Discovery with Eureka</span><span class="badge todo">planned</span></li>
+        <li class="hub-lesson locked"><span class="hub-name">Lesson 90 — Resilience Part 1: Circuit Breaker and Fallbacks</span><span class="badge todo">planned</span></li>
+        <li class="hub-lesson locked"><span class="hub-name">Lesson 91 — Resilience Part 2: Retry, Rate Limiter, Bulkhead</span><span class="badge todo">planned</span></li>
+        <li class="hub-lesson locked"><span class="hub-name">Lesson 92 — Distributed Configuration with Spring Cloud Config</span><span class="badge todo">planned</span></li>
+      </ul>
+    </div>
+
+    <div class="hub-chapter">
+      <h3><span class="hub-range">L93–94</span>Chapter 17 — Securing a Distributed System</h3>
+      <p class="hub-sub">One filter chain protected one app. Six services break every assumption behind it.</p>
+      <ul class="hub-lessons">
+        <li class="hub-lesson locked"><span class="hub-name">Lesson 93 — OAuth2 Resource Server and Identity Propagation</span><span class="badge todo">planned</span></li>
+        <li class="hub-lesson locked"><span class="hub-name">Lesson 94 — Service-to-Service Authentication and the Trust Boundary</span><span class="badge todo">planned</span></li>
+      </ul>
+    </div>
+
+    <div class="hub-chapter">
+      <h3><span class="hub-range">L95–100</span>Chapter 18 — Async Messaging with Kafka</h3>
+      <p class="hub-sub">Services that react to facts instead of waiting on each other's replies.</p>
+      <ul class="hub-lessons">
+        <li class="hub-lesson locked"><span class="hub-name">Lesson 95 — Why Async Messaging Exists</span><span class="badge todo">planned</span></li>
+        <li class="hub-lesson locked"><span class="hub-name">Lesson 96 — Apache Kafka Fundamentals</span><span class="badge todo">planned</span></li>
+        <li class="hub-lesson locked"><span class="hub-name">Lesson 97 — Spring Kafka: Producing and Consuming</span><span class="badge todo">planned</span></li>
+        <li class="hub-lesson locked"><span class="hub-name">Lesson 98 — Spring Kafka: Reliability</span><span class="badge todo">planned</span></li>
+        <li class="hub-lesson locked"><span class="hub-name">Lesson 99 — Building the Notification Service</span><span class="badge todo">planned</span></li>
+        <li class="hub-lesson locked"><span class="hub-name">Lesson 100 — Event Sourcing and CQRS Overview</span><span class="badge todo">planned</span></li>
+      </ul>
+    </div>
+
+    <div class="hub-chapter">
+      <h3><span class="hub-range">L101–105</span>Chapter 19 — Caching with Redis</h3>
+      <p class="hub-sub">Answering the same question twice without paying for it twice.</p>
+      <ul class="hub-lessons">
+        <li class="hub-lesson locked"><span class="hub-name">Lesson 101 — Why Caching Exists and What It Costs</span><span class="badge todo">planned</span></li>
+        <li class="hub-lesson locked"><span class="hub-name">Lesson 102 — Redis Fundamentals</span><span class="badge todo">planned</span></li>
+        <li class="hub-lesson locked"><span class="hub-name">Lesson 103 — Spring Cache Abstraction</span><span class="badge todo">planned</span></li>
+        <li class="hub-lesson locked"><span class="hub-name">Lesson 104 — RedisTemplate and Distributed Locking</span><span class="badge todo">planned</span></li>
+        <li class="hub-lesson locked"><span class="hub-name">Lesson 105 — Sessions and Rate Limiting with Redis</span><span class="badge todo">planned</span></li>
+      </ul>
+    </div>
+
+    <div class="hub-chapter">
+      <h3><span class="hub-range">L106–110</span>Chapter 20 — Distributed System Patterns</h3>
+      <p class="hub-sub">The named solutions to the problems the split created.</p>
+      <ul class="hub-lessons">
+        <li class="hub-lesson locked"><span class="hub-name">Lesson 106 — The Saga Pattern: The Idea</span><span class="badge todo">planned</span></li>
+        <li class="hub-lesson locked"><span class="hub-name">Lesson 107 — The Saga Pattern: Implementing the Order Flow</span><span class="badge todo">planned</span></li>
+        <li class="hub-lesson locked"><span class="hub-name">Lesson 108 — The Outbox Pattern</span><span class="badge todo">planned</span></li>
+        <li class="hub-lesson locked"><span class="hub-name">Lesson 109 — API Versioning Strategies</span><span class="badge todo">planned</span></li>
+        <li class="hub-lesson locked"><span class="hub-name">Lesson 110 — Idempotency</span><span class="badge todo">planned</span></li>
+      </ul>
+    </div>
+
+    <div class="hub-chapter">
+      <h3><span class="hub-range">L111–112</span>Chapter 21 — Alternative API Styles</h3>
+      <p class="hub-sub">REST over JSON is the default, not the only option — and knowing when each wins.</p>
+      <ul class="hub-lessons">
+        <li class="hub-lesson locked"><span class="hub-name">Lesson 111 — Spring for GraphQL</span><span class="badge todo">planned</span></li>
+        <li class="hub-lesson locked"><span class="hub-name">Lesson 112 — gRPC and Protocol Buffers</span><span class="badge todo">planned</span></li>
+      </ul>
+    </div>
+
+    <div class="hub-chapter">
+      <h3><span class="hub-range">L113–117</span>Chapter 22 — Observability</h3>
+      <p class="hub-sub">Knowing what the system is doing when it is spread across six machines.</p>
+      <ul class="hub-lessons">
+        <li class="hub-lesson locked"><span class="hub-name">Lesson 113 — Structured Logging in Distributed Systems</span><span class="badge todo">planned</span></li>
+        <li class="hub-lesson locked"><span class="hub-name">Lesson 114 — Metrics with Micrometer and Prometheus</span><span class="badge todo">planned</span></li>
+        <li class="hub-lesson locked"><span class="hub-name">Lesson 115 — Distributed Tracing</span><span class="badge todo">planned</span></li>
+        <li class="hub-lesson locked"><span class="hub-name">Lesson 116 — Health Checks and Probes</span><span class="badge todo">planned</span></li>
+        <li class="hub-lesson locked"><span class="hub-name">Lesson 117 — From Dashboards to Alerts: SLIs, SLOs, and Error Budgets</span><span class="badge todo">planned</span></li>
+      </ul>
+    </div>
+
+    <div class="hub-chapter">
+      <h3><span class="hub-range">L118–119</span>Chapter 23 — Testing Microservices</h3>
+      <p class="hub-sub">Every service's tests pass and the system is still broken. Now what?</p>
+      <ul class="hub-lessons">
+        <li class="hub-lesson locked"><span class="hub-name">Lesson 118 — Contract Testing</span><span class="badge todo">planned</span></li>
+        <li class="hub-lesson locked"><span class="hub-name">Lesson 119 — End-to-End and Chaos Testing</span><span class="badge todo">planned</span></li>
+      </ul>
+    </div>
+
+  </div>
+
+  <!-- ===================== PHASE 3 ===================== -->
+  <div class="hub-phase" id="phase-3">
+    <p class="hub-phase-kicker">Phase 3 · Chapters 24–29 · Lessons 120–146</p>
+    <h2>Production Readiness</h2>
+    <p>The same system, actually shipped: containers and Kubernetes, a pipeline that builds and deploys it, performance work backed by measurement, a full reactive chapter, batch processing, and the Spring internals underneath it all.</p>
+  </div>
+
+  <div class="hubgrid">
+
+    <div class="hub-chapter">
+      <h3><span class="hub-range">L120–123</span>Chapter 24 — Containerization</h3>
+      <p class="hub-sub">Docker explained in full at last, then Kubernetes running the whole system.</p>
+      <ul class="hub-lessons">
+        <li class="hub-lesson locked"><span class="hub-name">Lesson 120 — Docker for Spring Boot</span><span class="badge todo">planned</span></li>
+        <li class="hub-lesson locked"><span class="hub-name">Lesson 121 — Docker Compose and Networking</span><span class="badge todo">planned</span></li>
+        <li class="hub-lesson locked"><span class="hub-name">Lesson 122 — Kubernetes Fundamentals</span><span class="badge todo">planned</span></li>
+        <li class="hub-lesson locked"><span class="hub-name">Lesson 123 — Kubernetes Scaling and Zero-Downtime</span><span class="badge todo">planned</span></li>
+      </ul>
+    </div>
+
+    <div class="hub-chapter">
+      <h3><span class="hub-range">L124–127</span>Chapter 25 — CI, Delivery, and Deployment</h3>
+      <p class="hub-sub">Everything so far ran by hand on one laptop. Now the machine does it on every push.</p>
+      <ul class="hub-lessons">
+        <li class="hub-lesson locked"><span class="hub-name">Lesson 124 — Continuous Integration with GitHub Actions</span><span class="badge todo">planned</span></li>
+        <li class="hub-lesson locked"><span class="hub-name">Lesson 125 — Continuous Delivery: Building and Publishing Images</span><span class="badge todo">planned</span></li>
+        <li class="hub-lesson locked"><span class="hub-name">Lesson 126 — Deploying to the Cloud</span><span class="badge todo">planned</span></li>
+        <li class="hub-lesson locked"><span class="hub-name">Lesson 127 — Zero-Downtime Releases and Backward-Compatible Migrations</span><span class="badge todo">planned</span></li>
+      </ul>
+    </div>
+
+    <div class="hub-chapter">
+      <h3><span class="hub-range">L128–132</span>Chapter 26 — Performance</h3>
+      <p class="hub-sub">Measuring before optimising, and finding the bottleneck that is actually there.</p>
+      <ul class="hub-lessons">
+        <li class="hub-lesson locked"><span class="hub-name">Lesson 128 — Connection Pooling with HikariCP</span><span class="badge todo">planned</span></li>
+        <li class="hub-lesson locked"><span class="hub-name">Lesson 129 — Async Work and Thread Pools</span><span class="badge todo">planned</span></li>
+        <li class="hub-lesson locked"><span class="hub-name">Lesson 130 — Virtual Threads and Faster Startup</span><span class="badge todo">planned</span></li>
+        <li class="hub-lesson locked"><span class="hub-name">Lesson 131 — Database Performance</span><span class="badge todo">planned</span></li>
+        <li class="hub-lesson locked"><span class="hub-name">Lesson 132 — Load Testing and Finding the Real Bottleneck</span><span class="badge todo">planned</span></li>
+      </ul>
+    </div>
+
+    <div class="hub-chapter">
+      <h3><span class="hub-range">L133–141</span>Chapter 27 — Reactive Spring</h3>
+      <p class="hub-sub">A whole second programming model, taught properly — and ending with an honest verdict on whether you should use it at all.</p>
+      <ul class="hub-lessons">
+        <li class="hub-lesson locked"><span class="hub-name">Lesson 133 — Blocking versus Non-Blocking: Why Reactive Exists</span><span class="badge todo">planned</span></li>
+        <li class="hub-lesson locked"><span class="hub-name">Lesson 134 — Project Reactor: Mono and Flux</span><span class="badge todo">planned</span></li>
+        <li class="hub-lesson locked"><span class="hub-name">Lesson 135 — Operators: Composing a Stream</span><span class="badge todo">planned</span></li>
+        <li class="hub-lesson locked"><span class="hub-name">Lesson 136 — Schedulers, Threading, and Backpressure</span><span class="badge todo">planned</span></li>
+        <li class="hub-lesson locked"><span class="hub-name">Lesson 137 — Spring WebFlux</span><span class="badge todo">planned</span></li>
+        <li class="hub-lesson locked"><span class="hub-name">Lesson 138 — Reactive Data Access with R2DBC</span><span class="badge todo">planned</span></li>
+        <li class="hub-lesson locked"><span class="hub-name">Lesson 139 — Testing and Securing Reactive Code</span><span class="badge todo">planned</span></li>
+        <li class="hub-lesson locked"><span class="hub-name">Lesson 140 — WebFlux versus Virtual Threads: The Honest Verdict</span><span class="badge todo">planned</span></li>
+        <li class="hub-lesson locked"><span class="hub-name">Lesson 141 — RSocket: A Reactive Protocol</span><span class="badge todo">planned</span></li>
+      </ul>
+    </div>
+
+    <div class="hub-chapter">
+      <h3><span class="hub-range">L142–143</span>Chapter 28 — Batch Processing</h3>
+      <p class="hub-sub">Four million rows overnight, restartable, without loading them all into memory.</p>
+      <ul class="hub-lessons">
+        <li class="hub-lesson locked"><span class="hub-name">Lesson 142 — Spring Batch Fundamentals</span><span class="badge todo">planned</span></li>
+        <li class="hub-lesson locked"><span class="hub-name">Lesson 143 — Spring Batch in Production</span><span class="badge todo">planned</span></li>
+      </ul>
+    </div>
+
+    <div class="hub-chapter">
+      <h3><span class="hub-range">L144–146</span>Chapter 29 — Advanced Spring</h3>
+      <p class="hub-sub">The machinery underneath: native images, your own starter, and the container's own extension points.</p>
+      <ul class="hub-lessons">
+        <li class="hub-lesson locked"><span class="hub-name">Lesson 144 — Spring Boot 4.x and Spring Framework 7 Modern Features</span><span class="badge todo">planned</span></li>
+        <li class="hub-lesson locked"><span class="hub-name">Lesson 145 — Writing Your Own Auto-Configuration and Starter</span><span class="badge todo">planned</span></li>
+        <li class="hub-lesson locked"><span class="hub-name">Lesson 146 — Extending the Container</span><span class="badge todo">planned</span></li>
+      </ul>
+    </div>
+
+  </div>
+
+  <!-- ===================== PHASE 4 ===================== -->
+  <div class="hub-phase" id="phase-4">
+    <p class="hub-phase-kicker">Phase 4 · Chapters 30–35 · Lessons 147–168</p>
+    <h2>AI-Powered E-Commerce with Spring AI</h2>
+    <p>A sixth service that answers customers in plain language, grounded in our own help articles and catalog, able to look up real orders — then the same thing rebuilt in LangChain4j so you can judge both frameworks on the merits.</p>
+  </div>
+
+  <div class="hubgrid">
+
+    <div class="hub-chapter">
+      <h3><span class="hub-range">L147–148</span>Chapter 30 — AI Foundations for the Java Developer</h3>
+      <p class="hub-sub">What a language model actually does, before any library appears.</p>
+      <ul class="hub-lessons">
+        <li class="hub-lesson locked"><span class="hub-name">Lesson 147 — How Large Language Models Actually Work</span><span class="badge todo">planned</span></li>
+        <li class="hub-lesson locked"><span class="hub-name">Lesson 148 — Talking to a Model: Prompts, Roles, and Settings</span><span class="badge todo">planned</span></li>
+      </ul>
+    </div>
+
+    <div class="hub-chapter">
+      <h3><span class="hub-range">L149–152</span>Chapter 31 — Spring AI Core</h3>
+      <p class="hub-sub">Spring AI is to model providers what Spring Data is to databases.</p>
+      <ul class="hub-lessons">
+        <li class="hub-lesson locked"><span class="hub-name">Lesson 149 — Spring AI and Your First ChatClient Call</span><span class="badge todo">planned</span></li>
+        <li class="hub-lesson locked"><span class="hub-name">Lesson 150 — Prompt Templates and System Prompts</span><span class="badge todo">planned</span></li>
+        <li class="hub-lesson locked"><span class="hub-name">Lesson 151 — Structured Outputs: From Model Text to Java Objects</span><span class="badge todo">planned</span></li>
+        <li class="hub-lesson locked"><span class="hub-name">Lesson 152 — Chat Memory: Giving Conversations State</span><span class="badge todo">planned</span></li>
+      </ul>
+    </div>
+
+    <div class="hub-chapter">
+      <h3><span class="hub-range">L153–156</span>Chapter 32 — Embeddings, Vector Search, and RAG</h3>
+      <p class="hub-sub">Teaching the model about our store, which it has never heard of.</p>
+      <ul class="hub-lessons">
+        <li class="hub-lesson locked"><span class="hub-name">Lesson 153 — Embeddings: Turning Meaning into Numbers</span><span class="badge todo">planned</span></li>
+        <li class="hub-lesson locked"><span class="hub-name">Lesson 154 — Vector Stores with pgvector</span><span class="badge todo">planned</span></li>
+        <li class="hub-lesson locked"><span class="hub-name">Lesson 155 — Document Ingestion: The ETL Pipeline</span><span class="badge todo">planned</span></li>
+        <li class="hub-lesson locked"><span class="hub-name">Lesson 156 — Retrieval-Augmented Generation</span><span class="badge todo">planned</span></li>
+      </ul>
+    </div>
+
+    <div class="hub-chapter">
+      <h3><span class="hub-range">L157–163</span>Chapter 33 — Tools, the Assistant, and Production AI</h3>
+      <p class="hub-sub">Letting the model use our code — safely, affordably, and observably.</p>
+      <ul class="hub-lessons">
+        <li class="hub-lesson locked"><span class="hub-name">Lesson 157 — Tool Calling: Letting the Model Use Our Code</span><span class="badge todo">planned</span></li>
+        <li class="hub-lesson locked"><span class="hub-name">Lesson 158 — Building the AI Support Assistant Service</span><span class="badge todo">planned</span></li>
+        <li class="hub-lesson locked"><span class="hub-name">Lesson 159 — Agents: Multi-Step Reasoning with Tools</span><span class="badge todo">planned</span></li>
+        <li class="hub-lesson locked"><span class="hub-name">Lesson 160 — AI Security: Prompt Injection and Data Leakage</span><span class="badge todo">planned</span></li>
+        <li class="hub-lesson locked"><span class="hub-name">Lesson 161 — Beyond Text: Multimodal Models</span><span class="badge todo">planned</span></li>
+        <li class="hub-lesson locked"><span class="hub-name">Lesson 162 — Model Context Protocol (MCP)</span><span class="badge todo">planned</span></li>
+        <li class="hub-lesson locked"><span class="hub-name">Lesson 163 — Production AI: Cost, Observability, and Evaluation</span><span class="badge todo">planned</span></li>
+      </ul>
+    </div>
+
+    <div class="hub-chapter">
+      <h3><span class="hub-range">L164–167</span>Chapter 34 — The Other Framework: LangChain4j</h3>
+      <p class="hub-sub">The main alternative to Spring AI, taught as an honest compare-and-contrast.</p>
+      <ul class="hub-lessons">
+        <li class="hub-lesson locked"><span class="hub-name">Lesson 164 — LangChain4j versus Spring AI: The Landscape</span><span class="badge todo">planned</span></li>
+        <li class="hub-lesson locked"><span class="hub-name">Lesson 165 — LangChain4j Basics in Our Spring Boot App</span><span class="badge todo">planned</span></li>
+        <li class="hub-lesson locked"><span class="hub-name">Lesson 166 — AI Services: The Declarative Approach</span><span class="badge todo">planned</span></li>
+        <li class="hub-lesson locked"><span class="hub-name">Lesson 167 — Rebuilding a Slice of the Assistant with LangChain4j RAG</span><span class="badge todo">planned</span></li>
+      </ul>
+    </div>
+
+    <div class="hub-chapter">
+      <h3><span class="hub-range">L168</span>Chapter 35 — Capstone</h3>
+      <p class="hub-sub">Everything, connected, documented, and traced end to end.</p>
+      <ul class="hub-lessons">
+        <li class="hub-lesson locked"><span class="hub-name">Lesson 168 — Final Capstone: The Complete AI-Powered E-Commerce System</span><span class="badge todo">planned</span></li>
+      </ul>
+    </div>
+
+  </div>
+
+  <p class="lesson-footer">Course map · 169 lessons across 36 chapters · nothing built yet, Lesson 00 is next. Every chapter also ends with a summary page, which appears in its card as soon as the chapter is complete.</p>
 
 </div>
 </body>

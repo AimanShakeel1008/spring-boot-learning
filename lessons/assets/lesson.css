@@ -59,20 +59,26 @@ hr {
   margin: 2.5rem 0;
 }
 
-/* ---------- Page grid: sticky TOC left, content right ---------- */
+/* ---------- Page grid: collapsible TOC left, content right ----------
+   The first track is `auto`, not a fixed width, so it measures whatever the
+   sidebar currently is. Collapse the sidebar (it is a <details>) and the track
+   shrinks to the toggle button, handing every reclaimed pixel to the content
+   column — reflow with no JavaScript at all. */
 
 .page {
   display: grid;
-  grid-template-columns: 15rem minmax(0, 47rem);
+  grid-template-columns: auto minmax(0, 1fr);
   gap: 2.75rem;
-  max-width: 67rem;
+  max-width: 94rem;
   margin: 0 auto;
-  padding: 2.5rem 1.5rem 4rem;
+  padding: 2.5rem 2rem 4rem;
 }
 
-/* ---------- Table of contents sidebar ---------- */
+/* ---------- Table of contents sidebar (a collapsible <details>) ---------- */
 
 .toc {
+  width: 17rem;
+  margin: 0; /* cancels the generic details margin */
   position: sticky;
   top: 1.5rem;
   align-self: start;
@@ -84,15 +90,71 @@ hr {
   padding: 1.25rem 1rem;
   font-size: 0.875rem;
   animation: riseFade 0.6s ease 0.15s both;
+  transition: width 0.25s ease, padding 0.25s ease;
 }
 
+/* The summary IS the toggle. Native <details> behaviour, keyboard-accessible,
+   no script. The default disclosure triangle is replaced by our own glyph. */
 .toc-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  list-style: none;
   text-transform: uppercase;
   letter-spacing: 0.08em;
   font-size: 0.72rem;
   font-weight: 700;
   color: #8a8271;
   margin-bottom: 0.75rem;
+  border-radius: 6px;
+  padding: 0.15rem 0.2rem;
+  transition: color 0.18s ease, background-color 0.18s ease;
+}
+
+.toc-title::-webkit-details-marker {
+  display: none;
+}
+
+.toc-title::before {
+  content: "\2630"; /* ☰ — the universal "menu / contents" glyph */
+  font-size: 0.95rem;
+  line-height: 1;
+  color: #2b8a3e;
+  flex-shrink: 0;
+}
+
+.toc-title:hover {
+  color: #2b8a3e;
+  background: #f2efe7;
+}
+
+/* Collapsed: shrink to the toggle button and let the content take the space. */
+details.toc:not([open]) {
+  width: 3.4rem;
+  padding: 0.85rem 0.5rem;
+  overflow: hidden;
+}
+
+details.toc:not([open]) .toc-title {
+  margin-bottom: 0;
+  justify-content: center;
+}
+
+/* The label stays in the accessibility tree when collapsed — it is hidden from
+   sight, not removed, so a screen reader still announces what the button opens. */
+details.toc:not([open]) .toc-label {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* The sidebar reveals a nav, not an answer card — skip the answer animation. */
+details.toc[open] > *:not(summary) {
+  animation: none;
 }
 
 .toc nav a {
@@ -629,6 +691,14 @@ figure.fig svg {
   display: block;
 }
 
+/* A figure that should NOT stretch to a very wide content column — a roadmap or
+   any diagram that becomes comic-book-sized when given 1400px. */
+figure.fig.fig-narrow {
+  max-width: 58rem;
+  margin-left: auto;
+  margin-right: auto;
+}
+
 figure.fig text {
   font-family: "Segoe UI", -apple-system, BlinkMacSystemFont, Roboto,
     "Helvetica Neue", Arial, sans-serif;
@@ -1007,6 +1077,25 @@ figure.fig figcaption {
   .toc {
     position: static;
     max-height: none;
+    width: 100%;
+  }
+
+  /* Narrow screens: collapsed, the sidebar is a full-width "contents" bar
+     rather than a tiny square floating above the lesson. */
+  details.toc:not([open]) {
+    width: 100%;
+    padding: 0.85rem 1rem;
+  }
+
+  details.toc:not([open]) .toc-title {
+    justify-content: flex-start;
+  }
+
+  details.toc:not([open]) .toc-label {
+    position: static;
+    width: auto;
+    height: auto;
+    clip-path: none;
   }
 
   .prevnext {
@@ -1070,6 +1159,15 @@ figure.fig figcaption {
 
   .toc-title {
     color: #9c9484;
+  }
+
+  .toc-title::before {
+    color: #77c98a;
+  }
+
+  .toc-title:hover {
+    color: #77c98a;
+    background: #2c2926;
   }
 
   .prevnext a.hublink {
@@ -1426,6 +1524,65 @@ pre .fn { color: #82d2ce; }   /* method name at call/def site */
   margin-bottom: 0;
 }
 
+/* ---------- "Changed in Spring Boot 4" callout (teal) ----------
+   This course is built on Spring Boot 4, but nearly every tutorial, book and
+   Stack Overflow answer the learner will find is written for 3.x. Wherever a
+   name, coordinate or behaviour differs, this card says what changed and what
+   to type instead — so old material out there becomes readable rather than
+   confusing. Teal, the palette's secondary hue, keeps it distinct from the
+   four base callouts and from the violet .realworld card. */
+
+.v4 {
+  background: #e9f4f6;
+  border-left: 4px solid #0b7285;
+  border-radius: 10px;
+  padding: 1rem 1.2rem;
+  margin: 1.4rem 0;
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.v4:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 18px rgba(11, 114, 133, 0.14);
+}
+
+.v4::before {
+  content: "Changed in Spring Boot 4";
+  display: block;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-size: 0.72rem;
+  font-weight: 800;
+  color: #0b7285;
+  margin-bottom: 0.4rem;
+}
+
+.v4 > :last-child {
+  margin-bottom: 0;
+}
+
+/* The before/after pair inside a .v4 card: what 3.x said, what 4.x says. */
+.v4 .v4-old,
+.v4 .v4-new {
+  display: block;
+  font-family: "Cascadia Mono", Consolas, "SFMono-Regular", Menlo, monospace;
+  font-size: 0.86rem;
+  padding: 0.3rem 0.6rem;
+  border-radius: 6px;
+  margin: 0.25rem 0;
+}
+
+.v4 .v4-old {
+  background: #f8eceb;
+  color: #8a3227;
+  text-decoration: line-through;
+}
+
+.v4 .v4-new {
+  background: #e6f4e9;
+  color: #1f6f31;
+}
+
 /* ---------- Active-recall micro-check (a <details class="check"> — teal, to
    distinguish it from the violet hidden-answer / challenge <details>) ---------- */
 
@@ -1446,16 +1603,146 @@ details.check summary:hover {
 /* ---------- Course hub / index page ---------- */
 
 .hub {
-  max-width: 52rem;
+  max-width: 94rem;
   margin: 0 auto;
-  padding: 2.5rem 1.5rem 4rem;
+  padding: 2.5rem 2rem 4rem;
   animation: riseFade 0.6s ease 0.15s both;
 }
 
 .hubgrid {
   display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(19rem, 1fr));
+  align-items: start;
   gap: 1.25rem;
   margin: 1.5rem 0;
+}
+
+/* Summary strip: where the course stands at a glance */
+.hub-stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin: 1.5rem 0 1.25rem;
+}
+
+.hub-stat {
+  flex: 1 1 9rem;
+  background: #ffffff;
+  border: 1px solid #eae4d8;
+  border-radius: 12px;
+  padding: 0.85rem 1rem;
+  text-align: center;
+}
+
+.hub-stat-num {
+  display: block;
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: #2b8a3e;
+  line-height: 1.2;
+}
+
+.hub-stat-label {
+  display: block;
+  margin-top: 0.15rem;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #8a8271;
+  font-weight: 700;
+}
+
+.hub-stat.accent {
+  border-color: #f0c9a8;
+  background: #fff8f1;
+}
+
+.hub-stat.accent .hub-stat-num {
+  color: #e8590c;
+  font-size: 1.15rem;
+  padding: 0.28rem 0 0.12rem;
+}
+
+/* Jump-to-phase bar */
+.hub-jump {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.5rem;
+  margin: 0 0 1rem;
+  padding: 0.7rem 0.8rem;
+  background: #f3efe6;
+  border: 1px solid #eae4d8;
+  border-radius: 999px;
+}
+
+.hub-jump a {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  text-decoration: none;
+  color: #0b7285;
+  border: 1px solid #b9d9e0;
+  border-radius: 999px;
+  padding: 0.3rem 0.85rem;
+  transition: background 0.15s ease, transform 0.15s ease;
+}
+
+.hub-jump a:hover {
+  background: #e3f2f5;
+  transform: translateY(-1px);
+}
+
+/* Phase band heading a run of chapter cards */
+.hub-phase {
+  background: #2b8a3e;
+  background: linear-gradient(100deg, #2b8a3e 0%, #0b7285 55%, #5f3dc4 100%);
+  color: #ffffff;
+  border-radius: 14px;
+  padding: 1rem 1.35rem;
+  margin: 2.75rem 0 1.1rem;
+  scroll-margin-top: 0.75rem;
+}
+
+.hub-phase .hub-phase-kicker {
+  margin: 0 0 0.2rem;
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  letter-spacing: 0.13em;
+  font-weight: 800;
+  color: #d8f3dc;
+}
+
+.hub-phase h2 {
+  margin: 0 0 0.35rem;
+  padding: 0;
+  border: none;
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: #ffffff;
+}
+
+.hub-phase p {
+  margin: 0;
+  font-size: 0.86rem;
+  line-height: 1.6;
+  color: #f1f3f5;
+}
+
+/* The chapter holding the next lesson */
+.hub-chapter.current {
+  border-color: #2b8a3e;
+  box-shadow: 0 0 0 3px #e7f3e8;
+}
+
+.hub-chapter .hub-range {
+  float: right;
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: #a29a89;
+  text-transform: uppercase;
 }
 
 .hub-chapter {
@@ -1545,6 +1832,25 @@ details.check summary:hover {
     border-left-color: #8a6ff0;
   }
 
+  .v4 {
+    background: #17282b;
+    border-left-color: #2b98ad;
+  }
+
+  .v4::before {
+    color: #4fc3d9;
+  }
+
+  .v4 .v4-old {
+    background: #33211f;
+    color: #ff9a8c;
+  }
+
+  .v4 .v4-new {
+    background: #1e2a20;
+    color: #77c98a;
+  }
+
   .realworld::before {
     color: #b197fc;
   }
@@ -1593,6 +1899,59 @@ details.check summary:hover {
   .badge.todo {
     background: #2b2926;
     color: #9c9484;
+  }
+
+  .hub-stat {
+    background: #23211e;
+    border-color: #383430;
+  }
+
+  .hub-stat-num {
+    color: #77c98a;
+  }
+
+  .hub-stat-label {
+    color: #9c9484;
+  }
+
+  .hub-stat.accent {
+    background: #2e2318;
+    border-color: #5c4326;
+  }
+
+  .hub-stat.accent .hub-stat-num {
+    color: #ffa94d;
+  }
+
+  .hub-jump {
+    background: #23211e;
+    border-color: #383430;
+  }
+
+  .hub-jump a {
+    color: #4fc3d9;
+    border-color: #2f4e54;
+  }
+
+  .hub-jump a:hover {
+    background: #17282b;
+  }
+
+  .hub-phase .hub-phase-kicker {
+    color: #c3e8cb;
+  }
+
+  .hub-phase p {
+    color: #eef0f2;
+  }
+
+  .hub-chapter.current {
+    border-color: #4caf67;
+    box-shadow: 0 0 0 3px #1e2a20;
+  }
+
+  .hub-chapter .hub-range {
+    color: #787161;
   }
 }
 
