@@ -1524,6 +1524,34 @@ pre .fn { color: #82d2ce; }   /* method name at call/def site */
   margin-bottom: 0;
 }
 
+/* ---------- Section 4 / Section 5 approach labels ----------
+   Every lesson shows the naive approach first and the correct one second.
+   These two badges mark which is which at a glance, before a word is read. */
+
+.approach-wrong,
+.approach-right {
+  display: inline-block;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  font-size: 0.74rem;
+  font-weight: 800;
+  padding: 0.35rem 0.85rem;
+  border-radius: 999px;
+  margin: 0 0 1.1rem;
+}
+
+.approach-wrong {
+  background: #fbe9e7;
+  color: #b03a28;
+  border: 1px solid #f3c8c0;
+}
+
+.approach-right {
+  background: #e7f3e8;
+  color: #1f6f31;
+  border: 1px solid #c7e3cc;
+}
+
 /* ---------- "Changed in Spring Boot 4" callout (teal) ----------
    This course is built on Spring Boot 4, but nearly every tutorial, book and
    Stack Overflow answer the learner will find is written for 3.x. Wherever a
@@ -1830,6 +1858,18 @@ details.check summary:hover {
   .realworld {
     background: #241f31;
     border-left-color: #8a6ff0;
+  }
+
+  .approach-wrong {
+    background: #33211f;
+    color: #ff9a8c;
+    border-color: #5c322b;
+  }
+
+  .approach-right {
+    background: #1e2a20;
+    color: #77c98a;
+    border-color: #2f4f36;
   }
 
   .v4 {
