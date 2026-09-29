@@ -1,0 +1,43 @@
+# =============================================================================
+# application.yml - the application's settings file
+# =============================================================================
+# WHY THIS FILE EXISTS:
+# Everything in this file is a value Spring Boot looks for by name at startup.
+# Boot reads this file automatically because of where it is (src/main/resources,
+# which ends up at the root of the built jar) and what it is called
+# (application.yml). You never write code to load it. Rename it and Boot will
+# silently ignore it, fall back to every default, and give you no warning.
+#
+# WHY YAML AND NOT .properties:
+# Spring Boot reads both. A .properties file writes one full path per line
+# (server.port=8080). YAML lets related settings nest under a shared prefix, so
+# a file with fifty database and security settings stays readable. We use YAML
+# throughout this course for that reason. Indentation is meaningful in YAML -
+# two spaces per level, and SPACES ONLY. A tab character is a syntax error.
+#
+# WHY NO SECRETS HERE:
+# This file is committed to Git, so it must never contain a real password or
+# key. Where a secret is needed we write a placeholder like ${DB_PASSWORD} and
+# the real value lives in an environment variable or in application-local.yml,
+# which .gitignore keeps off GitHub. There are no secrets yet - this note is
+# here from day one so the habit is in place before there is something to leak.
+# =============================================================================
+
+spring:
+  application:
+    # WHY: a human-readable name for this application. Right now its only
+    # visible effect is the "[ecommerce]" tag that appears in every startup log
+    # line, which is already useful. Later, when Phase 2 runs six services at
+    # once, this name is how each one identifies itself to service discovery,
+    # tracing and metrics - so getting into the habit of setting it costs
+    # nothing now and saves confusion later.
+    name: ecommerce
+
+server:
+  # WHY: the port the embedded Tomcat server listens on - the numbered door on
+  # your machine that web requests arrive at. 8080 is already Spring Boot's
+  # default, so this line changes nothing today. It is written out explicitly
+  # so that the one place to change it is visible and obvious: when some other
+  # program on your machine has already taken 8080 and startup fails with
+  # "Port 8080 was already in use", this is the line you edit.
+  port: 8080

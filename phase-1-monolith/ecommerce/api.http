@@ -1,0 +1,43 @@
+# =============================================================================
+# api.http - one runnable HTTP request per endpoint
+# =============================================================================
+# WHAT THIS FILE IS:
+# A plain text file where each block starting with "###" is one HTTP request.
+# With the "REST Client" extension in VS Code (or the built-in HTTP client in
+# IntelliJ IDEA), a "Send Request" link appears above each block - click it and
+# the request is sent to your running application, with the response shown in a
+# panel beside it. No Postman, no retyping curl commands.
+#
+# HOW TO USE IT:
+#   1. Start the application:  mvn spring-boot:run   (from this folder)
+#   2. Click "Send Request" above any block below.
+#   3. Compare what comes back with the "Expected" note under each request.
+#
+# This file grows by one block every time a lesson adds an endpoint.
+# =============================================================================
+
+### Probe the server: is anything listening on port 8080?
+# We have not written a single endpoint yet, so this SHOULD fail to find
+# anything - and that failure is exactly the proof we want. A 404 means the
+# server is alive, received our request, understood it, and correctly reported
+# that nothing is mapped to "/". A refused connection would mean the server
+# never started at all. Two very different outcomes, and telling them apart is
+# the whole point of this request.
+#
+# Expected: HTTP/1.1 404
+#           {"timestamp":"...","status":404,"error":"Not Found","path":"/"}
+GET http://localhost:8080/
+Accept: application/json
+
+
+### The same probe, asking for HTML instead of JSON
+# Identical request, one different header. Because we say we want HTML, Spring
+# Boot's default error handler returns its "Whitelabel Error Page" - a small
+# HTML page - instead of the JSON above. Same 404, same cause, different shape,
+# chosen purely by what the caller said it could accept. This is a browser's
+# view of the line above, and it is why hitting localhost:8080 in Chrome looks
+# nothing like hitting it from this file.
+#
+# Expected: HTTP/1.1 404, an HTML page headed "Whitelabel Error Page"
+GET http://localhost:8080/
+Accept: text/html

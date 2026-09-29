@@ -56,3 +56,40 @@ Terms are added as they are introduced, so this file grows lesson by lesson.
 | **`@ConditionalOnMissingBean`** | A condition applying an auto-configuration only if you have not already defined that object yourself. The mechanism by which Boot backs off. | Lesson 01 |
 | **`@SpringBootApplication`** | The single annotation marking the application's starting point, switching on auto-configuration, and telling Spring where to look for your classes. Unpacked in Lesson 03. | Lesson 01 |
 | **Condition report** | The list Boot prints with `--debug`, showing every candidate auto-configuration under "Positive matches" and "Negative matches" with the reason. | Lesson 01 |
+| **Build tool** | A program that turns source code into a runnable program — fetching dependencies, compiling, testing and packaging — the same way on every machine. Ours is Maven. | Lesson 02 |
+| **Maven** | The build tool this course uses. You describe *what the project is*; Maven already knows what building means. | Lesson 02 |
+| **`pom.xml`** | "Project Object Model" — Maven's file describing who the project is, what it depends on, and how to build it. Delete it and the folder stops being a Maven project. | Lesson 02 |
+| **Bytecode** | The compact instruction format the Java runtime actually executes. `javac` turns `.java` text into `.class` bytecode. | Lesson 02 |
+| **Artifact** | Any published, downloadable output of a build — in practice, a jar file. | Lesson 02 |
+| **Coordinates** | The three values that uniquely name any artifact in the world: `groupId`, `artifactId`, `version`. | Lesson 02 |
+| **`groupId`** | Who published an artifact, written in reverse internet-domain order (e.g. `org.springframework.boot`). | Lesson 02 |
+| **`artifactId`** | Which of a publisher's artifacts this is (e.g. `spring-boot-starter-webmvc`). | Lesson 02 |
+| **Repository (Maven)** | A store of published jars addressed by coordinates. Maven Central is the public one. | Lesson 02 |
+| **Maven Central** | The default public repository holding essentially every open-source Java library. | Lesson 02 |
+| **Local repository** | `~/.m2/repository` on your own machine — every jar Maven has ever downloaded, cached. Checked before the internet, which is why the second build is fast. | Lesson 02 |
+| **Dependency** | A library your project needs in order to compile or run. | Lesson 02 |
+| **Transitive dependency** | A library that your dependency needs. Maven follows the chain to the bottom automatically — two declared dependencies become ≈40 jars. | Lesson 02 |
+| **Nearest wins** | Maven's default rule for version conflicts: the version fewest steps from your `pom.xml` is used. Deterministic, but arbitrary — which is why the BOM overrides it. | Lesson 02 |
+| **Parent POM** | Another `pom.xml` your project inherits from, exactly like a Java superclass. Ours is `spring-boot-starter-parent`. | Lesson 02 |
+| **`<dependencyManagement>`** | "If anyone asks for this, use this version." A price list, not an order — nothing is downloaded. Contrast with `<dependencies>`, which means "fetch this". | Lesson 02 |
+| **BOM (Bill of Materials)** | A POM whose only job is to pin versions for a coherent, tested set of libraries. `spring-boot-dependencies` pins ≈400 of them. | Lesson 02 |
+| **Jar hell** | The state where two libraries on one classpath were never built to work together, producing `NoSuchMethodError` at run time with no hint of the real cause. | Lesson 02 |
+| **`NoSuchMethodError`** | A runtime error meaning the class was there when you compiled and a *different version* of it is there now. Always a version-conflict symptom, never a code bug. | Lesson 02 |
+| **Scope (`test`)** | Marks a dependency as needed only for compiling and running tests, so it is kept out of the shipped jar. | Lesson 02 |
+| **Build lifecycle** | Maven's fixed, ordered sequence of phases: validate → compile → test → package → verify → install → deploy. | Lesson 02 |
+| **Phase** | One point in the lifecycle. Naming a phase runs that phase *and every phase before it* — which is why `mvn package` also runs your tests. | Lesson 02 |
+| **Goal** | One specific action from one specific plugin, written `plugin:goal` (e.g. `spring-boot:run`). Runs on its own and drags no phases behind it. | Lesson 02 |
+| **`target/`** | The folder Maven generates: compiled classes, test reports, the jar. 100% generated, git-ignored, safe to delete at any time — which is what `mvn clean` does. | Lesson 02 |
+| **Fat jar (executable jar)** | One file holding your classes, every dependency jar, and a loader that can read them — runnable with `java -jar`. Produced by the `repackage` goal. | Lesson 02 |
+| **`MANIFEST.MF`** | A small text file inside every jar. Its `Main-Class:` line tells `java -jar` where to start; missing it gives "no main manifest attribute". | Lesson 02 |
+| **`JarLauncher`** | The class Boot puts in `Main-Class`. It installs a class loader that can read jars nested inside a jar — something standard Java cannot do — then calls your real main class, recorded as `Start-Class`. | Lesson 02 |
+| **Spring Initializr** | The official project generator at start.spring.io. Adding a starter there is identical to typing a `<dependency>` block yourself. | Lesson 02 |
+| **`spring-boot-maven-plugin`** | The plugin that repackages the plain jar into an executable fat jar and provides the `spring-boot:run` goal. Remove it and `java -jar` fails. | Lesson 02 |
+| **`spring-boot-starter-webmvc`** | Boot 4's web starter. Pre-2026 tutorials all say `spring-boot-starter-web`, which is now deprecated. | Lesson 02 |
+| **`spring-boot-starter-webmvc-test`** | Boot 4's web test starter. Contains `spring-boot-starter-test` plus MockMvc and `RestTestClient`. | Lesson 02 |
+| **`spring-boot-starter-classic`** | A migration bridge pulling in all of Boot's modules at once, for upgrading a 3.x app quickly. Deliberately not for new projects. | Lesson 02 |
+| **`@SpringBootTest`** | Starts the entire application before running a test class. Makes `contextLoads()` a real test: startup failure means test failure. | Lesson 02 |
+| **JUnit / Jupiter** | Java's standard testing library. "Jupiter" is the name of JUnit 5's programming model. | Lesson 02 |
+| **Whitelabel Error Page** | Spring Boot's default HTML error page, shown when a browser asks for HTML and nothing is mapped. The JSON equivalent appears when the caller asks for JSON. | Lesson 02 |
+| **Content negotiation** | The server choosing a response format from what the caller says it accepts, via the `Accept` header. Full treatment in Chapter 4. | Lesson 02 |
+| **YAML** | An indentation-based settings format Spring Boot reads. Two spaces per level, spaces only — a tab is a syntax error. | Lesson 02 |

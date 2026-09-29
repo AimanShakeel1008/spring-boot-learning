@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ============================================================================
+  pom.xml  -  "Project Object Model"
+  ============================================================================
+  WHY THIS FILE EXISTS AT ALL:
+  Maven is a build tool. A build tool needs to be told three things before it
+  can do anything: (1) what this project is called, (2) what other people's
+  code this project needs, and (3) how to turn the source files into a
+  runnable program. This file is the answer to all three, written down in XML
+  so a machine can read it. If you delete this file, the folder stops being a
+  Maven project entirely - "mvn" will refuse to run and say it cannot find a
+  POM in this directory.
+
+  It is XML and not Java because it describes the project, it is not part of
+  the project. Nothing in here ever runs as part of your application.
+  ============================================================================
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <!--
+      The three attributes above tell an XML editor which vocabulary of tags is
+      legal inside this file, so your IDE can autocomplete tag names and
+      underline typos in red. They do not change the build in any way. Maven
+      itself ignores them. Leave them exactly as they are.
+    -->
+
+    <!--
+      The version of the POM file FORMAT itself - not of Maven, and not of our
+      project. It has been "4.0.0" since 2005 and is still 4.0.0 for Maven 3.
+      It is required, and there is currently no other legal value for us.
+    -->
+    <modelVersion>4.0.0</modelVersion>
+
+    <!--
+      ========================================================================
+      1. THE PARENT
+      ========================================================================
+      WHY: a "parent" POM is another pom.xml, published on the internet, whose
+      settings this file inherits - exactly like a Java class extending another
+      class. We inherit from Spring Boot's official parent.
+
+      What we inherit, concretely:
+        - A giant list of "if you ask for library X, use version Y" rules,
+          covering roughly 400 libraries that Spring tested together. This is
+          why every <dependency> below has NO <version> tag: the parent already
+          decided, and every chosen version is known to work with every other.
+        - Sensible defaults for the Java compiler, file encoding (UTF-8), and
+          the plugins that do the actual building.
+        - Configuration for the spring-boot-maven-plugin declared at the bottom.
+
+      WHAT BREAKS WITHOUT IT: every dependency below would need its own
+      <version>, and you would personally be responsible for picking versions of
+      Spring, Tomcat, Jackson, Logback and JUnit that do not fight each other.
+      That job is a full afternoon and is easy to get subtly wrong.
+    -->
+    <parent>
+        <!-- The organisation that publishes the parent. Written in reverse
+             internet-domain order (a worldwide convention that guarantees two
+             companies never accidentally claim the same name). -->
+        <groupId>org.springframework.boot</groupId>
+        <!-- The specific artifact within that organisation. -->
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <!-- THE PINNED VERSION FOR THIS ENTIRE COURSE. Changing this one number
+             changes the version of Spring, Tomcat, Jackson, Logback, JUnit and
+             ~400 other libraries all at once, because they are all decided by
+             this parent. Verified present on Maven Central on 2026-09-30. -->
+        <version>4.1.1</version>
+        <!-- WHY THIS EMPTY TAG: by default Maven first looks for the parent POM
+             in the folder ABOVE this one, on disk. Ours is not there - it is on
+             the internet. An empty <relativePath/> means "do not look on disk,
+             go straight to the repository". Without it Maven prints a warning
+             on every single build. -->
+        <relativePath/>
+    </parent>
+
+    <!--
+      ========================================================================
+      2. WHO WE ARE  (the "coordinates" of this project)
+      ========================================================================
+      Three values that together form a globally unique address for this
+      project, the same way groupId + artifactId + version identify every
+      library we depend on. Our project is itself a library as far as Maven is
+      concerned - it just happens to be the one we are writing.
+    -->
+    <!-- Our organisation. Reverse-domain convention again. -->
+    <groupId>com.ecommerce</groupId>
+    <!-- The project's short name. This becomes part of the built file name. -->
+    <artifactId>ecommerce</artifactId>
+    <!-- Our own version. "SNAPSHOT" is a Maven keyword meaning "still being
+         worked on, expect this to change" - as opposed to a released version
+         like 1.0.0 which must never change once published. -->
+    <version>0.0.1-SNAPSHOT</version>
+    <!-- How to package the compiled result. "jar" = one single executable file.
+         The old alternative, "war", produced a file you had to copy into a
+         separately installed Tomcat. We want the embedded server, so: jar. -->
+    <packaging>jar</packaging>
+
+    <!-- Human-readable labels. They appear in build logs and in generated
+         documentation. They have no effect on compilation. -->
+    <name>ecommerce</name>
+    <description>E-Commerce platform - Phase 1 monolith</description>
+
+    <!--
+      ========================================================================
+      3. PROPERTIES  (named values reused elsewhere in the build)
+      ========================================================================
+      A <properties> block declares variables. Anything declared here can be
+      referenced later as ${the-name}. More importantly, setting a property that
+      the PARENT already declared overrides the parent's value - which is
+      exactly what we are doing here.
+    -->
+    <properties>
+        <!-- Spring Boot's parent sets java.version to 17 by default. We raise
+             it to 21 because 21 is the Long Term Support release this course
+             pinned in Lesson 00. The parent uses this value for the compiler's
+             "release" setting, so this single line is what makes javac compile
+             against Java 21 and refuse Java 22+ syntax. -->
+        <java.version>21</java.version>
+    </properties>
+
+    <!--
+      ========================================================================
+      4. DEPENDENCIES  (other people's code that we need)
+      ========================================================================
+      Each <dependency> is a request: "fetch this library and put it on the
+      classpath". Maven fetches it, then fetches everything IT needs, then
+      everything THOSE need, and so on, all the way down. That cascade is called
+      transitive dependency resolution, and it is the reason two entries below
+      are enough to assemble roughly forty jar files.
+    -->
+    <dependencies>
+
+        <!--
+          ------------------------------------------------------------------
+          THE WEB STARTER
+          ------------------------------------------------------------------
+          WHY: this one line is what makes our project a web application. It
+          pulls in, transitively:
+            spring-boot-starter          - core Boot: auto-configuration,
+                                           logging, YAML reading
+            spring-boot-starter-jackson  - turning Java objects into JSON
+            spring-boot-starter-tomcat   - the EMBEDDED Tomcat server itself
+            spring-boot-http-converter   - converting HTTP bodies to/from Java
+            spring-boot-webmvc           - Spring MVC plus its auto-configuration
+
+          NOTE THE NAME. Every tutorial written before 2026 says
+          "spring-boot-starter-web". In Spring Boot 4 the correct name is
+          "spring-boot-starter-webmvc". The old name still resolves but is
+          deprecated and will be deleted in a future release. Explained in full
+          in Lesson 02.
+
+          NO <version> TAG: the parent already decided it (4.1.1).
+        -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-webmvc</artifactId>
+        </dependency>
+
+        <!--
+          ------------------------------------------------------------------
+          THE WEB TEST STARTER
+          ------------------------------------------------------------------
+          WHY: everything needed to write automatic tests for a Spring MVC
+          application. It pulls in, transitively:
+            spring-boot-starter-test     - JUnit 5, AssertJ, Mockito, Spring's
+                                           own test support
+            spring-boot-starter-jackson-test - JSON assertions
+            spring-boot-webmvc-test      - MockMvc, for calling controllers
+                                           without starting a real server
+            spring-boot-resttestclient   - RestTestClient, the new HTTP test
+                                           client in Boot 4
+
+          NOTE THE NAME AGAIN. Pre-2026 tutorials say "spring-boot-starter-test".
+          That artifact still exists and is still the core of testing - but in
+          Boot 4 the web-specific test helpers live in the per-technology
+          starter "spring-boot-starter-webmvc-test", which includes
+          spring-boot-starter-test inside it. Ask for the webmvc one and you get
+          both.
+
+          <scope>test</scope> means: put this on the classpath when compiling
+          and running TESTS, but leave it out of the final jar. Test libraries
+          have no business shipping to production - they would bloat the file
+          and expose testing tools to the outside world.
+        -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-webmvc-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+    </dependencies>
+
+    <!--
+      ========================================================================
+      5. BUILD  (which plugins actually do the work)
+      ========================================================================
+      Maven itself does almost nothing. Every real action - compiling, running
+      tests, zipping the jar - is performed by a plugin. Most of them are
+      configured for us by the parent and never need mentioning. One does.
+    -->
+    <build>
+        <plugins>
+            <!--
+              WHY: a plain Maven build produces a jar containing only OUR
+              compiled classes. Running it would fail instantly, because none of
+              the forty Spring and Tomcat jars are inside it. Java has no
+              built-in way to nest one jar inside another and still load it.
+
+              This plugin solves that. It takes the ordinary jar and repackages
+              it into a "fat jar" (also called an uber jar or executable jar):
+              our classes, every dependency jar, and a small purpose-built
+              loader that knows how to read nested jars - all in one file that
+              runs with "java -jar".
+
+              It also provides the "spring-boot:run" goal, which starts the
+              application straight from source without packaging first. That is
+              the command we use during development.
+
+              No <version> here either: the parent pinned it to 4.1.1 too.
+            -->
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>
