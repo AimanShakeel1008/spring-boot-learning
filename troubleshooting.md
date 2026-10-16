@@ -229,7 +229,8 @@ Two shapes of the same 404: a browser asks for HTML and gets the Whitelabel page
 usually one of:
 
 1. The URL does not match the mapping (check the path and the HTTP method).
-2. Your controller class sits outside the package Spring scans — see Lesson 03.
+2. Your controller class sits outside the package Spring scans — see
+   "My endpoint returns 404 and startup printed no error" below.
 
 ---
 
@@ -250,3 +251,150 @@ usually one of:
 **What it really means.** Nothing is wrong. Your two declared dependencies expand to roughly
 forty jars, and the first build fetches all of them from Maven Central into
 `~/.m2/repository`. Every later build finds them already there and runs in seconds.
+
+---
+
+## The main class and startup (Lesson 03)
+
+### `Web application could not be started as there was no org.springframework.boot.web.server.servlet.ServletWebServerFactory bean defined in the context.`
+
+Usually preceded by `APPLICATION FAILED TO START` and, in the log,
+`ApplicationContextException: Unable to start web server`.
+
+**What it really means.** Boot decided this is a servlet web application (because Spring MVC
+is on the classpath), so it went to build a web server, and found *zero* objects that know how
+to build one. The Tomcat jar may well be right there. Nothing used it.
+
+**The message says "check your dependencies", but check these first, in order:**
+
+1. **`@SpringBootApplication` is intact on the main class.** If someone replaced it with
+   `@Configuration` + `@ComponentScan`, `@EnableAutoConfiguration` is missing and no recipe
+   runs at all — including the one that builds Tomcat.
+2. **`spring.autoconfigure.exclude` is empty** (in `application.yml` and on the command line),
+   and there is no `exclude = …` on `@SpringBootApplication`. Excluding
+   `TomcatServletWebServerAutoConfiguration` gives exactly this error.
+3. **`spring.boot.enableautoconfiguration` is not set to `false`.**
+4. **Only then the dependencies.** If Tomcat was excluded from the webmvc starter in
+   `pom.xml`, add another server (such as Jetty) or put Tomcat back.
+
+---
+
+### `Unable to start ServletWebServerApplicationContext due to multiple ServletWebServerFactory beans`
+
+**What it really means.** The opposite of the error above: two objects both offer to build the
+web server, and Spring will not guess which one you meant. Usually you defined your own
+factory bean *and* left a second server (Jetty, say) on the classpath with its recipe active.
+
+**Fix.** Keep exactly one: remove the extra server dependency, or the extra bean.
+
+---
+
+### `Unable to find a @SpringBootConfiguration by searching packages upwards from the test.`
+
+**What it really means.** `@SpringBootTest` was not told which application to start, so it
+searched for the one class marked `@SpringBootConfiguration` (which `@SpringBootApplication`
+carries). It looked in the test's own package and below, then moved up one package at a time,
+and never found one.
+
+**Fixes, in order of likelihood:**
+
+1. **The test's `package` line is wrong**, or the test sits in a package tree that does not
+   contain the main class. Mirror the main class's package under `src/test/java`.
+2. **The main class lost its `@SpringBootApplication`.**
+3. If the test genuinely lives elsewhere, name the class: `@SpringBootTest(classes = EcommerceApplication.class)`.
+
+---
+
+### `Found multiple @SpringBootConfiguration annotated classes`
+
+(Wording from memory and not re-checked against 4.1.1 — search for the phrase
+"multiple @SpringBootConfiguration".)
+
+**What it really means.** There are two classes carrying `@SpringBootApplication` or
+`@SpringBootConfiguration` where `@SpringBootTest`'s search can see them, so it refuses to
+choose. Usually a copied sample application or a "quick experiment" class. Every
+`@SpringBootTest` in the project fails at once.
+
+**Fix.** Keep exactly one per application. Experiments go in a separate project.
+
+---
+
+### My endpoint returns 404 and startup printed no error
+
+**What it really means.** Very often, Spring never found your controller. Component scanning
+starts at the main class's package and covers only that package and the packages *beneath*
+it. A class anywhere else is silently never created — no error, no warning.
+
+**Check:**
+
+1. **Is `EcommerceApplication` still in `com.ecommerce`** — the root package? If someone moved
+   it into `com.ecommerce.app`, everything in `com.ecommerce.product`, `com.ecommerce.order` and
+   so on is now a sibling, not a child, and invisible. Move it back with the IDE's move
+   refactoring. Our test `theApplicationPackageIsTheMainClassPackage` fails when this happens.
+2. **Is the controller's package really beneath `com.ecommerce`?** `com.ecommerceadmin` and
+   `com.ecommerce2` look similar but are *different* packages, not children.
+3. **Did someone set `scanBasePackages`?** It *replaces* the default starting point rather
+   than adding to it.
+
+---
+
+### `** WARNING ** : Your ApplicationContext is unlikely to start due to a @ComponentScan of the default package.`
+
+**What it really means.** The main class has no `package` line, so the scan's starting point
+is "everything": every class in every jar. Startup usually fails soon afterwards.
+
+**Fix.** Give the class a package (`package com.ecommerce;`) and put the file in the matching
+folder (`src/main/java/com/ecommerce/`). Never leave any class in the default package.
+
+---
+
+### An auto-configuration exclusion copied from a tutorial does nothing
+
+**What it really means.** The exclusion is written as *text* (in `spring.autoconfigure.exclude`
+or `excludeName`) and names a class that does not exist in Spring Boot 4. Text names for
+classes that are not on the classpath are **silently ignored**. Most recipes moved package in
+Boot 4 — for example `org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration`
+is now `org.springframework.boot.jdbc.autoconfigure.DataSourceAutoConfiguration`.
+
+**Fix.** Look up the class's current package and correct the name — or better, use
+`@SpringBootApplication(exclude = SomeAutoConfiguration.class)`, where a wrong name is a
+compile error instead of silence. Confirm with `--debug`, but do not trust the `Exclusions:`
+list for this. It shows every name you asked to exclude, valid or not (from memory of
+Boot's source, not re-checked for 4.1.1). Look for the recipe itself: if it still appears
+under `Positive matches`, the exclusion did nothing.
+
+---
+
+### `package org.springframework.boot.web.embedded.tomcat does not exist` (or `...autoconfigure.jdbc`, `...web.servlet.context`)
+
+**What it really means.** Code copied from a Spring Boot 3.x tutorial imports a class from
+its old package. Spring Boot 4 moved the web-server and auto-configuration classes into
+per-technology modules.
+
+**Fix.** Use the 4.x package. The ones you will meet first:
+
+| Class | Spring Boot 4 package |
+|---|---|
+| `TomcatWebServer` | `org.springframework.boot.tomcat` |
+| `TomcatServletWebServerFactory` | `org.springframework.boot.tomcat.servlet` |
+| `ServletWebServerApplicationContext` | `org.springframework.boot.web.server.servlet.context` |
+| `WebServerApplicationContext` | `org.springframework.boot.web.server.context` |
+| `ServletWebServerFactory` | `org.springframework.boot.web.server.servlet` |
+| `DataSourceAutoConfiguration` | `org.springframework.boot.jdbc.autoconfigure` |
+
+---
+
+### `mvn test` prints `APPLICATION FAILED TO START`, but the build succeeds
+
+**What it really means.** Nothing is wrong. The demo test
+`excludingTheTomcatRecipeMeansTheWebApplicationCannotStart` *wants* startup to fail, and it
+passes because it did. The only line that decides anything is
+`Tests run: 11, Failures: 0, Errors: 0`.
+
+---
+
+### The app started with `spring.main.web-application-type=none` and immediately exited
+
+**What it really means.** Not a crash. With no web server there is no Tomcat thread keeping
+the Java process alive, so once `main()` finished there was no work left and the program
+ended normally. Remove the setting to get the web server back.

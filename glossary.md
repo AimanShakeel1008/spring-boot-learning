@@ -93,3 +93,49 @@ Terms are added as they are introduced, so this file grows lesson by lesson.
 | **Whitelabel Error Page** | Spring Boot's default HTML error page, shown when a browser asks for HTML and nothing is mapped. The JSON equivalent appears when the caller asks for JSON. | Lesson 02 |
 | **Content negotiation** | The server choosing a response format from what the caller says it accepts, via the `Accept` header. Full treatment in Chapter 4. | Lesson 02 |
 | **YAML** | An indentation-based settings format Spring Boot reads. Two spaces per level, spaces only — a tab is a syntax error. | Lesson 02 |
+| **`@interface`** | The Java keyword used to *declare* a new annotation, the way `class` declares a class. | Lesson 03 |
+| **Annotation attribute** | A named setting you can fill in when using an annotation, e.g. `scanBasePackages` in `@SpringBootApplication(scanBasePackages = "…")`. | Lesson 03 |
+| **Retention (`@Retention(RUNTIME)`)** | Whether an annotation survives compilation and can be seen by a running program. Spring can only read annotations with `RUNTIME` retention. | Lesson 03 |
+| **Reflection** | A running Java program examining its own classes: asking what methods, fields or annotations they have. How Spring notices your annotations at all. | Lesson 03 |
+| **Meta-annotation** | An annotation placed on another annotation's declaration, so using the outer one brings the inner one along. Plain Java does not follow these; Spring's annotation reader does. | Lesson 03 |
+| **`@AliasFor`** | Lets a bundle annotation pass a setting through to an inner annotation — `scanBasePackages` on `@SpringBootApplication` really sets `@ComponentScan`'s `basePackages`. | Lesson 03 |
+| **Bean** | An object that Spring creates, keeps and hands out, instead of your code creating it with `new`. Each one has a name. Covered fully in Lesson 04. | Lesson 03 |
+| **Bean definition** | Spring's written plan for a bean — its name, type and how to create it — registered before the bean itself is made. | Lesson 03 |
+| **Configuration class** | A class holding setup instructions for Spring, usually `@Bean` methods that each create one object. Marked `@Configuration`. Written for real in Lesson 07. | Lesson 03 |
+| **`@Configuration`** | Marks a class as a configuration class. It itself carries `@Component`, so the class becomes a bean too. | Lesson 03 |
+| **`@Bean`** | Marks a method inside a configuration class whose returned object Spring should keep as a bean. | Lesson 03 |
+| **`@Component`** | The basic marker meaning "Spring should manage this class". Component scanning looks for it, directly or through meta-annotations. Full family in Lesson 05. | Lesson 03 |
+| **`@SpringBootConfiguration`** | Part 1 of `@SpringBootApplication`: marks *the* primary configuration class. There must be exactly one, because `@SpringBootTest` searches for it. | Lesson 03 |
+| **Primary source** | The class passed as the first argument to `SpringApplication.run` — the first configuration class the context reads. For us, `EcommerceApplication`. | Lesson 03 |
+| **`@EnableAutoConfiguration`** | Part 2 of `@SpringBootApplication`: switches on the auto-configuration engine. Remove it and no recipe runs — not even the one that builds Tomcat. | Lesson 03 |
+| **`@Import`** | Tells Spring "while processing this configuration class, also process that one". | Lesson 03 |
+| **`AutoConfigurationImportSelector`** | The class `@EnableAutoConfiguration` imports. It reads every recipe list, removes exclusions, and hands back the recipes to evaluate. | Lesson 03 |
+| **`AutoConfiguration.imports`** | The recipe list file each jar can carry, at `META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports` — one recipe class name per line. | Lesson 03 |
+| **Auto-configuration exclusion** | Switching one recipe off before its conditions are checked: `exclude = X.class`, `excludeName = "…"`, or the `spring.autoconfigure.exclude` setting. A text name that does not exist is silently ignored. | Lesson 03 |
+| **`@AutoConfigurationPackage`** | Hidden inside `@EnableAutoConfiguration`. Records the main class's package (`com.ecommerce`) as "where the application's own code lives", for later features such as entity scanning. | Lesson 03 |
+| **`@ComponentScan`** | Part 3 of `@SpringBootApplication`: searches a package and every package beneath it for classes Spring should manage. | Lesson 03 |
+| **Component scanning** | Spring searching your compiled classes for `@Component` markers and registering a bean definition for each one it finds — the replacement for listing every class by hand. | Lesson 03 |
+| **Scan boundary** | The main class's package and everything nested inside it, by whole package segments. A class outside it is silently never created. | Lesson 03 |
+| **Base package** | Where component scanning starts. Empty (the default) means "the package of the class carrying `@ComponentScan`". Setting it replaces the default, not adds to it. | Lesson 03 |
+| **Exclude filter** | A rule that throws found classes back out of a scan. `@SpringBootApplication` adds two: `TypeExcludeFilter` and `AutoConfigurationExcludeFilter`. | Lesson 03 |
+| **Default package** | Where a class with no `package` line lives. A main class there makes Boot scan every class in every jar; Boot warns and startup usually fails. | Lesson 03 |
+| **Container** | The object at the centre of every Spring application: it holds every bean, creates and connects them, owns the settings, publishes events and controls startup and shutdown. | Lesson 03 |
+| **`ApplicationContext`** | Spring's full-featured container — "the brain" of the application. `SpringApplication.run` creates one and returns it. | Lesson 03 |
+| **`BeanFactory`** | The most basic container, which only knows "give me the bean called X". `ApplicationContext` builds on it. | Lesson 03 |
+| **`ConfigurableApplicationContext`** | An `ApplicationContext` you can also control — `refresh()`, `close()`, `isActive()`. The type `run` returns. | Lesson 03 |
+| **`ServletWebServerApplicationContext`** | The kind of context a servlet web application gets. It creates an embedded web server during refresh and stops it on close. | Lesson 03 |
+| **`Environment`** | The single object holding every setting — from `application.yml`, environment variables and the command line — merged, with the command line winning. Owned by the context. | Lesson 03 |
+| **Web application type** | Boot's early decision — `servlet`, `reactive` or `none` — made from the classpath and overridable with `spring.main.web-application-type`. It decides which context, and whether there is a web server. | Lesson 03 |
+| **Refresh** | The context's big startup step: process configuration classes, create the web server, create every bean, start everything. | Lesson 03 |
+| **Close (a context)** | The reverse of refresh: stop everything, including Tomcat, and destroy every bean in reverse order. What Ctrl+C triggers. | Lesson 03 |
+| **Factory (object)** | An object whose only job is to build another object. `tomcatServletWebServerFactory` builds the configured Tomcat. | Lesson 03 |
+| **`ServletWebServerFactory`** | The type of bean that knows how to build a servlet web server. The context needs exactly one; zero gives "no ServletWebServerFactory bean defined". | Lesson 03 |
+| **Thread** | An independent line of work inside a running program. `main()` runs on the thread named `main`; Tomcat starts several more. | Lesson 03 |
+| **Daemon / non-daemon thread** | A daemon thread is background help the program does not wait for; a non-daemon thread is work it must wait for. Java exits only when no non-daemon threads remain. | Lesson 03 |
+| **Shutdown hook** | Code registered in advance to run when the Java runtime is asked to stop (e.g. Ctrl+C). Spring Boot registers one that closes the context. | Lesson 03 |
+| **Graceful shutdown** | Stopping a server by refusing new connections, letting requests already in progress finish, and only then shutting down. | Lesson 03 |
+| **Lazy initialization** | Creating a bean only the first time it is used, instead of at startup. Faster startup, but mistakes surface on the first request instead. | Lesson 03 |
+| **Assertion** | A line in a test stating what must be true; if it is not, it throws and the test fails. | Lesson 03 |
+| **AssertJ** | The assertion library in `spring-boot-starter-test`. `assertThat(x).isTrue()` reads like a sentence and prints expected vs. actual on failure. | Lesson 03 |
+| **`@BeforeAll` / `@AfterAll`** | JUnit annotations for a `static` method that runs once before all tests in a class / once after all of them. | Lesson 03 |
+| **try-with-resources** | Java's `try ( … ) { … }` form: anything closeable declared in the brackets is closed automatically when the block ends, even if it throws. | Lesson 03 |

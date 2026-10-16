@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Chapter 1 Summary — Getting Started</title>
+  <link rel="stylesheet" href="../../assets/lesson.css">
+</head>
+<body>
+<div class="page">
+
+  <details class="toc" open>
+    <summary class="toc-title"><span class="toc-label">On this page</span></summary>
+    <nav>
+      <a href="#built">1 · What We Built</a>
+      <a href="#state">2 · System State</a>
+      <a href="#story">3 · The Story So Far</a>
+      <a href="#glance">4 · Lessons at a Glance</a>
+      <a href="#connect">5 · How It Connects</a>
+      <a href="#comeback">6 · Coming Back Later</a>
+      <a href="#checklist">7 · Self Assessment</a>
+      <a href="#boss">8 · Boss Challenge</a>
+    </nav>
+    <div class="prevnext">
+      <a class="prev" href="lesson-03-the-main-application-class.html"><span class="nav-dir">← Prev · Lesson 03</span><span class="nav-title">The Main Application Class</span></a>
+      <a class="hublink" href="../../index.html">↑ Course map</a>
+      <a class="next disabled" href="#"><span class="nav-dir">Next · Lesson 04</span><span class="nav-title">Coming soon</span></a>
+    </div>
+  </details>
+
+  <main>
+
+    <header class="lesson">
+      <p class="kicker">Phase 1 · Chapter 1 · Summary</p>
+      <h1>Chapter 1 Summary — Getting Started</h1>
+      <p class="subtitle">Three lessons, one running application. Why Spring Boot exists, what is actually on disk, and what happens between typing a command and getting a 404 back — pulled together into one picture.</p>
+      <p class="meta"><strong>Covers:</strong> <a href="lesson-01-what-is-spring-boot-and-why-it-exists.html">Lesson 01</a> · <a href="lesson-02-project-setup-and-structure.html">Lesson 02</a> · <a href="lesson-03-the-main-application-class.html">Lesson 03</a> · <strong>Pinned:</strong> Spring Boot 4.1.1 · Java 21 · Maven 3.9.16</p>
+    </header>
+
+    <!-- ============================================================= -->
+    <section id="built">
+      <h2><span class="secno">1</span>What We Built</h2>
+
+      <p>At the start of this chapter, <code>phase-1-monolith/</code> was an empty folder. Now it holds a real Spring Boot 4 application. It builds into one runnable file, starts an embedded web server, answers HTTP requests with a correct 404, shuts down cleanly, and has eleven automatic checks guarding how it starts. It has no features yet. That is deliberate: every piece of plumbing is now understood <em>before</em> any feature leans on it.</p>
+
+      <div class="tablewrap">
+        <table>
+          <thead><tr><th>File</th><th>Lesson</th><th>Purpose</th></tr></thead>
+          <tbody>
+            <tr><td><code>phase-1-monolith/ecommerce/pom.xml</code></td><td>02</td><td>The build file. Our coordinates, the <code>spring-boot-starter-parent:4.1.1</code> parent (which brings the BOM), Java 21, the two starters <code>spring-boot-starter-webmvc</code> and <code>spring-boot-starter-webmvc-test</code>, and the <code>spring-boot-maven-plugin</code> that makes the executable jar.</td></tr>
+            <tr><td><code>src/main/java/com/ecommerce/EcommerceApplication.java</code></td><td>02, 03</td><td>The entry point. <code>@SpringBootApplication</code> plus a <code>main</code> that calls <code>SpringApplication.run</code>. Created in Lesson 02; its comments were corrected in Lesson 03 (<code>run</code> returns; it does not block).</td></tr>
+            <tr><td><code>src/main/resources/application.yml</code></td><td>02</td><td>Settings Boot reads automatically: <code>spring.application.name: ecommerce</code> and <code>server.port: 8080</code>. Placeholders only, never real secrets.</td></tr>
+            <tr><td><code>src/test/java/com/ecommerce/EcommerceApplicationTests.java</code></td><td>02</td><td><code>contextLoads()</code>: starts the whole application under <code>@SpringBootTest</code> and fails if startup fails.</td></tr>
+            <tr><td><code>src/test/java/com/ecommerce/EcommerceApplicationAnnotationTests.java</code></td><td>03</td><td>Three tests proving <code>@SpringBootApplication</code> contains its three parts, and that scanning starts at the main class's package with two exclude filters.</td></tr>
+            <tr><td><code>src/test/java/com/ecommerce/EcommerceApplicationContextTests.java</code></td><td>03</td><td>Four tests that open the real <code>ApplicationContext</code>: the main class is a bean, a real Tomcat runs, the application package is <code>com.ecommerce</code>, and <code>close()</code> stops everything.</td></tr>
+            <tr><td><code>src/test/java/com/ecommerce/demos/mainclass/AutoConfigurationSwitchesDemoTests.java</code></td><td>03</td><td><em>For learning only.</em> Three demos: no web server with <code>web-application-type=none</code>, startup failing when the Tomcat recipe is excluded, and a stale 3.x exclusion being silently ignored.</td></tr>
+            <tr><td><code>phase-1-monolith/ecommerce/api.http</code></td><td>02</td><td>Two one-click requests: the JSON 404 probe and the HTML Whitelabel probe.</td></tr>
+            <tr><td><code>README.md</code>, <code>glossary.md</code>, <code>troubleshooting.md</code></td><td>01–03</td><td>The front page (how to run and test it), 131 glossary entries, and every error this chapter can produce, decoded.</td></tr>
+            <tr><td><code>architecture-doc.md</code></td><td>Summary</td><td>Updated with this chapter: the first real description and diagram of the system.</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ============================================================= -->
+    <section id="state">
+      <h2><span class="secno">2</span>System State Diagram</h2>
+
+      <figure class="fig">
+        <svg viewBox="0 0 940 430" role="img" aria-label="The system at the end of Chapter 1. On the left, outside the application, a neutral box: a browser, curl, or api.http sends a request to port 8080. It enters a large neutral box representing one Java process running the fat jar. Inside, along the top: the embedded Tomcat server in teal, on port 8080, kept alive by its container-0 thread; an arrow to the DispatcherServlet in teal; an arrow to a neutral box saying no controllers exist yet, so the answer is HTTP 404. Below them, a wide teal box: the ApplicationContext, holding three things: the green bean ecommerceApplication, our main class; a teal group of around one hundred and fifty auto-configured beans; and the neutral Environment, merging application.yml and the command line. Along the bottom, outside the process: the green pom.xml, an arrow to the teal Maven build that produces the fat jar, which feeds the process, and the green box of 11 tests run by mvn test.">
+          <rect x="16" y="84" width="196" height="78" rx="11" class="fig-box"/>
+          <text x="114" y="112" text-anchor="middle" class="fig-h">the outside world</text>
+          <text x="114" y="134" text-anchor="middle" class="fig-small">browser · curl · api.http</text>
+          <text x="114" y="152" text-anchor="middle" class="fig-mono-small">GET http://localhost:8080/</text>
+          <path class="fig-arrow" d="M212,123 H252"/><polygon class="fig-arrowhead" points="252,117 252,129 264,123"/>
+
+          <rect x="236" y="14" width="690" height="292" rx="14" class="fig-box"/>
+          <text x="256" y="40" class="fig-mono-small">one Java process · java -jar ecommerce-0.0.1-SNAPSHOT.jar (or mvn spring-boot:run)</text>
+
+          <rect x="268" y="84" width="188" height="78" rx="10" class="fig-box-teal"/>
+          <text x="362" y="110" text-anchor="middle" class="fig-label-teal">embedded Tomcat</text>
+          <text x="362" y="130" text-anchor="middle" class="fig-small">11.0.24 · port 8080</text>
+          <text x="362" y="150" text-anchor="middle" class="fig-small">alive via container-0</text>
+          <path class="fig-arrow" d="M456,123 H486"/><polygon class="fig-arrowhead" points="486,117 486,129 498,123"/>
+
+          <rect x="500" y="84" width="188" height="78" rx="10" class="fig-box-teal"/>
+          <text x="594" y="110" text-anchor="middle" class="fig-label-teal">DispatcherServlet</text>
+          <text x="594" y="130" text-anchor="middle" class="fig-small">Spring MVC's front door:</text>
+          <text x="594" y="150" text-anchor="middle" class="fig-small">"who handles GET / ?"</text>
+          <path class="fig-arrow" d="M688,123 H718"/><polygon class="fig-arrowhead" points="718,117 718,129 730,123"/>
+
+          <rect x="732" y="84" width="178" height="78" rx="10" class="fig-box"/>
+          <text x="821" y="110" text-anchor="middle" class="fig-h">nobody, yet</text>
+          <text x="821" y="130" text-anchor="middle" class="fig-small">no controllers exist</text>
+          <text x="821" y="150" text-anchor="middle" class="fig-caption-accent">→ HTTP 404</text>
+
+          <rect x="268" y="180" width="642" height="112" rx="12" class="fig-box-teal"/>
+          <text x="589" y="202" text-anchor="middle" class="fig-label-teal">ApplicationContext — the brain</text>
+
+          <rect x="284" y="214" width="190" height="66" rx="9" class="fig-box-green"/>
+          <text x="379" y="238" text-anchor="middle" class="fig-h-green">your one bean</text>
+          <text x="379" y="260" text-anchor="middle" class="fig-mono-small">ecommerceApplication</text>
+
+          <rect x="490" y="214" width="200" height="66" rx="9" class="fig-box-teal"/>
+          <text x="590" y="238" text-anchor="middle" class="fig-label-teal">≈150 auto-configured</text>
+          <text x="590" y="260" text-anchor="middle" class="fig-small">Tomcat factory, MVC, JSON…</text>
+
+          <rect x="706" y="214" width="188" height="66" rx="9" class="fig-box"/>
+          <text x="800" y="238" text-anchor="middle" class="fig-h">Environment</text>
+          <text x="800" y="260" text-anchor="middle" class="fig-small">application.yml + args</text>
+
+          <rect x="16" y="340" width="250" height="76" rx="11" class="fig-box-green"/>
+          <text x="141" y="366" text-anchor="middle" class="fig-h-green">pom.xml</text>
+          <text x="141" y="386" text-anchor="middle" class="fig-small">Boot 4.1.1 parent · Java 21</text>
+          <text x="141" y="404" text-anchor="middle" class="fig-small">webmvc + webmvc-test</text>
+          <path class="fig-arrow" d="M266,378 H318"/><polygon class="fig-arrowhead" points="318,372 318,384 330,378"/>
+
+          <rect x="332" y="340" width="300" height="76" rx="11" class="fig-box-teal"/>
+          <text x="482" y="366" text-anchor="middle" class="fig-label-teal">mvn clean package</text>
+          <text x="482" y="386" text-anchor="middle" class="fig-small">compile → test → package → repackage</text>
+          <text x="482" y="404" text-anchor="middle" class="fig-small">→ one fat jar with JarLauncher</text>
+          <path class="fig-arrow" d="M482,340 V318"/><polygon class="fig-arrowhead" points="476,318 488,318 482,306"/>
+
+          <rect x="676" y="340" width="250" height="76" rx="11" class="fig-box-green"/>
+          <text x="801" y="366" text-anchor="middle" class="fig-h-green">11 tests</text>
+          <text x="801" y="386" text-anchor="middle" class="fig-small">mvn test · startup, annotations,</text>
+          <text x="801" y="404" text-anchor="middle" class="fig-small">context, Tomcat, demos</text>
+        </svg>
+        <figcaption>The whole system as it stands. Green is what we wrote: the build file, one class, and the tests. Teal is what Spring Boot built from that: the server, the front door, the context and its ≈150 beans, and the jar. Neutral is the outside world and plain settings. Almost everything inside the process is teal. That is Spring Boot's whole promise, and Chapter 2 starts turning more of it green.</figcaption>
+      </figure>
+
+      <p>The same picture as text, for a quick reference:</p>
+
+      <pre class="diagram">  browser / curl ──► :8080 ──► embedded Tomcat ──► DispatcherServlet ──► (no controllers) ──► 404
+                                     │                     │
+                                     └──────── both are beans inside ────────┐
+                                                                             ▼
+                     ┌──────────────────────── ApplicationContext ────────────────────────┐
+                     │  ecommerceApplication (ours)  ·  ≈150 auto-configured  ·  Environment │
+                     └──────────────────────────────────────────────────────────────────────┘
+                                                   ▲
+  pom.xml ──► mvn clean package ──► fat jar ──► java -jar ──► JarLauncher ──► main() ──► SpringApplication.run</pre>
+    </section>
+
+    <!-- ============================================================= -->
+    <section id="story">
+      <h2><span class="secno">3</span>The Story So Far</h2>
+
+      <p><a href="lesson-01-what-is-spring-boot-and-why-it-exists.html">Lesson 01</a> was about <em>why</em>. Before Spring Boot, a Java web application was a pile of hand-written setup: install a server, write configuration for every library, copy a WAR file in, and hope the versions agreed. Spring Framework solved the hard part, a container that creates and connects your objects. But it still left you to set it all up by hand. Spring Boot's answer was a rule engine. Every library brings recipes with conditions, Boot reads the classpath as evidence of what you want, and the recipes whose conditions pass do the setup for you. The server moved <em>inside</em> the application. Then Spring Boot 4 split the one giant auto-configuration jar into a module per technology, which is why half the names in older tutorials no longer match ours.</p>
+
+      <p><a href="lesson-02-project-setup-and-structure.html">Lesson 02</a> was about <em>what is actually on disk</em>. We generated the project and read every line of it. Maven turns three coordinates into a URL, follows each dependency's own dependencies down until two starters become about forty jars, and lets the parent POM's BOM pin every version to a tested set. A starter turned out to be an almost empty jar: a shopping list, not a library. The build lifecycle runs its phases in order, which is why <code>mvn package</code> also runs the tests. The executable jar works only because Boot ships its own launcher that can read jars nested inside a jar. We ended with <code>java -jar</code> and a 404, and every step of that chain could be named.</p>
+
+      <p><a href="lesson-03-the-main-application-class.html">Lesson 03</a> opened the last black box: the two lines in <code>EcommerceApplication</code>. <code>@SpringBootApplication</code> is a bundle of three annotations. One makes the main class the primary configuration class and a bean. One switches on the Lesson 01 recipe engine by reading every <code>AutoConfiguration.imports</code> file. One draws the scan boundary around the main class's package. <code>SpringApplication.run</code> builds the <code>ApplicationContext</code>, the brain that holds every bean. During refresh it builds Tomcat from an auto-configured factory bean, and then it <em>returns</em>. The program stays alive only because Tomcat's own non-daemon thread does. We also corrected a claim Lesson 02 had made. Then we turned every one of these facts into a test, so the machine checks them, not your memory.</p>
+    </section>
+
+    <!-- ============================================================= -->
+    <section id="glance">
+      <h2><span class="secno">4</span>All Lessons at a Glance</h2>
+
+      <div class="tablewrap">
+        <table>
+          <thead><tr><th>Lesson</th><th>Title</th><th>Core concept</th><th>Key annotation or class</th><th>Output demonstrated</th></tr></thead>
+          <tbody>
+            <tr>
+              <td><a href="lesson-01-what-is-spring-boot-and-why-it-exists.html">01</a></td>
+              <td>What Is Spring Boot and Why It Exists</td>
+              <td>Framework versus library; the embedded server; auto-configuration as a rule engine over the classpath; Boot 4 modularization</td>
+              <td><code>@ConditionalOnClass</code>, <code>@ConditionalOnMissingBean</code>, <code>@SpringBootApplication</code> (first sight)</td>
+              <td>The predicted startup log; the auto-configuration simulation's MATCHED / SKIPPED decisions</td>
+            </tr>
+            <tr>
+              <td><a href="lesson-02-project-setup-and-structure.html">02</a></td>
+              <td>Project Setup and Structure</td>
+              <td>Maven coordinates, repositories and transitive resolution; parent POM and BOM; starters; the cumulative build lifecycle; the fat jar and <code>JarLauncher</code></td>
+              <td><code>spring-boot-starter-parent</code>, <code>spring-boot-starter-webmvc</code>, <code>spring-boot-maven-plugin</code>, <code>@SpringBootTest</code></td>
+              <td><code>mvn clean package</code> → <code>java -jar</code> → <code>HTTP/1.1 404</code> as JSON and as the Whitelabel page; <code>Tests run: 1</code></td>
+            </tr>
+            <tr>
+              <td><a href="lesson-03-the-main-application-class.html">03</a></td>
+              <td>The Main Application Class</td>
+              <td><code>@SpringBootApplication</code> = three meta-annotations; the scan boundary; the <code>ApplicationContext</code>; where Tomcat really comes from; why the program outlives <code>main()</code></td>
+              <td><code>@SpringBootConfiguration</code>, <code>@EnableAutoConfiguration</code>, <code>@ComponentScan</code>, <code>ApplicationContext</code>, <code>SpringApplication.run</code></td>
+              <td>Boot 4 logger names in the startup log; graceful-shutdown lines; <code>APPLICATION FAILED TO START</code> without auto-configuration; <code>Tests run: 11</code></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ============================================================= -->
+    <section id="connect">
+      <h2><span class="secno">5</span>How the Concepts Connect</h2>
+
+      <p>Read this top to bottom: each lesson's ideas are what the next lesson's ideas stand on.</p>
+
+      <pre class="diagram">LESSON 01 — WHY                      LESSON 02 — WHAT IS ON DISK              LESSON 03 — HOW IT STARTS
+─────────────────                    ───────────────────────                  ─────────────────────────
+framework: it calls YOUR code ─────────────────────────────────────────────► main() hands control to
+                                                                              SpringApplication.run
+classpath = evidence of intent ────► starters put jars ON the classpath
+                                     (webmvc → MVC + Tomcat + Jackson) ──┐
+                                                                         │
+auto-configuration = recipes ────────────────────────────────────────────┼──► @EnableAutoConfiguration
+  + conditions (@ConditionalOn…)                                         │    reads AutoConfiguration.imports,
+  backing off (@ConditionalOnMissingBean) ───────────────────────────────┼──► YOUR config first, recipes last
+                                                                         │
+embedded server: Tomcat lives                                            └──► TomcatServletWebServerAutoConfiguration
+  INSIDE the app ─────────────────────────────────────────────────────────►  → factory bean → Tomcat built in onRefresh
+                                     fat jar + JarLauncher ──────────────────► java -jar reaches main()
+                                     package line = folder path ─────────────► @ComponentScan boundary =
+                                                                              main class's package and below
+Boot 4 modularization ──────────────► -web → -webmvc rename ────────────────► classes moved: o.s.boot.tomcat,
+                                                                              o.s.boot.&lt;tech&gt;.autoconfigure
+
+                                    ALL OF IT LANDS IN ONE OBJECT:
+                         ApplicationContext — registry · factory · Environment · events · lifecycle</pre>
+    </section>
+
+    <!-- ============================================================= -->
+    <section id="comeback">
+      <h2><span class="secno">6</span>Concepts That Will Come Back</h2>
+
+      <ul>
+        <li><strong>The bean and the <code>ApplicationContext</code>.</strong> Lesson 03 used just enough of both to move on. Chapter 2 is entirely about them: how the context creates beans, connects them by dependency injection, scopes them, and runs their lifecycle.</li>
+        <li><strong>The scan boundary.</strong> From Lesson 05, every <code>@Service</code> and <code>@RestController</code> you write lives or dies by it. It returns at full strength in Phase 2, when shared code sits in a sibling package tree.</li>
+        <li><strong><code>@ConditionalOnMissingBean</code> and "your configuration first, recipes last".</strong> This is how every customisation in the course works, from defining your own bean in Lesson 07 to writing your own starter and auto-configuration in Chapter 29.</li>
+        <li><strong>The <code>Environment</code> and "the command line beats <code>application.yml</code>".</strong> Chapter 6 spells out the full priority order, and profiles. Every <code>--server.port=0</code> in our tests is already using it.</li>
+        <li><strong>The fat jar.</strong> It is the thing Chapter 24 puts into a Docker image and Chapter 25's pipeline builds on every push. "One file, no server to install" is why that is easy.</li>
+      </ul>
+    </section>
+
+    <!-- ============================================================= -->
+    <section id="checklist">
+      <h2><span class="secno">7</span>Self Assessment Checklist</h2>
+
+      <p>Tick each one only if you could do it out loud, to a colleague, without looking. The ticks are not saved anywhere. They are just for you.</p>
+
+      <ul>
+        <li><label><input type="checkbox"> I can explain the difference between a library and a framework, and how auto-configuration decides what to set up from what is on the classpath.</label></li>
+        <li><label><input type="checkbox"> I can read <code>pom.xml</code> line by line, say what the parent and the BOM do, and explain why two starters become about forty jars.</label></li>
+        <li><label><input type="checkbox"> I can list the three annotations inside <code>@SpringBootApplication</code>, give one consequence of each, and predict which packages are scanned.</label></li>
+        <li><label><input type="checkbox"> I can trace <code>java -jar</code> all the way to a 404: <code>JarLauncher</code>, <code>main</code>, <code>SpringApplication.run</code>, refresh, the Tomcat factory bean, the <code>DispatcherServlet</code>.</label></li>
+        <li><label><input type="checkbox"> I can explain why the program keeps running after <code>main()</code> returns, and what Ctrl+C actually triggers.</label></li>
+      </ul>
+    </section>
+
+    <!-- ============================================================= -->
+    <section id="boss">
+      <h2><span class="secno">8</span>Chapter Boss Challenge</h2>
+
+      <h3>The scenario: the Friday pull request</h3>
+
+      <p>A teammate opens a pull request titled <em>"Tidy up the project"</em>. It makes four changes:</p>
+
+      <ol>
+        <li><strong>Moves the main class</strong> into a new package, <code>com.ecommerce.boot</code>, using the IDE's move refactoring. The IDE updates every import in the tests, so everything compiles.</li>
+        <li><strong>Adds one line</strong> after <code>SpringApplication.run(...)</code> in <code>main</code>:
+          <pre><code><span class="t">System</span>.out.<span class="fn">println</span>(<span class="s">"Shop ready at http://localhost:8080"</span>);</code></pre>
+        </li>
+        <li><strong>Adds an exclusion</strong> to <code>application.yml</code>, copied from a 2023 blog post titled "Take control of your embedded server":
+          <pre><code><span class="k">spring</span>:
+  <span class="k">autoconfigure</span>:
+    <span class="k">exclude</span>: <span class="s">org.springframework.boot.autoconfigure.web.servlet.ServletWebServerFactoryAutoConfiguration</span></code></pre>
+        </li>
+        <li><strong>Deletes the <code>spring-boot-maven-plugin</code></strong> block from <code>pom.xml</code>, with the comment "<code>mvn compile</code> works fine without it".</li>
+      </ol>
+
+      <h3>What to work out</h3>
+
+      <p>Reason through each one on paper first, using only this chapter.</p>
+      <ol type="a">
+        <li>The teammate presses the IDE's Run button on <code>main</code>. Does the application start? Is Tomcat running? Does the new line print, and when?</li>
+        <li><code>mvn test</code>: how many of the 11 tests pass, which ones fail, and with what message? Does "Shop ready…" appear anywhere in the test output?</li>
+        <li>They run <code>mvn clean package -DskipTests</code>, then <code>java -jar target/ecommerce-0.0.1-SNAPSHOT.jar</code>. What happens?</li>
+        <li>A reviewer says: "That exclusion uses a 3.x name. Fix it to the correct Boot 4 class for the Tomcat recipe." If the teammate does exactly that, what happens at startup, and why?</li>
+        <li>Write the review: for each of the four changes, say keep, change or revert, and why. Then give the commands that prove the project is healthy again, and the output you expect.</li>
+      </ol>
+
+      <details>
+        <summary>Click to reveal the answer</summary>
+
+        <p><strong>a. Run from the IDE: it starts, Tomcat runs, and the line prints once.</strong> The move does not affect auto-configuration or Tomcat at all. The exclusion names a class that does not exist in Boot 4, because the core <code>spring-boot-autoconfigure</code> jar no longer contains any web-server recipe. Boot's exclusion check only complains about a class that <em>is</em> on the classpath but is not a recipe. A name that is not on the classpath at all is silently ignored, so the exclusion does nothing. <code>TomcatServletWebServerAutoConfiguration</code> still matches and Tomcat starts on 8080. Because <code>run</code> returns once startup is complete, "Shop ready at http://localhost:8080" prints once, straight after <code>Started EcommerceApplication in … seconds</code>. The application then keeps running on Tomcat's non-daemon <code>container-0</code> thread. The logger column for our class now reads <code>com.ecommerce.boot.EcommerceApplication</code>.</p>
+
+        <p><strong>b. <code>mvn test</code>: 10 pass, 1 fails, BUILD FAILURE.</strong></p>
+        <ul>
+          <li><code>theApplicationPackageIsTheMainClassPackage</code> fails. AssertJ reports that it expected exactly <code>["com.ecommerce"]</code> and found <code>["com.ecommerce.boot"]</code>. This is the guard Lesson 03 added for exactly this change.</li>
+          <li><code>contextLoads()</code> <em>passes</em>. <code>@SpringBootTest</code> searches from <code>com.ecommerce</code> downwards first and finds the one <code>@SpringBootConfiguration</code> in <code>com.ecommerce.boot</code>.</li>
+          <li>The three anatomy tests pass, because the annotation is unchanged. The other three context tests pass, because the bean name and Tomcat do not depend on the package. The three demos pass too. Two of them pass their own <code>spring.autoconfigure.exclude</code> on the command line, which replaces the one in <code>application.yml</code> because the command line outranks it. The third does not set an exclusion, so the YAML one applies, and it does nothing.</li>
+          <li><strong>"Shop ready…" never appears in the test output.</strong> No test calls <code>main</code>. They all call <code>SpringApplication.run</code> directly, so the line after it in <code>main</code> never runs. It is a small reminder that tests exercise exactly what they call, and nothing else.</li>
+        </ul>
+        <pre><code>[ERROR] Failures:
+[ERROR]   EcommerceApplicationContextTests.theApplicationPackageIsTheMainClassPackage
+  Expecting actual:
+    ["com.ecommerce.boot"]
+  to contain exactly (and in same order):
+    ["com.ecommerce"]
+<span class="hi">[ERROR] Tests run: 11, Failures: 1, Errors: 0, Skipped: 0</span>
+[INFO] BUILD FAILURE</code></pre>
+        <p>A prediction: AssertJ's exact layout may differ slightly; the test name, the two lists, and <code>Failures: 1</code> will not.</p>
+
+        <p><strong>c. <code>java -jar</code>: <code>no main manifest attribute, in target/ecommerce-0.0.1-SNAPSHOT.jar</code>.</strong> <code>-DskipTests</code> got past the failing test, and that alone should worry a reviewer: the jar is now an artifact with no evidence behind it. Without the <code>spring-boot-maven-plugin</code> there is no <code>repackage</code> step. Maven produces a plain jar containing only our own classes, with no dependency jars inside and no <code>Main-Class</code> line in its manifest. "<code>mvn compile</code> works fine without it" was true, but compiling was never the plugin's job.</p>
+
+        <p><strong>d. The "fixed" exclusion breaks startup.</strong> With <code>org.springframework.boot.tomcat.autoconfigure.servlet.TomcatServletWebServerAutoConfiguration</code> excluded, the one recipe that defines a <code>ServletWebServerFactory</code> is removed before its conditions are checked. Spring MVC is still on the classpath, so this is still a servlet web application. During <code>onRefresh</code> the context asks for exactly one factory, finds zero, and gives up:</p>
+        <pre><code>***************************
+APPLICATION FAILED TO START
+***************************
+
+Description:
+
+<span class="hi">Web application could not be started as there was no org.springframework.boot.web.server.servlet.ServletWebServerFactory
+bean defined in the context.</span></code></pre>
+        <p>That is exactly what our demo test <code>excludingTheTomcatRecipeMeansTheWebApplicationCannotStart</code> asserts. The blog post's idea of "taking control of the embedded server" never meant excluding the recipe. It meant defining your <em>own</em> factory bean, so the recipe backs off through <code>@ConditionalOnMissingBean</code>. That is a Lesson 07 skill. The two versions of this exclusion fail in opposite ways: the old name silently does nothing, and the correct name breaks startup loudly.</p>
+
+        <p><strong>e. The review.</strong></p>
+        <div class="tablewrap">
+          <table>
+            <thead><tr><th>Change</th><th>Verdict</th><th>Why</th></tr></thead>
+            <tbody>
+              <tr><td>Main class to <code>com.ecommerce.boot</code></td><td>Revert</td><td>It moves the scan boundary, so every future class in <code>com.ecommerce.product</code>, <code>.order</code> and so on becomes invisible. The failing test is right.</td></tr>
+              <tr><td><code>println</code> after <code>run</code></td><td>Revert</td><td>Harmless, but startup work does not belong in <code>main</code>. It never runs in tests, and Lesson 10 shows the proper tool. Boot already logs the port.</td></tr>
+              <tr><td>3.x exclusion in <code>application.yml</code></td><td>Revert (do not "fix")</td><td>As written it does nothing and misleads every reader. Corrected, it breaks the application. Neither is wanted.</td></tr>
+              <tr><td>Deleting <code>spring-boot-maven-plugin</code></td><td>Revert</td><td>Without it there is no executable jar, so nothing can be deployed.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p>Then, from <code>phase-1-monolith/ecommerce/</code>:</p>
+        <pre><code>$ mvn clean package
+...
+<span class="hi">[INFO] Tests run: 11, Failures: 0, Errors: 0, Skipped: 0</span>
+<span class="hi">[INFO] BUILD SUCCESS</span>
+
+$ java -jar target/ecommerce-0.0.1-SNAPSHOT.jar
+...
+INFO ... o.s.boot.tomcat.TomcatWebServer          : Tomcat started on port 8080 (http) with context path '/'
+<span class="hi">INFO ... com.ecommerce.EcommerceApplication       : Started EcommerceApplication in 1.9 seconds</span>
+
+$ curl -i http://localhost:8080/
+<span class="hi">HTTP/1.1 404</span></code></pre>
+        <p>These are predictions. Timings and process details will differ. The test counts, the logger names and the 404 should not.</p>
+
+        <div class="tryit">
+          <p>You can stage this PR yourself on a throwaway branch: <code>git switch -c boss-challenge</code>, make the four changes, and run each command above. Compare every answer with what your machine prints. Then <code>git switch main</code> and <code>git branch -D boss-challenge</code> to throw it away. If anything disagrees with the predictions, the machine is right. Tell me what you saw.</p>
+        </div>
+      </details>
+    </section>
+
+    <footer class="next">
+      <p class="kicker">Next up · Chapter 2</p>
+      <h2>Lesson 04 — Inversion of Control, the Soul of Spring</h2>
+      <p>Chapter 1 kept saying "Spring creates the object and hands it to you". Chapter 2 explains why that reversal, letting a container build your objects instead of calling <code>new</code> yourself, is the idea everything else in Spring rests on, and what a bean really is.</p>
+    </footer>
+
+    <p class="lesson-footer">Chapter 1 Summary · Phase 1 · Chapter 1 — Getting Started · complete (Lessons 01–03)</p>
+
+  </main>
+</div>
+</body>
+</html>

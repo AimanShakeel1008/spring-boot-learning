@@ -27,7 +27,7 @@
     <div class="prevnext">
       <a class="prev" href="lesson-01-what-is-spring-boot-and-why-it-exists.html"><span class="nav-dir">← Prev · Lesson 01</span><span class="nav-title">What Is Spring Boot and Why It Exists</span></a>
       <a class="hublink" href="../../index.html">↑ Course map</a>
-      <a class="next disabled" href="#"><span class="nav-dir">Next · Lesson 03</span><span class="nav-title">Coming soon</span></a>
+      <a class="next" href="lesson-03-the-main-application-class.html"><span class="nav-dir">Next · Lesson 03</span><span class="nav-title">The Main Application Class</span></a>
     </div>
   </details>
 
@@ -620,7 +620,7 @@ curl https://start.spring.io/starter.zip \
         <li><strong>The JVM opens the jar and reads <code>META-INF/MANIFEST.MF</code></strong>, a small text file every jar contains. It looks for a line saying <code>Main-Class:</code>, because that names the class whose <code>main</code> method to call. Without that line you get "no main manifest attribute" and nothing happens.</li>
         <li><strong>That line does not name your class.</strong> It names <code>org.springframework.boot.loader.launch.JarLauncher</code>, a class Spring Boot's Maven plugin inserted during the <code>repackage</code> step. <em>Why?</em> Because of a real limitation: the standard Java class loader can read classes out of a jar, but it cannot read classes out of a jar that is <em>inside</em> another jar. Our fat jar contains forty nested jars. So Boot supplies its own launcher and its own class loader that can. Your real main class is recorded separately in the manifest as <code>Start-Class:</code>, and the launcher reads it and calls it once the class loader is ready. This is the mechanism that makes "one runnable file" possible at all, and it is why the packaging step is called <em>re</em>packaging — it rewrites an ordinary jar into this special layout.</li>
         <li><strong><code>SpringApplication.run(EcommerceApplication.class, args)</code> executes.</strong> It detects from the classpath that this is a servlet web application, creates the <span class="term" tabindex="0" data-def="Spring's container: the object that creates, holds and connects every object Spring manages. Covered fully in Lesson 04.">application context</span>, evaluates every auto-configuration rule against the classpath exactly as Lesson 01's simulation modelled, and creates the resulting objects.</li>
-        <li><strong>Because the web auto-configuration matched, Tomcat starts</strong> — inside this same process, as a library — and binds to port 8080. <code>SpringApplication.run</code> does not return; the application stays alive.</li>
+        <li><strong>Because the web auto-configuration matched, Tomcat starts</strong> — inside this same process, as a library — and binds to port 8080. <code>SpringApplication.run</code> then returns, but the application stays alive, because Tomcat started a thread of its own that keeps the Java process running. (An earlier version of this lesson said <code>run</code> never returns. That was wrong; <a href="lesson-03-the-main-application-class.html#concept">Lesson 03, section 3.8</a> explains what really happens.)</li>
         <li><strong>A request arrives.</strong> Tomcat accepts the connection and hands the request to Spring's front door, the <code>DispatcherServlet</code>, which looks for something mapped to that path. We have written nothing, so there is no match — and Boot's default error handling produces a <strong>404 Not Found</strong>.</li>
       </ol>
 
@@ -831,13 +831,13 @@ $ mvn clean package
 
  :: Spring Boot ::                (v4.1.1)
 
-INFO 18244 --- [ecommerce] [  main] c.e.EcommerceApplication : Starting EcommerceApplication v0.0.1-SNAPSHOT using Java 21.0.9
-INFO 18244 --- [ecommerce] [  main] c.e.EcommerceApplication : No active profile set, falling back to 1 default profile: "default"
-<span class="hi">INFO 18244 --- [ecommerce] [  main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8080 (http)</span>
-INFO 18244 --- [ecommerce] [  main] o.a.catalina.core.StandardService        : Starting service [Tomcat]
-INFO 18244 --- [ecommerce] [  main] o.s.b.w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed
-INFO 18244 --- [ecommerce] [  main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8080 (http) with context path '/'
-<span class="hi">INFO 18244 --- [ecommerce] [  main] c.e.EcommerceApplication : Started EcommerceApplication in 1.974 seconds</span></code></pre>
+INFO 18244 --- [ecommerce] [  main] com.ecommerce.EcommerceApplication       : Starting EcommerceApplication v0.0.1-SNAPSHOT using Java 21.0.9
+INFO 18244 --- [ecommerce] [  main] com.ecommerce.EcommerceApplication       : No active profile set, falling back to 1 default profile: "default"
+<span class="hi">INFO 18244 --- [ecommerce] [  main] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 8080 (http)</span>
+INFO 18244 --- [ecommerce] [  main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+INFO 18244 --- [ecommerce] [  main] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed
+INFO 18244 --- [ecommerce] [  main] o.s.boot.tomcat.TomcatWebServer          : Tomcat started on port 8080 (http) with context path '/'
+<span class="hi">INFO 18244 --- [ecommerce] [  main] com.ecommerce.EcommerceApplication       : Started EcommerceApplication in 1.974 seconds</span></code></pre>
 
       <p><strong>This is the prediction Lesson 01 left open.</strong> The process id (<code>18244</code>), the Java patch version and the startup time will all differ on your machine — everything else should match. Note <code>[ecommerce]</code> in every line: that is the <code>spring.application.name</code> we set in <code>application.yml</code>, doing visible work already.</p>
 
@@ -1134,12 +1134,12 @@ There was an unexpected error (type=Not Found, status=404).</code></pre>
 
       <p>You have a running application, and one annotation on one class is doing an enormous amount of work that we have so far waved at.</p>
 
-      <p><strong>Lesson 03</strong> takes <code>@SpringBootApplication</code> apart into the three annotations it actually stands for, explains what the <code>ApplicationContext</code> is and why it is the brain of every Spring application, and shows exactly how Spring decides which of your classes it can see — including a simulation where moving the main class changes the answer. That last part is the cause of the most baffling beginner bug in Spring: a controller that is silently invisible.</p>
+      <p><a href="lesson-03-the-main-application-class.html"><strong>Lesson 03</strong></a> takes <code>@SpringBootApplication</code> apart into the three annotations it actually stands for, explains what the <code>ApplicationContext</code> is and why it is the brain of every Spring application, and shows exactly how Spring decides which of your classes it can see — including a simulation where moving the main class changes the answer. That last part is the cause of the most baffling beginner bug in Spring: a controller that is silently invisible.</p>
     </section>
 
     <footer class="next">
       <p class="kicker">Next up</p>
-      <h2>Lesson 03 — The Main Application Class</h2>
+      <h2><a href="lesson-03-the-main-application-class.html">Lesson 03 — The Main Application Class</a></h2>
       <p><code>@SpringBootApplication</code> unpacked into its three parts, the <code>ApplicationContext</code> as the brain of the application, and the scanning boundary that decides which of your classes Spring can even see.</p>
     </footer>
 

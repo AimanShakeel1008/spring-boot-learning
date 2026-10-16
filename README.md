@@ -49,8 +49,17 @@ Either way the application listens on <http://localhost:8080>.
 mvn test
 ```
 
-One test currently runs: `contextLoads()`, which starts the entire application and fails if
-anything at all prevents startup. It is the quickest answer to "did I just break something?"
+Eleven tests currently run, and the result should be `Tests run: 11, Failures: 0, Errors: 0`:
+
+| Test class | What it guards |
+|---|---|
+| `EcommerceApplicationTests` | `contextLoads()` — the whole application can start. The quickest answer to "did I just break something?" |
+| `EcommerceApplicationAnnotationTests` | `@SpringBootApplication` really contains its three parts, and scanning starts at the main class's package |
+| `EcommerceApplicationContextTests` | The real `ApplicationContext`: the main class is a bean, a real embedded Tomcat starts, the application package is `com.ecommerce`, and `close()` stops everything |
+| `demos/mainclass/AutoConfigurationSwitchesDemoTests` | For learning only — what `spring.main.web-application-type=none` and auto-configuration exclusion do |
+
+One of the demo tests deliberately makes startup fail, so an `APPLICATION FAILED TO START`
+block in the output is expected. Only the final `Tests run:` line decides anything.
 
 ## Poking it
 
@@ -71,6 +80,9 @@ Expect `HTTP/1.1 404` with a JSON body — correct for now, since nothing is map
 | Starts an embedded Tomcat server on port 8080 | Lesson 02 | No external server to install |
 | Packages into one runnable file | Lesson 02 | `java -jar` — roughly 20 MB, fully self-contained |
 | Self-check that the application can start | Lesson 02 | `mvn test` |
+| Self-checks on how it starts: annotation parts, scan boundary, embedded Tomcat, clean shutdown | Lesson 03 | 11 tests in total |
+| Starts without a web server, on request | Lesson 03 | `mvn spring-boot:run -Dspring-boot.run.arguments=--spring.main.web-application-type=none` |
+| Shows every auto-configuration decision | Lesson 03 | `mvn spring-boot:run -Dspring-boot.run.arguments=--debug` |
 
 ## Pinned versions
 

@@ -482,7 +482,8 @@ server:
 
         <span class="c">// Hand control to Spring Boot. This one call creates the container,</span>
         <span class="c">// runs the auto-configuration rule engine, starts the embedded Tomcat,</span>
-        <span class="c">// and then blocks — keeping the program alive to serve requests.</span>
+        <span class="c">// and then returns. Tomcat's own thread keeps the program alive to serve</span>
+        <span class="c">// requests (Lesson 03 shows exactly how).</span>
         <span class="c">// We pass our own class so Boot knows where to start looking, and args</span>
         <span class="c">// so settings typed on the command line reach the framework.</span>
         <span class="t">SpringApplication</span>.<span class="fn">run</span>(<span class="t">EcommerceApplication</span>.<span class="k">class</span>, args);
@@ -514,12 +515,12 @@ server:
 
  :: Spring Boot ::                (v4.1.1)
 
-INFO 18244 --- [ecommerce] [  main] c.e.EcommerceApplication : Starting EcommerceApplication using Java 21.0.9
-INFO 18244 --- [ecommerce] [  main] c.e.EcommerceApplication : No active profile set, falling back to 1 default profile: "default"
-<span class="hi">INFO 18244 --- [ecommerce] [  main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8080 (http)</span>
-INFO 18244 --- [ecommerce] [  main] o.a.catalina.core.StandardService        : Starting service [Tomcat]
-INFO 18244 --- [ecommerce] [  main] o.s.b.w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed
-<span class="hi">INFO 18244 --- [ecommerce] [  main] c.e.EcommerceApplication : Started EcommerceApplication in 1.974 seconds</span></code></pre>
+INFO 18244 --- [ecommerce] [  main] com.ecommerce.EcommerceApplication       : Starting EcommerceApplication using Java 21.0.9
+INFO 18244 --- [ecommerce] [  main] com.ecommerce.EcommerceApplication       : No active profile set, falling back to 1 default profile: "default"
+<span class="hi">INFO 18244 --- [ecommerce] [  main] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 8080 (http)</span>
+INFO 18244 --- [ecommerce] [  main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+INFO 18244 --- [ecommerce] [  main] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed
+<span class="hi">INFO 18244 --- [ecommerce] [  main] com.ecommerce.EcommerceApplication       : Started EcommerceApplication in 1.974 seconds</span></code></pre>
 
       <p>Three lines in that log are worth learning to read now, because you will read them hundreds of times:</p>
 
