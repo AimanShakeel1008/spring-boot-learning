@@ -20,9 +20,10 @@
       <a href="#applied">6 · Applied to Our Project</a>
       <a href="#gotchas">7 · Gotchas</a>
       <a href="#tradeoffs">8 · Tradeoffs</a>
-      <a href="#takeaways">9 · Key Takeaways</a>
-      <a href="#challenge">10 · Challenge</a>
-      <a href="#next">11 · What Is Next</a>
+      <a href="#challenge">9 · Challenge</a>
+      <a href="#keywords">10 · Key Words</a>
+      <a href="#recap">11 · Quick Recap</a>
+      <a href="#next">12 · What Is Next</a>
     </nav>
     <div class="prevnext">
       <a class="prev" href="lesson-01-what-is-spring-boot-and-why-it-exists.html"><span class="nav-dir">← Prev · Lesson 01</span><span class="nav-title">What Is Spring Boot and Why It Exists</span></a>
@@ -40,21 +41,70 @@
       <p class="meta"><strong>Files created:</strong> <code>phase-1-monolith/ecommerce/pom.xml</code> · <code>EcommerceApplication.java</code> · <code>application.yml</code> · <code>EcommerceApplicationTests.java</code> · <code>api.http</code> · <strong>Prerequisites:</strong> <a href="../chapter-00-setup/lesson-00-getting-your-machine-ready.html">Lesson 00</a>, <a href="lesson-01-what-is-spring-boot-and-why-it-exists.html">Lesson 01</a> · <strong>Pinned:</strong> Spring Boot 4.1.1 · Java 21 · Maven 3.9.16</p>
     </header>
 
+    <div class="learn">
+      <ul>
+        <li>How Maven fetches libraries, picks versions that fit together, and builds your project in fixed steps.</li>
+        <li>What every file and folder in a Spring Boot project is for, and what breaks without it.</li>
+        <li>What really happens between typing <code>java -jar</code> and getting your first HTTP response.</li>
+      </ul>
+    </div>
+
     <!-- ============================================================= -->
     <section id="problem">
       <h2><span class="secno">1</span>The Problem</h2>
 
-      <p>You have an empty folder. You want it to become a running web application. Let us be very exact about what stands in the way. Every problem we are about to meet is one that a build tool was invented to remove.</p>
+      <p>You have an empty folder. You want it to become a running web app. Let us be very exact about what stands in the way. A build tool exists to remove every problem we are about to meet.</p>
 
-      <p>Your Java source code is text. The machine cannot run text. Something has to turn <code>EcommerceApplication.java</code> into <code>EcommerceApplication.class</code>. That is a file of <strong>bytecode</strong>, the compact instructions that the Java runtime actually runs. The program that does this is the compiler, <code>javac</code>, and you can run it yourself. Fine. One file, one command.</p>
+      <h3>1.1 Compiling one file is easy</h3>
 
-      <p>Now your code says <code>import org.springframework.boot.SpringApplication;</code>. The compiler stops. It has never heard of that class. It is not part of Java. It lives in a file called <code>spring-boot-4.1.1.jar</code>, on a server somewhere on the internet. You must find it, download it, and tell the compiler where it is, by hand. So you go to a website, search, download a jar, and point the compiler at it. And the compiler stops again. <code>SpringApplication</code> uses classes from <em>four other jars</em>. Those use classes from <em>eleven more</em>. A full Spring Boot web application needs about <strong>forty separate jar files</strong>. All of them must be there at once, and all at versions that work together.</p>
+      <p>Your Java source code is text. The machine cannot run text. Something has to turn <code>EcommerceApplication.java</code> into <code>EcommerceApplication.class</code>. That <code>.class</code> file holds <strong>bytecode</strong>: the compact instructions the JVM runs (Lesson 00). The compiler, <code>javac</code>, does this job, and you can run it yourself. Fine. One file, one command.</p>
 
-      <p>That last part is where it goes from boring to truly dangerous. Say you download Spring Framework 7.0.9. Separately, you download a Tomcat 10.1 jar from an old tutorial. Everything compiles, and the application starts. Then, forty minutes into a demo, one request calls a method. Spring 7 expects Tomcat to have that method, but Tomcat 10.1 does not. The program does not fail at startup, when you would notice. It fails right then, with a <code>NoSuchMethodError</code>. The error names a method you have never heard of, in a class you did not write. The list of method calls it prints (the "stack trace") is fifty lines deep. Nothing in it tells you the real cause: two of your forty jars were never built to work together. Java developers have a name for this mess, and it is not a kind one: <strong>jar hell</strong>.</p>
+      <h3>1.2 Then you need other people's code</h3>
 
-      <p>And there is one last insult. Say you solve it. You find forty jars that really do work together. Now a colleague copies your project. Do they get the same forty? Only if you wrote the list down in a form a program can read, so they can fetch exactly those. Otherwise the phrase from Lesson 01 is back: <em>it works on my machine</em>.</p>
+      <p>Now your code says <code>import org.springframework.boot.SpringApplication;</code>. The compiler stops. It has never heard of that class. The class is not part of Java. It lives in a file called <code>spring-boot-4.1.1.jar</code>, on a computer somewhere on the internet.</p>
 
-      <p>So the problem is not "how do I compile Java?". The real questions are these. <strong>Who keeps the list of what this project needs? Who fetches it? Who makes sure the pieces fit? Who turns the result into one runnable thing? And who does all that the same way, on every machine, every time?</strong> The answer to all five is a build tool. Ours is Maven.</p>
+      <p>So you must do this by hand:</p>
+
+      <ol>
+        <li>Go to a website and search for the JAR.</li>
+        <li>Download it.</li>
+        <li>Tell the compiler where it is.</li>
+      </ol>
+
+      <p>And the compiler stops again. <code>SpringApplication</code> uses classes from <em>four other JARs</em>. Those use classes from <em>eleven more</em>. A full Spring Boot web app needs about <strong>forty separate JAR files</strong>. All of them must be there at once. And all of them must be versions that work together.</p>
+
+      <h3>1.3 When the versions do not fit</h3>
+
+      <p>That last part is where it goes from boring to truly dangerous. Here is an example.</p>
+
+      <ol>
+        <li>You download Spring Framework 7.0.9.</li>
+        <li>Separately, you download a Tomcat 10.1 JAR from an old tutorial.</li>
+        <li>Everything compiles. The app starts.</li>
+        <li>Forty minutes into a demo, one request calls a method. Spring 7 expects Tomcat to have that method. Tomcat 10.1 does not.</li>
+      </ol>
+
+      <p>The program does not fail at startup, where you would notice. It fails right then, with a <code>NoSuchMethodError</code>. That error means "Java tried to call a method, and the class it found does not have it". The error names a method you have never heard of, in a class you did not write. The list of method calls it prints (the stack trace, from Lesson 01) is fifty lines deep. Nothing in it tells you the real cause: two of your forty JARs were never built to work together.</p>
+
+      <p>Java developers have a name for this mess, and it is not a kind one: <strong>JAR hell</strong>.</p>
+
+      <h3>1.4 And then a colleague copies your project</h3>
+
+      <p>Say you solve it. You find forty JARs that really do work together. Now a colleague copies your project. Do they get the same forty? Only if you wrote the list down in a form a program can read. Then their machine can fetch exactly those. Otherwise the phrase from Lesson 01 is back: <em>it works on my machine</em>.</p>
+
+      <h3>1.5 The real questions</h3>
+
+      <p>So the problem is not "how do I compile Java?". The real questions are these:</p>
+
+      <ul>
+        <li>Who keeps the list of what this project needs?</li>
+        <li>Who fetches it?</li>
+        <li>Who makes sure the pieces fit?</li>
+        <li>Who turns the result into one runnable thing?</li>
+        <li>And who does all that the same way, on every machine, every time?</li>
+      </ul>
+
+      <p>The answer to all five is a build tool. Ours is Maven.</p>
     </section>
 
     <!-- ============================================================= -->
@@ -63,9 +113,15 @@
 
       <p>You are cooking dinner for eight people tonight, and your kitchen is empty.</p>
 
-      <p>The hard way: invent the meal and write down every ingredient. Walk the supermarket aisles, guessing amounts. Hope the curry paste you grabbed is as hot as the one the recipe meant. If you get it wrong, you find out at 7pm, with your guests already there.</p>
+      <p><strong>The hard way:</strong> invent the meal and write down every ingredient. Walk the supermarket aisles, guessing amounts. Hope the curry paste you grabbed is as hot as the recipe meant. If you get it wrong, you find out at 7pm, with your guests already there.</p>
 
-      <p>The easy way has three parts. First, you write a <strong>shopping list</strong>. It is not the food itself, just the names. Second, someone else does the shopping. They read your list, go to the shop, and bring everything back. And if an item on your list is a <em>meal kit</em>, they bring the whole box, with everything inside it. You do not have to list each thing in the box. Third, you buy those kits from a brand you trust. That brand has already tested that its sauce, its spices and its noodles go well together. You do not have to check that the chilli and the coconut milk get along. Someone already did that, and put their name on it.</p>
+      <p><strong>The easy way</strong> has three parts:</p>
+
+      <ol>
+        <li>You write a <strong>shopping list</strong>. It is not the food itself, just the names.</li>
+        <li>Someone else does the shopping. They read your list, go to the shop, and bring everything back. If an item on your list is a <em>meal kit</em>, they bring the whole box, with everything inside it. You do not have to list each thing in the box.</li>
+        <li>You buy those kits from a brand you trust. That brand has already tested that its sauce, spices and noodles go well together. You do not have to check that the chilli and the coconut milk get along. Someone already did that, and put their name on it.</li>
+      </ol>
 
       <div class="tablewrap">
         <table>
@@ -73,13 +129,13 @@
           <tbody>
             <tr><td>The shopping list on the counter</td><td><strong><code>pom.xml</code></strong>: names what you need, but holds none of it</td></tr>
             <tr><td>The person who goes shopping</td><td><strong>Maven</strong>: reads the list and fetches everything</td></tr>
-            <tr><td>The supermarket</td><td><strong>Maven Central</strong>: the public store where libraries are published</td></tr>
-            <tr><td>Your cupboard at home</td><td><strong>The local repository</strong>, <code>~/.m2/repository</code>: once something is fetched, it is never fetched again</td></tr>
+            <tr><td>The supermarket</td><td><strong>Maven Central</strong>: the public store where people publish libraries</td></tr>
+            <tr><td>Your cupboard at home</td><td><strong>The local repository</strong>, <code>~/.m2/repository</code>: once Maven fetches something, it never fetches it again</td></tr>
             <tr><td>A meal kit box</td><td>A <strong>starter</strong>: one name that brings a whole set of libraries</td></tr>
             <tr><td>Opening the kit and finding sauce, spices and noodles inside</td><td><strong>Transitive dependencies</strong>: the things your dependencies themselves need</td></tr>
             <tr><td>The brand promising its ingredients go together</td><td>The <strong>parent POM</strong>: one tested version for every library at once</td></tr>
             <tr><td>"Chop, then fry, then simmer, then serve", always in that order</td><td>The <strong>build lifecycle</strong>: fixed steps that always run in order</td></tr>
-            <tr><td>Everything plated and carried out on one tray</td><td>The <strong>executable jar</strong>: your code and all forty libraries in one runnable file</td></tr>
+            <tr><td>Everything plated and carried out on one tray</td><td>The <strong>executable JAR</strong>: your code and all forty libraries in one runnable file</td></tr>
           </tbody>
         </table>
       </div>
@@ -93,7 +149,7 @@
 
       <h3>3.1 What a build tool is</h3>
 
-      <p>A <span class="term" tabindex="0" data-def="A program that turns source code into a runnable program: fetching dependencies, compiling, running tests and packaging, in a fixed order, the same way every time.">build tool</span> is a program that turns your source code into a finished program you can run. It does it the same way every time, on every machine.</p>
+      <p>Lesson 00 gave you a short meaning. A <span class="term" tabindex="0" data-def="A program that turns source code into a runnable program: fetching dependencies, compiling, running tests and packaging, in a fixed order, the same way every time.">build tool</span> is a program that turns your source code into a finished program you can run. It does it the same way every time, on every machine.</p>
 
       <p>"Build" sounds vague. So here is exactly what it means for a Java project. A build tool must:</p>
       <ol>
@@ -106,47 +162,70 @@
         <li>Finally, bundle the result into one file you can hand to others.</li>
       </ol>
 
-      <p>You could do all of that by hand. People did, for years, with a tool called Ant. In Ant, you wrote out each of those steps yourself, in XML. Then came a simple idea that replaced it. <strong>Almost every Java project does these steps in the same order. So stop describing the steps, and start describing the project.</strong> Tell the tool the project's name and what it needs. The tool already knows what building means. That is Maven's whole idea. It is the same <span class="term" tabindex="0" data-def="Assuming the usual arrangement instead of making you state it, and letting you change it only where yours is different.">convention over configuration</span> idea that Spring Boot uses for setup. That is no accident. Maven's success is what made Boot's approach feel natural.</p>
+      <p>You could do all of that by hand. People did, for years, with an older tool called Ant. In Ant, you wrote out each of those steps yourself, in XML.</p>
+
+      <p>Then came a simple idea that replaced it. <strong>Almost every Java project does these steps in the same order. So stop describing the steps. Start describing the project.</strong> Tell the tool the project's name and what it needs. The tool already knows what building means. That is Maven's whole idea.</p>
+
+      <p>It is the same <span class="term" tabindex="0" data-def="Assuming the usual arrangement instead of making you state it, and letting you change it only where yours is different.">convention over configuration</span> idea that Spring Boot uses for setup (Lesson 01). That is no accident. Maven's success is what made Boot's approach feel natural.</p>
 
       <h3>3.2 Coordinates: how any library in the world is named</h3>
 
-      <p>Before Maven can fetch anything, it needs a clear name for it, with no chance of a mix-up. Maven uses three values. Together, they are called the <strong>coordinates</strong> of an artifact. (An <span class="term" tabindex="0" data-def="Any published, downloadable output of a build, usually a jar file. Named by groupId, artifactId and version.">artifact</span> is just "a thing a build produces". In practice, it is almost always a jar file.)</p>
+      <p>Before Maven can fetch anything, it needs a clear name for it, with no chance of a mix-up. Maven uses three values. Together, they are called the <strong>coordinates</strong> of an artifact. An <span class="term" tabindex="0" data-def="Any published, downloadable output of a build, usually a jar file. Named by groupId, artifactId and version.">artifact</span> is just "a thing a build produces". In practice, it is almost always a JAR file.</p>
 
       <div class="tablewrap">
         <table>
           <thead><tr><th>Coordinate</th><th>What it identifies</th><th>Our example</th></tr></thead>
           <tbody>
-            <tr><td><code>groupId</code></td><td>Who published it. Written in reverse internet-domain order.</td><td><code>org.springframework.boot</code></td></tr>
+            <tr><td><code>groupId</code></td><td>Who published it. Written as a web address, backwards.</td><td><code>org.springframework.boot</code></td></tr>
             <tr><td><code>artifactId</code></td><td>Which of that publisher's things it is.</td><td><code>spring-boot-starter-webmvc</code></td></tr>
             <tr><td><code>version</code></td><td>Which release of it.</td><td><code>4.1.1</code></td></tr>
           </tbody>
         </table>
       </div>
 
-      <p>Why is the group written as a web address backwards? Because the internet already solved the problem of "two organisations must never pick the same name". Reusing that answer costs nothing. Spring owns <code>springframework.org</code>, so nobody else can claim <code>org.springframework</code>. Amazon publishes under <code>software.amazon.awssdk</code>. Your own company would use something like <code>com.yourcompany</code>. Java uses the same habit for package names, for the same reason.</p>
+      <p>Why write the group as a web address backwards? The name part of a web address, like <code>springframework.org</code>, is called a <strong>domain</strong>. Only one organisation can own each domain. So the internet already solved the problem of "two organisations must never pick the same name". Reusing that answer costs nothing.</p>
+
+      <ul>
+        <li>Spring owns <code>springframework.org</code>, so nobody else can claim <code>org.springframework</code>.</li>
+        <li>Amazon publishes under <code>software.amazon.awssdk</code>.</li>
+        <li>Your own company would use something like <code>com.yourcompany</code>.</li>
+      </ul>
+
+      <p>Java uses the same habit for package names, for the same reason.</p>
+
+      <h3>3.3 How coordinates become a web address</h3>
 
       <p>Those three values turn straight into a folder path on a web server. The coordinates <code>org.springframework.boot : spring-boot-starter-webmvc : 4.1.1</code> become:</p>
 
       <pre><code>https://repo1.maven.org/maven2/org/springframework/boot/spring-boot-starter-webmvc/4.1.1/
                               └─────── groupId ───────┘└──── artifactId ────┘└version┘</code></pre>
 
-      <p>That is not a search. There is no lookup service and no index. Maven <em>works out</em> the address from the three values. It replaces every dot in the groupId with a slash. That is why one typo in a coordinate gives a blunt "could not resolve dependency" error. You do not get a helpful "did you mean…?". Maven asked for a web address that does not exist, and a web server has nothing clever to say about that.</p>
+      <p>That is not a search. There is no lookup service and no index. Maven <em>works out</em> the address from the three values. It replaces every dot in the groupId with a slash, and adds the other two parts.</p>
 
-      <h3>3.3 The repository, and why the second build is fast</h3>
+      <p>That is why one typo in a coordinate gives a blunt "could not resolve dependency" error. You do not get a helpful "did you mean…?". Maven asked for a web address that does not exist. A web server has nothing clever to say about that.</p>
+
+      <h3>3.4 The repository, and why the second build is fast</h3>
 
       <p>A <span class="term" tabindex="0" data-def="A place where published jar files are stored, found by their coordinates. Maven Central is the public one; ~/.m2/repository is your local copy.">repository</span> is a place where artifacts are stored. Two of them matter to you.</p>
 
-      <p><strong>Maven Central</strong> is the public one. It is one free, huge store of open-source Java libraries, and the first place Maven looks. Publishing to it takes deliberate paperwork: you must prove you own the web address in your groupId. That is exactly why Maven can trust it by default.</p>
+      <p><strong>Maven Central</strong> is the public one. It is one free, huge store of open-source Java libraries. It is the first place Maven looks. To publish to it, you must fill in paperwork and prove you own the domain in your groupId. That is exactly why Maven can trust it by default.</p>
 
-      <p><strong>Your local repository</strong> is a folder on your own machine. On macOS and Linux it is <code>~/.m2/repository</code>. On Windows it is <code>C:\Users\YourName\.m2\repository</code>. Every jar Maven ever downloads is stored there, in a folder path made from its coordinates. Before fetching anything from the internet, Maven checks here first.</p>
+      <p><strong>Your local repository</strong> is a folder on your own machine:</p>
 
-      <p>This is why your very first Spring Boot build takes two or three minutes. It prints a long stream of "Downloading from central…" lines. Your second build takes eight seconds and prints almost nothing. Nothing was made faster. The second build just found all forty jars already in the cupboard. It also means you can build with no internet at all, as long as you have built once before. That is handy the first time you try to work on a train.</p>
+      <ul>
+        <li>On macOS and Linux it is <code>~/.m2/repository</code>. The <code>~</code> sign is short for "my home folder".</li>
+        <li>On Windows it is <code>C:\Users\YourName\.m2\repository</code>.</li>
+      </ul>
+
+      <p>Maven stores every JAR it ever downloads there, in a folder path made from its coordinates. Before it fetches anything from the internet, Maven checks here first.</p>
+
+      <p>This is why your very first Spring Boot build takes two or three minutes. It prints a long stream of "Downloading from central…" lines. Your second build takes eight seconds and prints almost nothing. Nothing got faster. The second build just found all forty JARs already in the cupboard. It also means you can build with no internet at all, as long as you built once before. That is handy the first time you try to work on a train.</p>
 
       <div class="note">
-        <p>If a download is ever cut off, the local repository may be left with a half-written file. Every later build will then fail on it, in a confusing way. The fix is simple and safe. Delete the broken folder inside <code>~/.m2/repository</code> and build again. Maven will download it again. Deleting the whole <code>~/.m2/repository</code> folder is safe too. It only costs you one slow build. Nothing you cannot replace is ever stored there.</p>
+        <p>Sometimes a download gets cut off. Then the local repository may hold a half-written file. Every later build fails on it, in a confusing way. The fix is simple and safe. Delete the broken folder inside <code>~/.m2/repository</code> and build again. Maven downloads it again. Deleting the whole <code>~/.m2/repository</code> folder is safe too. It only costs you one slow build. Nothing you cannot replace lives there.</p>
       </div>
 
-      <h3>3.4 Transitive dependencies — the thing that does the real work</h3>
+      <h3>3.5 Transitive dependencies: the thing that does the real work</h3>
 
       <p>A <span class="term" tabindex="0" data-def="A library your project needs in order to compile or run.">dependency</span> is a library your project needs. A <strong>transitive dependency</strong> is a library that your dependency needs. Maven follows that chain all the way down, by itself. This is the feature that turns forty downloads by hand into two lines of text.</p>
 
@@ -203,28 +282,53 @@
         <figcaption>One dependency line, followed all the way down. Green is what you type. Teal is Spring Boot's own modules. Neutral is code written by others, not by you or Spring. You name the box on the left, and Maven works out the whole tree. The parent POM chose every version number shown here, not you.</figcaption>
       </figure>
 
-      <p>Now the obvious question, and it is a good one. Maven pulls in dozens of things by itself. <strong>What happens when two branches of that tree ask for different versions of the same library?</strong> Say Spring MVC wants SLF4J 2.0.18, and some other library wants SLF4J 1.7.36. Both cannot be on the classpath. The Java runtime will load exactly one <code>org.slf4j.Logger</code> class and ignore the other. If it loads the wrong one, methods go missing while the program runs.</p>
+      <p>The diagram names several libraries. You do not need to learn them now. Here is what each one does, in one line:</p>
 
-      <p>Maven's built-in answer is a rule called <strong>nearest wins</strong>. Of the clashing versions, it uses the one that is fewest steps away from your <code>pom.xml</code>. That is predictable, which is good. But it is also random in a way. It picks by <em>place in the tree</em>, not by whether the result actually works. That is not good enough for a framework made of forty pieces that must work together. Which brings us to the real solution.</p>
+      <ul>
+        <li><strong>Logback</strong> and <strong>SLF4J</strong> write log lines, like the startup log you saw in Lesson 01.</li>
+        <li><strong>snakeyaml</strong> reads YAML files. <span class="term" tabindex="0" data-def="A settings-file format that uses indentation (spaces) to group related settings. application.yml is written in YAML.">YAML</span> is a settings-file format. It groups related settings by indenting them with spaces. Our <code>application.yml</code> is a YAML file.</li>
+        <li><strong>Jackson</strong> turns Java objects into JSON and back.</li>
+        <li><strong>tomcat-embed-core</strong> is Tomcat itself: the embedded web server.</li>
+        <li><strong>spring-boot-autoconfigure</strong> holds core auto-configuration recipes (Lesson 01).</li>
+      </ul>
+
+      <h3>3.6 When two versions of one library clash</h3>
+
+      <p>Now the obvious question, and it is a good one. Maven pulls in dozens of things by itself. <strong>What happens when two branches of that tree ask for different versions of the same library?</strong></p>
+
+      <p>Say Spring MVC wants SLF4J 2.0.18, and some other library wants SLF4J 1.7.36. Both cannot be on the classpath (the list of code your program can use, from Lesson 01). The JVM will load exactly one <code>org.slf4j.Logger</code> class and ignore the other. If it loads the wrong one, methods go missing while the program runs.</p>
+
+      <p>Maven's built-in answer is a rule called <strong>nearest wins</strong>. Of the clashing versions, it uses the one that is fewest steps away from your <code>pom.xml</code>. That is predictable, which is good. But it is also random in a way. It picks by <em>place in the tree</em>, not by whether the result actually works. That is not good enough for a framework made of forty pieces that must work together. So the Spring team adds a better solution on top. That is the next section.</p>
 
       <div class="note">
-        <p><strong>A command worth learning now and using forever:</strong> <code>mvn dependency:tree</code> prints your project's whole tree of dependencies, indented. It marks every version Maven replaced. When a library acts strangely, run this first. Try it after the build in section 5, and you will see the ≈40 jars above with your own eyes.</p>
+        <p><strong>A command worth learning now and using forever:</strong> <code>mvn dependency:tree</code> prints your project's whole tree of dependencies, indented. It marks every version Maven replaced. When a library acts strangely, run this first. Try it after the build in section 5, and you will see the ≈40 JARs above with your own eyes.</p>
       </div>
 
-      <h3>3.5 The parent POM and dependency management</h3>
+      <h3>3.7 The parent POM</h3>
+
+      <p><code>pom.xml</code> stands for "Project Object Model". A <strong>POM</strong> is Maven's description of one project: its name, what it needs, and how to build it.</p>
 
       <p>In the shopping example, the parent POM is the brand that promises its ingredients go together. Here is what it actually is.</p>
 
-      <p>Our <code>pom.xml</code> names a <code>&lt;parent&gt;</code>. The parent is just another <code>pom.xml</code>, published on Maven Central. Our file <em>inherits</em> from it, the same way a Java class inherits from a superclass. Anything the parent says, we get for free. Anything we say ourselves replaces it. Our parent is <code>spring-boot-starter-parent</code>. It has a parent of its own, too: <code>spring-boot-dependencies</code>.</p>
-
-      <p>That grandparent file is the interesting one. It has a section called <code>&lt;dependencyManagement&gt;</code>. The difference between that and a normal <code>&lt;dependencies&gt;</code> section is the most useful thing to understand about Maven:</p>
+      <p>Our <code>pom.xml</code> names a <code>&lt;parent&gt;</code>. The parent is just another <code>pom.xml</code>, published on Maven Central. Our file <em>inherits</em> from it. That works like a Java class that extends a superclass:</p>
 
       <ul>
-        <li><strong><code>&lt;dependencies&gt;</code> means "fetch this."</strong> The library is downloaded and put on the classpath.</li>
-        <li><strong><code>&lt;dependencyManagement&gt;</code> means "if anyone asks for this, use this version."</strong> Nothing is downloaded. It is a price list, not an order.</li>
+        <li>Anything the parent says, we get for free.</li>
+        <li>Anything we say ourselves replaces it.</li>
       </ul>
 
-      <p><code>spring-boot-dependencies</code> is a price list for about four hundred libraries. The Spring team built and tested every one of them together, as a set. A file whose only job is to set versions for a matching set of libraries has a name. It is a <strong>BOM</strong>, short for Bill of Materials. The term comes from factories, where a bill of materials lists every part that goes into a product.</p>
+      <p>Our parent is <code>spring-boot-starter-parent</code>. It has a parent of its own, too: <code>spring-boot-dependencies</code>.</p>
+
+      <h3>3.8 Dependency management and the BOM</h3>
+
+      <p>That grandparent file is the interesting one. It has a section called <code>&lt;dependencyManagement&gt;</code>. It differs from a normal <code>&lt;dependencies&gt;</code> section. That difference is the most useful thing to understand about Maven:</p>
+
+      <ul>
+        <li><strong><code>&lt;dependencies&gt;</code> means "fetch this."</strong> Maven downloads the library and puts it on the classpath.</li>
+        <li><strong><code>&lt;dependencyManagement&gt;</code> means "if anyone asks for this, use this version."</strong> Maven downloads nothing. It is a price list, not an order.</li>
+      </ul>
+
+      <p><code>spring-boot-dependencies</code> is a price list for about four hundred libraries. The Spring team built and tested every one of them together, as a set. A file whose only job is to set versions for a matching set of libraries has a name. It is a <strong>BOM</strong>, short for Bill of Materials. The term comes from factories. There, a bill of materials lists every part that goes into a product.</p>
 
       <p>Here are real lines from the 4.1.1 BOM, checked on Maven Central on 2026-09-30:</p>
 
@@ -240,29 +344,31 @@
 &lt;postgresql.version&gt;<span class="n">42.7.13</span>&lt;/postgresql.version&gt;
 &lt;hibernate.version&gt;<span class="n">7.4.5.Final</span>&lt;/hibernate.version&gt;</code></pre>
 
-      <p><strong>This is why our <code>pom.xml</code> has no version numbers in it.</strong> We write two dependencies and no versions. The result is forty jars that a team of people spent months testing against each other. Change our one <code>&lt;version&gt;4.1.1&lt;/version&gt;</code> on the parent, and all forty move together. That is the whole trick. It cures the jar hell from section 1.</p>
+      <p><strong>This is why our <code>pom.xml</code> has no version numbers in it.</strong> We write two dependencies and no versions. The result is forty JARs that a team of people spent months testing against each other. Change our one <code>&lt;version&gt;4.1.1&lt;/version&gt;</code> on the parent, and all forty move together. That is the whole trick. It cures the JAR hell from section 1.</p>
 
-      <p><code>spring-boot-starter-parent</code> adds a few things on top of the BOM. I checked these in the published file:</p>
+      <h3>3.9 What else the parent sets up</h3>
+
+      <p>A POM can hold <strong>properties</strong>: named values, like <code>java.version</code>, that other parts of the build read. <code>spring-boot-starter-parent</code> adds a few things on top of the BOM. I checked these in the published file:</p>
       <ul>
-        <li>It sets <code>java.version</code> to <code>17</code> by default, and makes <code>maven.compiler.release</code> follow it. So setting one property in our file changes which Java version the compiler produces.</li>
-        <li>It makes source files and build output use UTF-8 text encoding.</li>
-        <li>It pins the version of every build plugin.</li>
+        <li>It sets the property <code>java.version</code> to <code>17</code> by default. It makes <code>maven.compiler.release</code> follow it. So one property in our file decides which Java version the compiler produces.</li>
+        <li>It makes source files and build output use UTF-8. UTF-8 is the standard way to store letters as bytes, so accented letters like "é" survive.</li>
+        <li>It pins the version of every build plugin (the add-ons that do Maven's jobs, from Lesson 00).</li>
         <li>It sets <code>resource.delimiter</code> to <code>@</code>. This detail is a famous trap. We meet it again in section 7.</li>
       </ul>
 
       <details class="check">
-        <summary>Check yourself: our <code>pom.xml</code> lists two dependencies, yet about forty jars end up on the classpath. Where did the other thirty-eight come from, and who chose their versions?</summary>
+        <summary>Check yourself: our <code>pom.xml</code> lists two dependencies, yet about forty JARs end up on the classpath. Where did the other thirty-eight come from, and who chose their versions?</summary>
         <p>They came from <strong>transitive resolution</strong>. Each of our two dependencies lists its own dependencies. Those list theirs. Maven walks the whole tree until nothing is left to fetch.</p>
-        <p>Their versions were chosen by the <strong>BOM</strong> inside <code>spring-boot-dependencies</code>, which our parent inherits from. If nobody had decided, Maven's own "nearest wins" rule would apply. But the BOM's <code>&lt;dependencyManagement&gt;</code> section overrides it for every library Spring looks after, which is almost all of them. So: Maven fetched them, but the Spring team picked them.</p>
+        <p>The <strong>BOM</strong> inside <code>spring-boot-dependencies</code> chose their versions, and our parent inherits from it. If nobody had decided, Maven's own "nearest wins" rule would apply. But the BOM's <code>&lt;dependencyManagement&gt;</code> section overrides that rule for every library Spring looks after, which is almost all of them. So: Maven fetched them, but the Spring team picked them.</p>
       </details>
 
-      <h3>3.6 What a starter actually <em>is</em></h3>
+      <h3>3.10 What a starter actually <em>is</em></h3>
 
       <p>Lesson 01 defined a <span class="term" tabindex="0" data-def="A ready-made group of libraries for one job, added as one dependency, with versions already known to work together.">starter</span> as "a ready-made group of libraries for one job". Now that you know what a POM is, we can be exact. The truth is funnier than that definition suggests.</p>
 
-      <p><strong>A starter is an empty jar.</strong> Really. Download <code>spring-boot-starter-webmvc-4.1.1.jar</code>, open it, and there are no classes inside. All its value is in the <em>POM file</em> published next to it. That file lists five dependencies and nothing else. A starter is a shopping list pretending to be a product.</p>
+      <p><strong>A starter is an empty JAR.</strong> Really. Download <code>spring-boot-starter-webmvc-4.1.1.jar</code> and open it. There are no classes inside. All its value is in the <em>POM file</em> published next to it. That file lists five dependencies and nothing else. A starter is a shopping list pretending to be a product.</p>
 
-      <p>This is done on purpose. A starter just states what you want: "I am building a Spring MVC web application". It is kept completely separate from the code that does the work. Boot's <span class="term" tabindex="0" data-def="Spring Boot looking at the classpath when the app starts and setting up the obvious things, using conditions, not magic.">auto-configuration</span> then reads the classpath that the starter filled, and draws conclusions from it, just as Lesson 01's simulation showed. The starter provides the clues. Auto-configuration is the detective.</p>
+      <p>This is on purpose. A starter just states what you want: "I am building a Spring MVC web app". It is kept completely separate from the code that does the work. Then Boot's <span class="term" tabindex="0" data-def="Spring Boot looking at the classpath when the app starts and setting up the obvious things, using conditions, not magic.">auto-configuration</span> reads the classpath that the starter filled. It draws conclusions from it, just as Lesson 01's simulation showed. The starter provides the clues. Auto-configuration is the detective.</p>
 
       <p>Here is what is really in our two starters, taken from their published POMs:</p>
 
@@ -280,14 +386,38 @@ spring-boot-starter-webmvc-test  (no classes of its own, scope: test)
  ├── spring-boot-webmvc-test          MockMvc — call a controller without a real server
  └── spring-boot-resttestclient       RestTestClient — Boot 4's HTTP test client</pre>
 
+      <p>The second starter has <code>scope: test</code>. A dependency's <strong>scope</strong> tells Maven when it is needed. <code>test</code> means "only for running tests". So none of it goes into the finished app.</p>
+
+      <p>The test starter names several testing tools. Here is what each one does:</p>
+
+      <ul>
+        <li><strong>JUnit 5</strong> finds your test methods and runs them.</li>
+        <li><strong>AssertJ</strong> and <strong>Hamcrest</strong> let you write checks, like "this value must equal 5". A check like that is called an <strong>assertion</strong>.</li>
+        <li><strong>Mockito</strong> makes fake objects for tests, so you can test one class on its own.</li>
+        <li><strong>JSONPath</strong> picks single values out of a JSON response in a test.</li>
+        <li><strong>spring-test</strong> is Spring's own support for tests.</li>
+        <li><strong>MockMvc</strong> sends pretend requests to your web code without a real server.</li>
+        <li><strong>RestTestClient</strong> is new in Boot 4. It sends HTTP requests to your app from a test.</li>
+      </ul>
+
+      <p>You will use all of these in later lessons. For now, just know they arrive with one line.</p>
+
+      <h3>3.11 Starter names that changed in Spring Boot 4</h3>
+
       <div class="v4">
         <p><strong>The starter rename you will trip over within a week.</strong> Every Spring Boot tutorial, book, video and Stack Overflow answer from before 2026 starts a web project with this:</p>
         <span class="v4-old">spring-boot-starter-web</span>
         <span class="v4-new">spring-boot-starter-webmvc</span>
-        <p><strong>What 3.x did:</strong> one starter named <code>spring-boot-starter-web</code>. It brought in one giant auto-configuration jar. That jar grew from 182 KiB in 2014 to about 2 MiB by Boot 3.5. It held the setup recipes for every technology Spring supports. Every application got all of it, whether it used that technology or not.</p>
-        <p><strong>What 4.x does:</strong> that giant jar was split into small <code>spring-boot-&lt;technology&gt;</code> modules. The starters were renamed to match the module each one brings in. "web" was unclear, because Spring has two completely different ways of building web apps. So the servlet one became <code>webmvc</code>. That matches <code>webflux</code>, the other one, which was already named after its technology. Two more renames happened at the same time. <code>spring-boot-starter-web-services</code> became <code>spring-boot-starter-webservices</code>. And the three OAuth2 starters got a <code>security-</code> prefix. For example, <code>spring-boot-starter-oauth2-client</code> became <code>spring-boot-starter-security-oauth2-client</code>.</p>
-        <p><strong>Why it changed:</strong> a smaller classpath, fewer useless classes for Boot's rule engine to check at startup, and a name that tells you what you are getting. There is a second, quieter benefit. With one module per technology, your list of dependencies honestly shows what your application uses. That matters for security checks, and for native images later in Phase 3.</p>
-        <p><strong>What this means for you:</strong> type <code>spring-boot-starter-webmvc</code> in our project. When you read an older tutorial, translate <code>-web</code> to <code>-webmvc</code> on sight. The old name still works today. It is deprecated (marked as old and due to be removed), not deleted. So a copied tutorial will seem to work. That is exactly why it is worth knowing about now. One real difference in behaviour: the new starter brings in <code>spring-boot-starter-tomcat</code> by itself. Older tutorials add a separate Tomcat dependency. You no longer need it.</p>
+        <p><strong>What 3.x did:</strong> one starter named <code>spring-boot-starter-web</code>. It brought in one giant auto-configuration JAR. That JAR grew from 182 KiB in 2014 to about 2 MiB by Boot 3.5. It held the setup recipes for every technology Spring supports. Every app got all of it, whether it used that technology or not.</p>
+        <p><strong>What 4.x does:</strong> the Spring team split that giant JAR into small <code>spring-boot-&lt;technology&gt;</code> modules. They renamed the starters to match the module each one brings in. "web" was unclear, because Spring has two completely different ways to build web apps. So the servlet way became <code>webmvc</code>. That matches <code>webflux</code>, the other (reactive) way, which was already named after its technology.</p>
+        <p>Two more renames happened at the same time:</p>
+        <ul>
+          <li><code>spring-boot-starter-web-services</code> became <code>spring-boot-starter-webservices</code>.</li>
+          <li>The three OAuth2 starters got a <code>security-</code> prefix. (OAuth2 is a standard way to log in through another service, like "Sign in with Google".) For example, <code>spring-boot-starter-oauth2-client</code> became <code>spring-boot-starter-security-oauth2-client</code>.</li>
+        </ul>
+        <p><strong>Why it changed:</strong> three reasons. A smaller classpath. Fewer useless classes for Boot's rule engine to check at startup. And a name that tells you what you get. There is a fourth, quieter benefit. With one module per technology, your list of dependencies honestly shows what your app uses. That matters for security checks, and for native images later in Phase 3.</p>
+        <p><strong>What this means for you:</strong> type <code>spring-boot-starter-webmvc</code> in our project. When you read an older tutorial, translate <code>-web</code> to <code>-webmvc</code> on sight. The old name still works today. It is deprecated (marked as old, and due to be removed), not deleted. So a copied tutorial will seem to work. That is exactly why it is worth knowing about now.</p>
+        <p>One real difference in behaviour: the new starter brings in <code>spring-boot-starter-tomcat</code> by itself. Older tutorials add a separate Tomcat dependency. You no longer need it.</p>
       </div>
 
       <div class="v4">
@@ -295,19 +425,26 @@ spring-boot-starter-webmvc-test  (no classes of its own, scope: test)
         <span class="v4-old">spring-boot-starter-test</span>
         <span class="v4-new">spring-boot-starter-webmvc-test</span>
         <p><strong>What 3.x did:</strong> one test starter for everything. <code>spring-boot-starter-test</code> brought JUnit, Mockito, AssertJ <em>and</em> all the web testing helpers, whether your project had a web part or not.</p>
-        <p><strong>What 4.x does:</strong> the same split into modules, applied to testing. <code>spring-boot-starter-test</code> still exists. It still holds the general testing tools that work for any technology: JUnit Jupiter, AssertJ, Mockito, Hamcrest, JSONPath and <code>spring-test</code>. The web testing helpers moved into <code>spring-boot-starter-webmvc-test</code>. That starter <em>contains</em> <code>spring-boot-starter-test</code>, so asking for the webmvc one gets you both.</p>
+        <p><strong>What 4.x does:</strong> the same split into modules, applied to testing. <code>spring-boot-starter-test</code> still exists. It still holds the general testing tools that work for any technology: JUnit Jupiter, AssertJ, Mockito, Hamcrest, JSONPath and <code>spring-test</code>. The web testing helpers moved into <code>spring-boot-starter-webmvc-test</code>. That starter <em>contains</em> <code>spring-boot-starter-test</code>. So asking for the webmvc one gets you both.</p>
         <p><strong>Why it changed:</strong> the same reason as the main starters. You should only carry testing tools for the technologies you actually use. It also gives a natural home to Boot 4's new <code>RestTestClient</code>.</p>
-        <p><strong>What this means for you:</strong> in a web project, use <code>spring-boot-starter-webmvc-test</code>. That is what Spring Initializr now creates. Say you copy <code>spring-boot-starter-test</code> from a 3.x tutorial. Your project will still compile. But then a test that uses <code>MockMvc</code> fails with "cannot find symbol", and the cause is not obvious. There is a related Boot 4 change, which you will meet properly in the testing chapter. <code>@SpringBootTest</code> no longer gives you <code>MockMvc</code> or <code>TestRestTemplate</code> automatically, as it used to.</p>
+        <p><strong>What this means for you:</strong> in a web project, use <code>spring-boot-starter-webmvc-test</code>. That is what Spring Initializr now creates. Say you copy <code>spring-boot-starter-test</code> from a 3.x tutorial. Your project still compiles. But a test that uses <code>MockMvc</code> then fails with "cannot find symbol". That is the compiler saying "I do not know this name". The cause is not obvious.</p>
+        <p>There is a related Boot 4 change. You meet it properly in the testing chapter. <code>@SpringBootTest</code> is the annotation that starts the whole app inside a test (you see it in section 6). In 3.x it gave you <code>MockMvc</code> and <code>TestRestTemplate</code> (an older tool for sending requests in tests) automatically. In 4.x it no longer does.</p>
       </div>
 
       <div class="v4">
         <p><strong>The emergency exit: good to know about, but do not use it.</strong></p>
         <span class="v4-new">spring-boot-starter-classic</span>
-        <p><strong>What it is:</strong> a starter that brings in <em>all</em> of Boot's modules. So every auto-configuration class is there, just like in the old single jar before 4.0. (It leaves out their own dependencies.) The official guide for moving up to Boot 4 calls it a bridge. You swap <code>spring-boot-starter</code> for <code>spring-boot-starter-classic</code>, and <code>spring-boot-starter-test</code> for <code>spring-boot-starter-test-classic</code>. Then your existing 3.x application compiles and runs on Boot 4 quickly. After that, you move to the proper module-by-module starters.</p>
-        <p><strong>Why a new project must not use it:</strong> it exists only to make an <em>upgrade</em> less painful. On a fresh project, it brings back the exact problem the split was meant to solve: a bloated classpath full of auto-configurations you will never use. The official advice is clearly to move away from it. We are starting fresh, so we start with modules.</p>
+        <p><strong>What it is:</strong> a starter that brings in <em>all</em> of Boot's modules. So every auto-configuration class is there, just like in the old single JAR before 4.0. (It leaves out their own dependencies.) The official guide for moving up to Boot 4 calls it a bridge. Here is how the bridge works:</p>
+        <ol>
+          <li>You swap <code>spring-boot-starter</code> for <code>spring-boot-starter-classic</code>, and <code>spring-boot-starter-test</code> for <code>spring-boot-starter-test-classic</code>.</li>
+          <li>Your existing 3.x app now compiles and runs on Boot 4 quickly.</li>
+          <li>After that, you move to the proper module-by-module starters.</li>
+        </ol>
+        <p><strong>Why a new project must not use it:</strong> it exists only to make an <em>upgrade</em> less painful. On a fresh project, it brings back the exact problem the split was meant to solve. You get a bloated classpath, full of auto-configurations you will never use. The official advice is clearly to move away from it. We are starting fresh, so we start with modules.</p>
       </div>
 
-      <h3>3.7 The folder layout, and why you cannot change it</h3>
+
+      <h3>3.12 The folder layout, and why you cannot change it</h3>
 
       <p>You never told Maven where your source code is. It found it anyway. That is because the folder layout is a convention. Maven assumes it, and so does nearly every other Java tool today.</p>
 
@@ -354,23 +491,26 @@ spring-boot-starter-webmvc-test  (no classes of its own, scope: test)
           <text x="760" y="348" text-anchor="middle" class="fig-small">100% generated · git-ignored</text>
           <text x="760" y="366" text-anchor="middle" class="fig-small">safe to delete at any time</text>
         </svg>
-        <figcaption>Every folder here is a convention that Maven assumes. None of it is a setting you chose. Green is source you write and commit. Teal is generated, or a tool. One rule is worth remembering forever: nothing in <code>target/</code> is ever precious. It is rebuilt from the green boxes every single time.</figcaption>
+        <figcaption>Every folder here is a convention that Maven assumes. None of it is a setting you chose. Green is source you write and commit. Teal is generated, or a tool. One rule is worth remembering forever: nothing in <code>target/</code> is ever precious. The build makes it again from the green boxes every single time.</figcaption>
       </figure>
 
-      <p>Here is each one, and what breaks if you get it wrong:</p>
+      <p>Here is each folder, and what breaks if you get it wrong.</p>
 
-      <ul>
-        <li><strong><code>src/main/java</code></strong>: the Java source for the real application. Maven compiles everything in here. The folders inside must exactly match the <code>package</code> lines. <code>package com.ecommerce;</code> means the file must sit in <code>src/main/java/com/ecommerce/</code>. Put the file one folder off, and the compiler rejects it before it even reads the code.</li>
-        <li><strong><code>src/main/resources</code></strong>: files that are not code but must travel with the application. Today that is <code>application.yml</code>. Later it will include SQL scripts, message files and page templates. Everything here is copied, with the same folder layout, to the top level of the built jar. That is exactly why Boot finds <code>application.yml</code> without you telling it where. When the app runs, the file is at the top level of the jar, which is where Boot looks.</li>
-        <li><strong><code>src/test/java</code></strong>: the test source. It is compiled completely separately. Tests can use the application's classes, but the application can never see the tests. This rule is enforced, not just a good habit. It makes sure your test libraries can never end up in the real application by accident. (<code>src/test/resources</code> exists for the same reason and holds settings used only by tests. We do not need it yet.)</li>
-        <li><strong><code>target/</code></strong>: everything the build produces: compiled <code>.class</code> files, the jar, test reports. Maven creates it. You never edit anything inside it. It is listed in <code>.gitignore</code> and must stay there. <strong>You can delete the whole folder whenever you like.</strong> That is exactly what <code>mvn clean</code> does. "Have you tried <code>mvn clean</code>?" is Java's version of "turn it off and on again". It works surprisingly often, because it forces every old <code>.class</code> file to be rebuilt.</li>
-      </ul>
+      <p><strong><code>src/main/java</code></strong> holds the Java source for the real app. Maven compiles everything in here. The folders inside must exactly match the <code>package</code> lines. <code>package com.ecommerce;</code> means the file must sit in <code>src/main/java/com/ecommerce/</code>. Put the file one folder off, and the compiler rejects it before it even reads the code.</p>
 
-      <h3>3.8 The build lifecycle: phases always run in order</h3>
+      <p><strong><code>src/main/resources</code></strong> holds files that are not code but must travel with the app. Today that is <code>application.yml</code>. Later it will include SQL scripts (SQL is the language for talking to databases), message files and page templates. Maven copies everything here, with the same folder layout, to the top level of the built JAR. That is exactly why Boot finds <code>application.yml</code> without you telling it where. When the app runs, the file sits at the top level of the JAR, which is where Boot looks.</p>
 
-      <p>When you type <code>mvn package</code>, you are not naming a single task. You are naming a <strong>phase</strong>: one step in a fixed list of steps. Maven runs <em>that phase and every phase before it</em>.</p>
+      <p><strong><code>src/test/java</code></strong> holds the test source. Maven compiles it completely separately. Tests can use the app's classes, but the app can never see the tests. Maven enforces this rule; it is not just a good habit. It makes sure your test libraries can never end up in the real app by accident. (<code>src/test/resources</code> exists for the same reason. It holds settings used only by tests. We do not need it yet.)</p>
 
-      <p>This one fact explains most of the Maven behaviour that confuses newcomers. So let us be concrete. Here are the standard phases for a jar project, in order:</p>
+      <p><strong><code>target/</code></strong> holds everything the build produces: compiled <code>.class</code> files, the JAR, and test reports. Maven creates it. You never edit anything inside it. It is listed in <code>.gitignore</code> and must stay there.</p>
+
+      <p><strong>You can delete the whole <code>target/</code> folder whenever you like.</strong> That is exactly what <code>mvn clean</code> does. "Have you tried <code>mvn clean</code>?" is Java's version of "turn it off and on again". It works surprisingly often, because it forces Maven to rebuild every old <code>.class</code> file.</p>
+
+      <h3>3.13 The build lifecycle: phases always run in order</h3>
+
+      <p>When you type <code>mvn package</code>, you do not name a single task. You name a <strong>phase</strong>: one step in a fixed list of steps. Maven runs <em>that phase and every phase before it</em>.</p>
+
+      <p>This one fact explains most of the Maven behaviour that confuses newcomers. So let us be concrete. Here are the standard phases for a JAR project, in order:</p>
 
       <div class="tablewrap">
         <table>
@@ -381,20 +521,26 @@ spring-boot-starter-webmvc-test  (no classes of its own, scope: test)
             <tr><td>3</td><td><code>test</code></td><td>Compile <code>src/test/java</code>, then run every test. <strong>Any failure stops the build here.</strong></td></tr>
             <tr><td>4</td><td><code>package</code></td><td>Zip <code>target/classes</code> into <code>target/ecommerce-0.0.1-SNAPSHOT.jar</code>.</td></tr>
             <tr><td>5</td><td><code>verify</code></td><td>Run any larger checks that test several parts together.</td></tr>
-            <tr><td>6</td><td><code>install</code></td><td>Copy the jar into your local repository, so other projects on this machine can use it.</td></tr>
-            <tr><td>7</td><td><code>deploy</code></td><td>Upload it to a shared online repository. This is almost always done by a build server, not a person.</td></tr>
+            <tr><td>6</td><td><code>install</code></td><td>Copy the JAR into your local repository, so other projects on this machine can use it.</td></tr>
+            <tr><td>7</td><td><code>deploy</code></td><td>Upload it to a shared online repository. A build server usually does this, not a person. (A build server is a computer that builds and tests code automatically each time someone pushes.)</td></tr>
           </tbody>
         </table>
       </div>
 
-      <p>So <code>mvn package</code> also compiles and runs your tests. You never have to ask for those separately. And <code>mvn install</code> does everything <code>package</code> does, plus more. This "everything before it" rule also explains the most common Maven surprise of all: <em>"I asked it to package, and it said BUILD FAILURE because of a test."</em> Yes. That is on purpose. A build that packages code known to be broken would be worse than useless.</p>
+      <p>So <code>mvn package</code> also compiles and runs your tests. You never have to ask for those separately. And <code>mvn install</code> does everything <code>package</code> does, plus more.</p>
 
-      <p><code>clean</code> is the odd one out. It belongs to a separate list of steps, and its only job is to delete <code>target/</code>. That is why you write <code>mvn clean package</code>: two separate lists, in that order. <code>package</code> alone does not clean first.</p>
+      <p>This "everything before it" rule also explains the most common Maven surprise of all: <em>"I asked it to package, and it said BUILD FAILURE because of a test."</em> Yes. That is on purpose. A build that packages code known to be broken would be worse than useless.</p>
 
-      <p>Finally, <code>mvn spring-boot:run</code> looks different because it is different. Anything with a colon in it is a <strong>goal</strong>. A goal is one specific action from one specific plugin, run directly instead of as part of a phase. Read it as <em>plugin : goal</em>: the <code>spring-boot</code> plugin, and its <code>run</code> goal. It compiles what it needs and starts the application straight from <code>target/classes</code>. It does not build a jar at all. That is why it is the fast command while you are developing.</p>
+      <h3>3.14 <code>clean</code>, goals, and the fat JAR</h3>
+
+      <p><code>clean</code> is the odd one out. It belongs to a separate list of steps. Its only job is to delete <code>target/</code>. That is why you write <code>mvn clean package</code>: two separate lists, in that order. <code>package</code> alone does not clean first.</p>
+
+      <p><code>mvn spring-boot:run</code> looks different because it is different. Anything with a colon in it is a <strong>goal</strong>. A goal is one action from one plugin, run directly instead of as part of a phase. Read it as <em>plugin : goal</em>: the <code>spring-boot</code> plugin, and its <code>run</code> goal. It compiles what it needs and starts the app straight from <code>target/classes</code>. It does not build a JAR at all. That is why it is the fast command while you develop.</p>
+
+      <p>One more word before the simulation. A normal JAR holds only your own classes. Spring Boot's plugin turns it into a <strong>fat JAR</strong>: one JAR that holds your classes <em>and</em> every library they need. That is the "one runnable file" from Lesson 01. Maven makes it in a step called <code>repackage</code>, right after <code>package</code>. Section 3.16 shows how it works inside.</p>
 
       <div class="sim">
-        <p class="sim-hint">Pick a command. Watch which phases actually run, in order, and what appears in <code>target/</code>. The thing to notice: you only ever name one phase, and you always get every phase before it.</p>
+        <p class="sim-hint">Pick a command. Watch which phases actually run, in order, and what appears in <code>target/</code>. Notice this: you only ever name one phase, and you always get every phase before it.</p>
 
         <div class="sim-controls">
           <button type="button" class="sim-btn active" id="sim2-c1">mvn compile</button>
@@ -410,7 +556,7 @@ spring-boot-starter-webmvc-test  (no classes of its own, scope: test)
 
         <div class="sim-console" id="sim2-out" aria-live="polite">Pick a command, then press “Run it”.</div>
 
-        <p class="sim-note">This is a model of the lifecycle, not the real thing. It has five commands and seven phases, not Maven's full set. Your machine has the final say. Run the real commands from <code>phase-1-monolith/ecommerce/</code> and compare. If you want to see which plugin really runs in each phase, <code>mvn help:describe -Dcmd=package</code> prints it.</p>
+        <p class="sim-note">This is a model of the lifecycle, not the real thing. It has five commands and seven phases, not Maven's full set. Your machine has the final say. Run the real commands from <code>phase-1-monolith/ecommerce/</code> and compare. To see which plugin really runs in each phase, run <code>mvn help:describe -Dcmd=package</code>.</p>
       </div>
 
       <script>
@@ -513,46 +659,54 @@ spring-boot-starter-webmvc-test  (no classes of its own, scope: test)
       </script>
 
       <details class="check">
-        <summary>Check yourself: you run <code>mvn package</code> and it prints BUILD FAILURE with a failing test. Is there a jar in <code>target/</code>?</summary>
-        <p><strong>No.</strong> <code>test</code> comes before <code>package</code>, and a failing test stops the build right there. The <code>package</code> phase is never reached, so no jar is made.</p>
-        <p>But an <em>older</em> jar from an earlier successful build may still be there. It is untouched, and now it is misleading, because it does not have your latest code. That is one quiet reason to always type <code>mvn clean package</code>. Then a failed build leaves you with no jar at all. You cannot run an old one by accident and be confused by it.</p>
+        <summary>Check yourself: you run <code>mvn package</code> and it prints BUILD FAILURE with a failing test. Is there a JAR in <code>target/</code>?</summary>
+        <p><strong>No.</strong> <code>test</code> comes before <code>package</code>, and a failing test stops the build right there. The build never reaches <code>package</code>, so no JAR is made.</p>
+        <p>But an <em>older</em> JAR from an earlier successful build may still be there. It is untouched, and now it is misleading, because it does not have your latest code. That is one quiet reason to always type <code>mvn clean package</code>. Then a failed build leaves you with no JAR at all. You cannot run an old one by accident and be confused by it.</p>
       </details>
 
-      <h3>3.9 Maven versus Gradle — the honest comparison</h3>
+      <h3>3.15 Maven versus Gradle: the honest comparison</h3>
 
-      <p>Maven is not the only Java build tool. Gradle is the other one you will meet. Spring Initializr picks Gradle by default, so you should know why we are not using it.</p>
+      <p>Maven is not the only Java build tool. Gradle is the other one you will meet. Spring Initializr picks Gradle by default, so you should know why we do not use it.</p>
 
       <div class="tablewrap">
         <table>
           <thead><tr><th></th><th>Maven</th><th>Gradle</th></tr></thead>
           <tbody>
-            <tr><td>Build file</td><td><code>pom.xml</code>: XML that only describes the project</td><td><code>build.gradle(.kts)</code>: real code, in Groovy or Kotlin</td></tr>
+            <tr><td>Build file</td><td><code>pom.xml</code>: XML that only describes the project</td><td><code>build.gradle(.kts)</code>: real code, in Groovy or Kotlin (two other languages that run on the JVM)</td></tr>
             <tr><td>Length</td><td>Wordy. A dependency takes five lines.</td><td>Short. A dependency takes one line.</td></tr>
             <tr><td>Flexibility</td><td>Limited on purpose. You describe the project, not the steps</td><td>Almost unlimited. You can write any logic you like</td></tr>
             <tr><td>Speed on big projects</td><td>Slower. It does not reuse earlier work by default</td><td>Faster. It rebuilds only what changed, reuses earlier work, and keeps a helper program running in the background</td></tr>
             <tr><td>Predictability</td><td>Very high. Every Maven project looks the same.</td><td>Lower. Every Gradle project can look different.</td></tr>
-            <tr><td>Learning curve</td><td>Shallow. Learn it once, read any project.</td><td>Steeper. A custom build can be a small program.</td></tr>
+            <tr><td>Learning curve</td><td>Gentle. Learn it once, read any project.</td><td>Steeper. A custom build can be a small program.</td></tr>
           </tbody>
         </table>
       </div>
 
-      <p>Both are excellent, and both are used everywhere. Neither is out of date. We use Maven for one teaching reason: its strictness helps while you are learning. A Maven build cannot hold clever custom logic. So there is never a hidden step doing something surprising. The layout you learn here is the layout of nearly every Maven project you will ever open. Gradle lets each project be different, and that is exactly what you do not want while you are learning what is normal. Learn Maven first. When you meet Gradle later, you will understand what its shortcuts are <em>for</em>.</p>
+      <p>Both are excellent, and both are used everywhere. Neither is out of date. We use Maven for one teaching reason: its strictness helps while you learn.</p>
 
-      <h3>3.10 Spring Initializr, option by option</h3>
+      <ul>
+        <li>A Maven build cannot hold clever custom logic. So no hidden step ever does something surprising.</li>
+        <li>The layout you learn here is the layout of nearly every Maven project you will ever open.</li>
+        <li>Gradle lets each project be different. That is exactly what you do not want while you are still learning what is normal.</li>
+      </ul>
+
+      <p>Learn Maven first. When you meet Gradle later, you will understand what its shortcuts are <em>for</em>.</p>
+
+      <h3>3.16 Spring Initializr, option by option</h3>
 
       <p><strong>Spring Initializr</strong> is a website at <a href="https://start.spring.io">start.spring.io</a>. It creates a new, correct Spring Boot project for you, as a zip file. It is not a toy. The Spring team runs it, and professionals use it to start real projects. IntelliJ IDEA and VS Code both have it built in, so you never have to leave the editor.</p>
 
-      <p>Every option, and what we choose:</p>
+      <p>Here is every option, and what we choose:</p>
 
       <div class="tablewrap">
         <table>
           <thead><tr><th>Option</th><th>What it means</th><th>Ours</th></tr></thead>
           <tbody>
-            <tr><td><strong>Project</strong></td><td>Which build tool. Determines whether you get <code>pom.xml</code> or <code>build.gradle</code>.</td><td><strong>Maven</strong></td></tr>
+            <tr><td><strong>Project</strong></td><td>Which build tool. It decides whether you get <code>pom.xml</code> or <code>build.gradle</code>.</td><td><strong>Maven</strong></td></tr>
             <tr><td><strong>Language</strong></td><td>Java, Kotlin or Groovy.</td><td><strong>Java</strong></td></tr>
-            <tr><td><strong>Spring Boot</strong></td><td>The version. Versions ending in <code>-SNAPSHOT</code>, <code>-M</code> or <code>-RC</code> are unfinished. Never pick one for real work.</td><td><strong>4.1.1</strong></td></tr>
+            <tr><td><strong>Spring Boot</strong></td><td>The version. Versions that end in <code>-SNAPSHOT</code> (still being worked on), <code>-M</code> (milestone: an early preview) or <code>-RC</code> (release candidate: almost finished) are unfinished. Never pick one for real work.</td><td><strong>4.1.1</strong></td></tr>
             <tr><td><strong>Group</strong></td><td>The <code>groupId</code>. A web address written backwards.</td><td><code>com.ecommerce</code></td></tr>
-            <tr><td><strong>Artifact</strong></td><td>The <code>artifactId</code>: the project's short name. It becomes the folder name and the jar name.</td><td><code>ecommerce</code></td></tr>
+            <tr><td><strong>Artifact</strong></td><td>The <code>artifactId</code>: the project's short name. It becomes the folder name and the JAR name.</td><td><code>ecommerce</code></td></tr>
             <tr><td><strong>Name</strong></td><td>The display name. It also decides the main class name: <code>ecommerce</code> → <code>EcommerceApplication</code>.</td><td><code>ecommerce</code></td></tr>
             <tr><td><strong>Package name</strong></td><td>The top Java package. <strong>This one really matters.</strong> Spring only looks for your classes in this package and the ones inside it.</td><td><code>com.ecommerce</code></td></tr>
             <tr><td><strong>Packaging</strong></td><td><code>Jar</code> = one runnable file with a server inside. <code>War</code> = the old format, copied into a separately installed server.</td><td><strong>Jar</strong></td></tr>
@@ -562,9 +716,15 @@ spring-boot-starter-webmvc-test  (no classes of its own, scope: test)
         </table>
       </div>
 
-      <p>Two of those are worth a second look. <strong>Package name</strong> is the one that quietly ruins afternoons. Spring's search for your classes starts at the package of your main class. It covers only that package and the packages inside it. Put a controller in a package next to it, and Spring will not find it. There will be no error at all. The endpoint will just return 404. A failure with no message is the worst kind. Lesson 03 covers this properly, with a simulation.</p>
+      <h3>3.17 Two options that deserve a second look</h3>
 
-      <p>And <strong>Dependencies</strong>: adding a starter here is exactly the same as typing a <code>&lt;dependency&gt;</code> block into <code>pom.xml</code> yourself. The website has no special power. It saves you time in the first five minutes. After that, you edit the POM directly. You can even start a project from the command line. It is worth seeing once, to show there is nothing mysterious about the website:</p>
+      <p><strong>Package name</strong> is the one that quietly ruins afternoons. Spring's search for your classes starts at the package of your main class. It covers only that package and the packages inside it.</p>
+
+      <p>Say you put a <strong>controller</strong> in a package next to it, not inside it. (A controller is the class that answers web requests. Chapter 4 builds the first one.) Spring will not find it. There will be no error at all. The endpoint (a web address your app answers) will just return 404. A failure with no message is the worst kind. Lesson 03 covers this properly, with a simulation.</p>
+
+      <p><strong>Dependencies</strong>: adding a starter here is exactly the same as typing a <code>&lt;dependency&gt;</code> block into <code>pom.xml</code> yourself. The website has no special power. It saves you time in the first five minutes. After that, you edit the POM directly.</p>
+
+      <p>You can even start a project from the terminal. It is worth seeing once, to show there is nothing mysterious about the website. The command below uses <code>curl</code>. <strong>curl</strong> is a small tool that sends a web request from the terminal and shows or saves what comes back. Windows 10 and 11, macOS and Linux all include it.</p>
 
       <pre><code><span class="c"># Generates and unzips exactly what the website would have given you.</span>
 curl https://start.spring.io/starter.zip \
@@ -575,10 +735,10 @@ curl https://start.spring.io/starter.zip \
   -o ecommerce.zip</code></pre>
 
       <div class="note">
-        <p><strong>A detail worth noticing:</strong> the command still asks for <code>web</code>, yet Boot 4.1.1 puts <code>spring-boot-starter-webmvc</code> in the POM. <code>web</code> is just Initializr's own <em>label</em> for "the servlet way of building web apps". It turns that label into the right starter for the Boot version you picked. Pick Boot 3.x, and the same request gives you <code>spring-boot-starter-web</code>. The website is quietly translating for you. That is exactly the translation you now have to do yourself when reading an old tutorial.</p>
+        <p><strong>A detail worth noticing:</strong> the command still asks for <code>web</code>, yet Boot 4.1.1 puts <code>spring-boot-starter-webmvc</code> in the POM. <code>web</code> is just Initializr's own <em>label</em> for "the servlet way to build web apps". Initializr turns that label into the right starter for the Boot version you picked. Pick Boot 3.x, and the same request gives you <code>spring-boot-starter-web</code>. The website quietly translates for you. Now you must do that same translation yourself when you read an old tutorial.</p>
       </div>
 
-      <h3>3.11 From a typed command to the first HTTP response</h3>
+      <h3>3.18 From a typed command to the first HTTP response</h3>
 
       <p>This is where it all comes together. Here is the whole chain, with nothing skipped.</p>
 
@@ -625,24 +785,53 @@ curl https://start.spring.io/starter.zip \
           <text x="678" y="256" text-anchor="middle" class="fig-h">6 · A request arrives · DispatcherServlet looks for a match</text>
           <text x="678" y="277" text-anchor="middle" class="fig-caption-accent">nothing is mapped yet → HTTP 404, which is still a real response</text>
         </svg>
-        <figcaption>Green is your code and your typing. Teal is Spring Boot and the server. Neutral is the Java platform and the outside world. Stage 3 is the part nobody explains. The Java runtime cannot load a jar that sits inside another jar. So Spring Boot brings its own launcher and class loader, to make the one-file idea work at all.</figcaption>
+        <figcaption>Green is your code and your typing. Teal is Spring Boot and the server. Neutral is the Java platform and the outside world. Stage 3 is the part nobody explains. The JVM cannot load a JAR that sits inside another JAR. So Spring Boot brings its own launcher and class loader, to make the one-file idea work at all.</figcaption>
       </figure>
 
-      <p>Step by step, with the details that matter:</p>
+      <p>Here are the six stages, step by step, with the details that matter.</p>
+
+      <p><strong>Stage 1. You type <code>java -jar target/ecommerce-0.0.1-SNAPSHOT.jar</code>.</strong> The <code>-jar</code> part is a <strong>flag</strong>: an extra instruction added to a command. It tells the JVM: "this file is a program; look inside it to find where to start".</p>
+
+      <p><strong>Stage 2. The JVM opens the JAR and reads <code>META-INF/MANIFEST.MF</code>.</strong> This is a small text file that every JAR has. It is called the <strong>manifest</strong>, like a ship's list of cargo. The JVM looks for a line that says <code>Main-Class:</code>. That line names the class whose <code>main</code> method it should call. Without it, you get "no main manifest attribute", and nothing happens.</p>
+
+      <p><strong>Stage 3. That line does not name your class.</strong> It names <code>org.springframework.boot.loader.launch.JarLauncher</code>. Spring Boot's Maven plugin put it there during the <code>repackage</code> step. <em>Why?</em> Because of a real limit in Java. Follow it step by step:</p>
 
       <ol>
-        <li><strong>You type <code>java -jar target/ecommerce-0.0.1-SNAPSHOT.jar</code>.</strong> The <code>-jar</code> flag tells the Java runtime: "this file is a program; look inside it to find where to start".</li>
-        <li><strong>The JVM opens the jar and reads <code>META-INF/MANIFEST.MF</code>.</strong> This is a small text file that every jar has. The JVM looks for a line that says <code>Main-Class:</code>. That line names the class whose <code>main</code> method it should call. Without it, you get "no main manifest attribute", and nothing happens.</li>
-        <li><strong>That line does not name your class.</strong> It names <code>org.springframework.boot.loader.launch.JarLauncher</code>. Spring Boot's Maven plugin put that class there during the <code>repackage</code> step. <em>Why?</em> Because of a real limit in Java. A class loader is the part of Java that finds and loads classes. The standard one can read classes from a jar. But it cannot read classes from a jar that is <em>inside</em> another jar. Our fat jar holds forty jars inside it. So Boot brings its own launcher and its own class loader that can. Your real main class is written in the manifest separately, on a line called <code>Start-Class:</code>. Once its class loader is ready, the launcher reads that line and calls your class. This is what makes "one runnable file" possible at all. It is also why the packaging step is called <em>re</em>packaging: it rewrites an ordinary jar into this special layout.</li>
-        <li><strong><code>SpringApplication.run(EcommerceApplication.class, args)</code> runs.</strong> It sees from the classpath that this is a servlet web application. It creates the <span class="term" tabindex="0" data-def="Spring's container: the object that creates, holds and connects every object Spring manages. Covered fully in Lesson 04.">application context</span>. It checks every auto-configuration rule against the classpath, just as Lesson 01's simulation showed. Then it creates the objects those rules call for.</li>
-        <li><strong>The web auto-configuration matched, so Tomcat starts.</strong> It runs inside this same program, as a library, and listens on port 8080. Then <code>SpringApplication.run</code> returns. But the application stays alive, because Tomcat started a thread of its own that keeps the Java program running. (An earlier version of this lesson said <code>run</code> never returns. That was wrong. <a href="lesson-03-the-main-application-class.html#concept">Lesson 03, section 3.8</a> explains what really happens.)</li>
-        <li><strong>A request arrives.</strong> Tomcat accepts the connection. It hands the request to Spring's front door, the <code>DispatcherServlet</code>. The <code>DispatcherServlet</code> looks for code that handles that address. We have written none, so there is no match. Boot's default error handling then sends back a <strong>404 Not Found</strong>.</li>
+        <li>A <strong>class loader</strong> is the part of Java that finds and loads classes while a program runs.</li>
+        <li>The standard class loader can read classes from a JAR.</li>
+        <li>But it cannot read classes from a JAR that sits <em>inside</em> another JAR.</li>
+        <li>Our fat JAR holds forty JARs inside it.</li>
+        <li>So Boot brings its own launcher, with its own class loader that <em>can</em> read them.</li>
+        <li>Your real main class is written in the manifest separately, on a line called <code>Start-Class:</code>.</li>
+        <li>Once its class loader is ready, the launcher reads that line and calls your class.</li>
       </ol>
 
-      <p>That 404 is the goal of this lesson. It is a success, not a letdown. Here is why. It proves that a network connection was opened and accepted. An HTTP request was read. Spring's servlet was asked what to do, and it made a decision. A correct HTTP response was written back. Every part of the chain worked. The only thing missing is an endpoint, and that is Chapter 4's job, not today's.</p>
+      <p>This is what makes "one runnable file" possible at all. It is also why the packaging step is called <em>re</em>packaging. It rewrites an ordinary JAR into this special layout.</p>
+
+      <p><strong>Stage 4. <code>SpringApplication.run(EcommerceApplication.class, args)</code> runs.</strong> It sees from the classpath that this is a servlet web app. It creates the <span class="term" tabindex="0" data-def="Spring's container: the object that creates, holds and connects every object Spring manages. Covered fully in Lesson 04.">application context</span>, Spring's container for your beans (Lesson 01). It checks every auto-configuration rule against the classpath, just as Lesson 01's simulation showed. Then it creates the objects those rules call for.</p>
+
+      <p><strong>Stage 5. The web auto-configuration matched, so Tomcat starts.</strong> It runs inside this same program, as a library, and listens on port 8080. Then <code>SpringApplication.run</code> returns. But the app stays alive. Tomcat started a thread of its own. (A thread is a separate line of work inside the program.) That thread keeps the Java program running. (An earlier version of this lesson said <code>run</code> never returns. That was wrong. <a href="lesson-03-the-main-application-class.html#concept">Lesson 03, section 3.15</a> explains what really happens.)</p>
+
+      <p><strong>Stage 6. A request arrives.</strong> Tomcat accepts the connection. It hands the request to Spring's front door, the <code>DispatcherServlet</code> (Spring's main servlet, from Lesson 01). The <code>DispatcherServlet</code> looks for code that handles that address. We have written none, so there is no match. Boot's default error handling then sends back a <strong>404 Not Found</strong>.</p>
+
+      <h3>3.19 Why a 404 counts as success</h3>
+
+      <p>That 404 is the goal of this lesson. It is a success, not a letdown. It proves that every link in the chain worked:</p>
+
+      <ul>
+        <li>A network connection was opened and accepted.</li>
+        <li>Tomcat read an HTTP request.</li>
+        <li>Spring's servlet was asked what to do, and it made a decision.</li>
+        <li>A correct HTTP response went back.</li>
+      </ul>
+
+      <p>The only thing missing is an endpoint. That is Chapter 4's job, not today's.</p>
 
       <div class="realworld">
-        <p>Three things from this section come up all the time in real work. <strong>The fat jar</strong> is why modern Java runs so well in containers. The Docker setup file for a Spring Boot service is often four lines long. There is no server to install: you copy one file and run it. <strong>The BOM</strong> is how real teams stay sane. A company with thirty microservices publishes its own parent POM, so every service uses the same tested versions. Then upgrading all of them is a one-number change. And <strong>"can you explain what happens between <code>java -jar</code> and the first response?"</strong> is a common interview question. It shows the difference between people who have only followed tutorials and people who understand how the pieces connect.</p>
+        <p>Three things from this section come up all the time in real work.</p>
+        <p><strong>The fat JAR</strong> is why modern Java runs so well in containers (the sealed boxes from Lesson 00). The Docker setup file for a Spring Boot service is often four lines long. There is no server to install: you copy one file and run it.</p>
+        <p><strong>The BOM</strong> is how real teams stay sane. Picture a company with thirty microservices (small separate programs that work together). It publishes its own parent POM, so every service uses the same tested versions. Then upgrading all of them is a one-number change.</p>
+        <p>And <strong>"can you explain what happens between <code>java -jar</code> and the first response?"</strong> is a common interview question. It shows the difference between people who only followed tutorials and people who understand how the pieces connect.</p>
       </div>
     </section>
 
@@ -652,7 +841,9 @@ curl https://start.spring.io/starter.zip \
 
       <p class="approach-wrong">Wrong approach</p>
 
-      <p>Let us do exactly what section 1 described: put the project together by hand. This is not a made-up bad example. It really is how it was done. Seeing it fail makes the cure easy to understand.</p>
+      <h3>4.1 Building the project by hand</h3>
+
+      <p>Let us do exactly what section 1 described: put the project together by hand. This is not a made-up bad example. It really is how people did it. Seeing it fail makes the cure easy to understand.</p>
 
       <pre><code><span class="c"># Create a folder, write the class, download some jars, compile.</span>
 mkdir ecommerce &amp;&amp; cd ecommerce
@@ -672,9 +863,18 @@ javac -cp "lib/*" -d out src/EcommerceApplication.java
 <span class="c"># Run it, listing them again.</span>
 java -cp "out:lib/*" EcommerceApplication</code></pre>
 
-      <p><strong>What goes wrong.</strong> Four separate things, and each is worse than the one before.</p>
+      <p>Two things in that code need a word. <code>mkdir</code> makes a new folder. <code>-cp</code> is short for "classpath": it tells <code>javac</code> and <code>java</code> where the JARs are.</p>
 
-      <p>First, the boredom. You have forty web addresses to find by hand, with no list telling you which forty. Second, there is no record of what you downloaded. A colleague cannot rebuild your <code>lib/</code> folder, and neither can you in six months. Third, you must type the classpath twice, once to compile and once to run. Forget one jar, and the program crashes while it runs. Fourth, and this is the one that really hurts: <strong>nothing checks that these versions belong together.</strong> Spring Boot 4.1.1 is built for Spring Framework 7 and Tomcat 11. We grabbed Spring 6 and Tomcat 10. Nothing complains. It compiles.</p>
+      <h3>4.2 What goes wrong</h3>
+
+      <p>Four separate things go wrong. Each is worse than the one before.</p>
+
+      <ol>
+        <li><strong>The boredom.</strong> You must find forty web addresses by hand, with no list telling you which forty.</li>
+        <li><strong>No record.</strong> Nothing writes down what you downloaded. A colleague cannot rebuild your <code>lib/</code> folder. Neither can you, in six months.</li>
+        <li><strong>The classpath, typed twice.</strong> You type it once to compile and once to run. Forget one JAR, and the program crashes while it runs.</li>
+        <li><strong>Nothing checks that these versions belong together.</strong> This is the one that really hurts. Spring Boot 4.1.1 is built for Spring Framework 7 and Tomcat 11. We grabbed Spring 6 and Tomcat 10. Nothing complains. It compiles.</li>
+      </ol>
 
       <p>Here is what it looks like when the problem finally shows up. Notice <em>when</em> it shows up:</p>
 
@@ -695,15 +895,22 @@ INFO  --- Starting EcommerceApplication using Java 21.0.9
     at EcommerceApplication.main(EcommerceApplication.java:9)</span></code></pre>
 
       <div class="warn">
-        <p>Read that error the way a beginner would. It names a method you never typed, in a class you have never heard of, from a library you did not knowingly download. Nowhere does it mention the real cause: <code>spring-core-6.1.2.jar</code> and <code>spring-boot-4.1.1.jar</code> were never meant to be used together. <code>NoSuchMethodError</code> is different from the compiler's "cannot find symbol". It always means the same thing: <strong>the class was there when you compiled, and a different version of it is there now.</strong> That is jar hell. No amount of reading your own code will fix it.</p>
+        <p>Read that error the way a beginner would. It names a method you never typed. The method sits in a class you have never heard of. That class comes from a library you did not knowingly download. (The odd name <code>&lt;init&gt;</code> is how Java writes a constructor inside an error.) Nowhere does it mention the real cause: <code>spring-core-6.1.2.jar</code> and <code>spring-boot-4.1.1.jar</code> were never meant to be used together.</p>
+        <p><code>NoSuchMethodError</code> is different from the compiler's "cannot find symbol". It always means the same thing: <strong>the class was there when you compiled, and a different version of it is there now.</strong> That is JAR hell. No amount of reading your own code will fix it.</p>
         <p>And this is the best case. This one crashed at startup, where you notice. The really nasty version of this bug hides in a part of the code nobody uses, until a customer does.</p>
       </div>
 
       <details class="check">
         <summary>Check yourself: the compiler was happy, but the program crashed. How is that possible?</summary>
-        <p>Java checks method calls twice, against two different things. At <strong>compile time</strong>, <code>javac</code> checks your code against the jars on the classpath <em>at that moment</em>. It writes the call down as a note: "call a method with this name and these parameters, on this class". At <strong>run time</strong>, the JVM looks that note up against the class on the classpath <em>now</em>.</p>
+        <p>Java checks method calls twice, against two different things.</p>
+        <ul>
+          <li>At <strong>compile time</strong>, <code>javac</code> checks your code against the JARs on the classpath <em>at that moment</em>. It writes the call down as a note: "call a method with this name and these parameters, on this class".</li>
+          <li>At <strong>run time</strong>, the JVM looks that note up against the class on the classpath <em>now</em>.</li>
+        </ul>
         <p>If those two classpaths hold different versions of the same class, compiling works and the lookup fails. You get <code>NoSuchMethodError</code>, <code>NoSuchFieldError</code> or <code>NoClassDefFoundError</code>. A build tool makes the compile classpath and the run classpath from the same written list. That is not just handy. It removes a whole kind of bug.</p>
       </details>
+
+      <h3>4.3 The modern wrong way: copying from a tutorial</h3>
 
       <p>There is a second, much more modern wrong way. You are far more likely to hit this one: copying a dependency from a tutorial.</p>
 
@@ -714,7 +921,14 @@ INFO  --- Starting EcommerceApplication using Java 21.0.9
     &lt;version&gt;<span class="n">3.2.0</span>&lt;/version&gt;                          <span class="c">&lt;!-- and a hardcoded version! --&gt;</span>
 &lt;/dependency&gt;</code></pre>
 
-      <p>Two mistakes in five lines. The <code>artifactId</code> is the old, deprecated name. It still works, so nothing warns you. But now your project quietly differs from every other file in it. The <code>&lt;version&gt;</code> is much worse. It <em>overrides the BOM</em>. You have just pulled Spring Framework 6 into a Spring Boot 4 application. That brings back the exact crash above, from inside a POM that looks perfectly fine. If you remember one rule from this whole lesson, make it this one: <strong>never write a <code>&lt;version&gt;</code> on a Spring dependency.</strong> The parent has already decided, and it decided better than the blog post did.</p>
+      <p>Two mistakes in five lines:</p>
+
+      <ul>
+        <li>The <code>artifactId</code> is the old, deprecated name. It still works, so nothing warns you. But now your project quietly differs from every other file in it.</li>
+        <li>The <code>&lt;version&gt;</code> is much worse. It <em>overrides the BOM</em>. You have just pulled Spring Framework 6 into a Spring Boot 4 app. That brings back the exact crash above, from inside a POM that looks perfectly fine.</li>
+      </ul>
+
+      <p>If you remember one rule from this whole lesson, make it this one: <strong>never write a <code>&lt;version&gt;</code> on a Spring dependency.</strong> The parent has already decided, and it decided better than the blog post did.</p>
     </section>
 
     <!-- ============================================================= -->
@@ -723,7 +937,9 @@ INFO  --- Starting EcommerceApplication using Java 21.0.9
 
       <p class="approach-right">Correct approach</p>
 
-      <p>Two dependencies, no versions, and a folder layout that every Java tool already understands. Here is the POM, with every part explained. The full file, with a comment on every line, is saved to disk and shown in section 6.</p>
+      <h3>5.1 The POM</h3>
+
+      <p>Two dependencies, no versions, and a folder layout that every Java tool already understands. Here is the POM, with every part explained. The full file, with a comment on every line, is saved to disk and listed in section 6.</p>
 
       <pre><code><span class="c">&lt;!-- The parent: inherit ~400 tested library versions and sane defaults. --&gt;</span>
 &lt;parent&gt;
@@ -768,6 +984,10 @@ INFO  --- Starting EcommerceApplication using Java 21.0.9
     &lt;/plugin&gt;
 &lt;/plugins&gt;&lt;/build&gt;</code></pre>
 
+      <p>The version <code>0.0.1-SNAPSHOT</code> means "an early version that is still being worked on". Every new project starts like this.</p>
+
+      <h3>5.2 The main class</h3>
+
       <p>And the main class. Only four of its lines really do anything:</p>
 
       <pre><code><span class="k">package</span> com.ecommerce;
@@ -785,20 +1005,28 @@ INFO  --- Starting EcommerceApplication using Java 21.0.9
     }
 }</code></pre>
 
-      <h3>Step-by-step walkthrough of what happens when you build and run</h3>
+      <h3>5.3 Step by step: what happens when you build and run</h3>
 
       <ol>
         <li>Maven reads <code>pom.xml</code> and finds the <code>&lt;parent&gt;</code>. It fetches <code>spring-boot-starter-parent:4.1.1</code> from Maven Central. Then it fetches <em>its</em> parent, <code>spring-boot-dependencies:4.1.1</code>. (If they are already in <code>~/.m2</code>, it uses those copies.)</li>
         <li>From those parents, Maven now knows the version of every library Spring looks after. It also knows that <code>maven.compiler.release</code> follows <code>${java.version}</code>, which our <code>&lt;properties&gt;</code> block set to 21.</li>
-        <li>It reads our two dependencies and looks up their versions in the inherited list (4.1.1 for both). It fetches their POMs. Then it follows every transitive dependency to the end of the chain. That is about forty jars. They are downloaded once and kept in <code>~/.m2/repository</code> for good.</li>
-        <li>Phase <code>compile</code>: <code>application.yml</code> is copied into <code>target/classes/</code>. Then <code>EcommerceApplication.java</code> is compiled to <code>target/classes/com/ecommerce/EcommerceApplication.class</code>, for Java 21. All forty jars are on the classpath while it compiles.</li>
-        <li>Phase <code>test</code>: <code>EcommerceApplicationTests.java</code> is compiled into <code>target/test-classes/</code>. Then the Surefire plugin, Maven's test runner, runs it. <code>@SpringBootTest</code> starts the whole application in memory. If that works, the test passes.</li>
-        <li>Phase <code>package</code>: the jar plugin zips <code>target/classes</code> into <code>ecommerce-0.0.1-SNAPSHOT.jar</code>. This jar holds only our one class and one YAML file. It is a few kilobytes, and you cannot run it.</li>
-        <li>Then the <code>spring-boot-maven-plugin</code>'s <code>repackage</code> goal rewrites it. Our classes move to <code>BOOT-INF/classes/</code>. The forty dependency jars go into <code>BOOT-INF/lib/</code>. The launcher classes are added. The manifest gets two lines: <code>Main-Class: …JarLauncher</code> and <code>Start-Class: com.ecommerce.EcommerceApplication</code>. The original small jar is kept next to it as <code>.jar.original</code>. The result is about 20 MB and needs nothing else to run.</li>
-        <li><code>java -jar</code> then goes through the six stages in the diagram in section 3.11. It ends with Tomcat listening on port 8080.</li>
+        <li>It reads our two dependencies and looks up their versions in the inherited list (4.1.1 for both). It fetches their POMs. Then it follows every transitive dependency to the end of the chain. That is about forty JARs. It downloads them once and keeps them in <code>~/.m2/repository</code> for good.</li>
+        <li>Phase <code>compile</code>: Maven copies <code>application.yml</code> into <code>target/classes/</code>. Then it compiles <code>EcommerceApplication.java</code> to <code>target/classes/com/ecommerce/EcommerceApplication.class</code>, for Java 21. All forty JARs are on the classpath while it compiles.</li>
+        <li>Phase <code>test</code>: Maven compiles <code>EcommerceApplicationTests.java</code> into <code>target/test-classes/</code>. Then the Surefire plugin, Maven's test runner, runs it. <code>@SpringBootTest</code> starts the whole app in memory. If that works, the test passes.</li>
+        <li>Phase <code>package</code>: the JAR plugin zips <code>target/classes</code> into <code>ecommerce-0.0.1-SNAPSHOT.jar</code>. This JAR holds only our one class and one YAML file. It is a few kilobytes, and you cannot run it.</li>
+        <li>Then the <code>spring-boot-maven-plugin</code>'s <code>repackage</code> goal rewrites it into a fat JAR:
+          <ul>
+            <li>Our classes move to <code>BOOT-INF/classes/</code>.</li>
+            <li>The forty dependency JARs go into <code>BOOT-INF/lib/</code>.</li>
+            <li>The launcher classes are added.</li>
+            <li>The manifest gets two lines: <code>Main-Class: …JarLauncher</code> and <code>Start-Class: com.ecommerce.EcommerceApplication</code>.</li>
+            <li>The original small JAR is kept next to it, as <code>.jar.original</code>.</li>
+          </ul>
+          The result is about 20 MB and needs nothing else to run.</li>
+        <li><code>java -jar</code> then goes through the six stages from section 3.18. It ends with Tomcat listening on port 8080.</li>
       </ol>
 
-      <h3>Expected output — <code>mvn clean package</code></h3>
+      <h3>5.4 Expected output: <code>mvn clean package</code></h3>
 
       <pre><code>$ cd phase-1-monolith/ecommerce
 $ mvn clean package
@@ -831,9 +1059,16 @@ $ mvn clean package
 [INFO] Total time:  14.203 s
 [INFO] ------------------------------------------------------------------------</code></pre>
 
-      <p><strong>This is a prediction.</strong> Two parts of it will surely differ on your machine. Do not worry about them. The plugin version numbers in the middle (<code>compiler:3.x.x</code> and the rest) are whatever the 4.1.1 parent pins. And the total time depends on whether the forty jars are already saved locally. On your very first build, you will also see a long stream of <code>Downloading from central:</code> lines before anything else. That is normal, and it only happens once.</p>
+      <p><strong>This is a prediction.</strong> Two parts of it will surely differ on your machine. Do not worry about them:</p>
 
-      <h3>Expected output — running it</h3>
+      <ul>
+        <li>The plugin version numbers in the middle (<code>compiler:3.x.x</code> and the rest) are whatever the 4.1.1 parent pins.</li>
+        <li>The total time depends on whether the forty JARs are already saved locally.</li>
+      </ul>
+
+      <p>On your very first build, you will also see a long stream of <code>Downloading from central:</code> lines before anything else. That is normal, and it only happens once.</p>
+
+      <h3>5.5 Expected output: running it</h3>
 
       <pre><code>$ java -jar target/ecommerce-0.0.1-SNAPSHOT.jar
 
@@ -856,7 +1091,9 @@ INFO 18244 --- [ecommerce] [  main] o.s.boot.tomcat.TomcatWebServer          : T
 
       <p><strong>This is the prediction Lesson 01 promised.</strong> The process number (<code>18244</code>), the exact Java version and the startup time will differ on your machine. Everything else should match. Notice <code>[ecommerce]</code> on every line. That is the <code>spring.application.name</code> we set in <code>application.yml</code>, already doing something you can see.</p>
 
-      <h3>Expected output — the first HTTP response</h3>
+      <h3>5.6 Expected output: the first HTTP response</h3>
+
+      <p>The <code>-i</code> flag tells curl to show the response's headers too, not just its body. (A <strong>header</strong> is a labelled line of extra information sent with a request or a response.)</p>
 
       <pre><code>$ curl -i http://localhost:8080/
 
@@ -865,6 +1102,15 @@ Content-Type: application/json
 Transfer-Encoding: chunked
 
 {"timestamp":"2026-09-30T09:14:22.108+00:00","status":404,"error":"Not Found","path":"/"}</code></pre>
+
+      <p>Here is how to read it:</p>
+
+      <ul>
+        <li><code>HTTP/1.1 404</code>: the status code. Nothing lives at this address.</li>
+        <li><code>Content-Type: application/json</code>: the body is JSON.</li>
+        <li><code>Transfer-Encoding: chunked</code>: the server sent the body in pieces, without saying its full size first. You can ignore this one.</li>
+        <li>The last line is the body. Boot wrote it for us: when, which status, what kind of error, and which address.</li>
+      </ul>
 
       <p>And in a browser, where the request says it accepts HTML instead:</p>
 
@@ -876,7 +1122,7 @@ as a fallback.
 Tue Sep 30 09:14:22 BST 2026
 There was an unexpected error (type=Not Found, status=404).</code></pre>
 
-      <p>The same 404, the same cause, but two different shapes. The shape depends only on the <code>Accept</code> header the caller sent. (A header is a labelled line of extra information sent with a request.) This is called <span class="term" tabindex="0" data-def="The server choosing a response format based on what the caller says it can accept, via the Accept header.">content negotiation</span>, and Chapter 4 covers it properly.</p>
+      <p>The same 404, the same cause, but two different shapes. The shape depends only on the <code>Accept</code> header the caller sent. That header says which formats the caller can read. Choosing the format this way is called <span class="term" tabindex="0" data-def="The server choosing a response format based on what the caller says it can accept, via the Accept header.">content negotiation</span>. Chapter 4 covers it properly.</p>
 
       <div class="tryit">
         <p>From <code>phase-1-monolith/ecommerce/</code>, in order:</p>
@@ -885,12 +1131,13 @@ There was an unexpected error (type=Not Found, status=404).</code></pre>
           <li><code>java -jar target/ecommerce-0.0.1-SNAPSHOT.jar</code>. Expect the banner and <code>Started EcommerceApplication</code>.</li>
           <li>In a second terminal: <code>curl -i http://localhost:8080/</code>. Expect <code>HTTP/1.1 404</code> and the JSON body above.</li>
           <li>Open <code>http://localhost:8080/</code> in a browser. Expect the Whitelabel Error Page.</li>
-          <li>Stop it with <kbd>Ctrl</kbd>+<kbd>C</kbd>. Then try the development command instead: <code>mvn spring-boot:run</code>. It is the same application, but no jar is built.</li>
-          <li>Finally, look at what you built. <code>mvn dependency:tree</code> prints the real tree of ≈40 jars from section 3.4. <code>unzip -l target/ecommerce-0.0.1-SNAPSHOT.jar | head -30</code> shows <code>BOOT-INF/classes/</code>, <code>BOOT-INF/lib/</code> and the launcher from section 3.11.</li>
+          <li>Stop it with <kbd>Ctrl</kbd>+<kbd>C</kbd>. Then try the development command instead: <code>mvn spring-boot:run</code>. It is the same app, but no JAR is built.</li>
+          <li>Finally, look at what you built. <code>mvn dependency:tree</code> prints the real tree of ≈40 JARs from section 3.5. <code>jar tf target/ecommerce-0.0.1-SNAPSHOT.jar</code> lists every file inside the JAR. (<code>jar</code> is a tool that comes with the JDK, so it works on every system.) Near the top you should see <code>BOOT-INF/classes/</code>, <code>BOOT-INF/lib/</code> and the launcher from section 3.18.</li>
         </ol>
         <p><strong>Compare each of these with the predictions above.</strong> If anything differs, your machine is right and I am wrong. Tell me exactly what you saw, and we will work out why. A difference here is not a setback. It is the most useful thing that can happen this early.</p>
       </div>
     </section>
+
 
     <!-- ============================================================= -->
     <section id="applied">
@@ -904,22 +1151,22 @@ There was an unexpected error (type=Not Found, status=404).</code></pre>
           <tbody>
             <tr><td><code>phase-1-monolith/ecommerce/pom.xml</code></td><td>The shopping list: our coordinates, the Boot 4.1.1 parent, two starters, and the repackaging plugin.</td></tr>
             <tr><td><code>…/src/main/java/com/ecommerce/EcommerceApplication.java</code></td><td>The starting point. <code>@SpringBootApplication</code>, plus a <code>main</code> that hands control to Spring Boot.</td></tr>
-            <tr><td><code>…/src/main/resources/application.yml</code></td><td>Settings Boot reads by itself: the application name and the server port.</td></tr>
-            <tr><td><code>…/src/test/java/com/ecommerce/EcommerceApplicationTests.java</code></td><td>The safety check: proves the whole application can start.</td></tr>
+            <tr><td><code>…/src/main/resources/application.yml</code></td><td>Settings Boot reads by itself: the app name and the server port.</td></tr>
+            <tr><td><code>…/src/test/java/com/ecommerce/EcommerceApplicationTests.java</code></td><td>The safety check: proves the whole app can start.</td></tr>
             <tr><td><code>…/api.http</code></td><td>Requests you can send to the running app with one click. It starts with the 404 test.</td></tr>
           </tbody>
         </table>
       </div>
 
-      <h3>The settings file</h3>
+      <h3>6.1 The settings file</h3>
 
       <pre><code><span class="c"># src/main/resources/application.yml</span>
 <span class="c"># Boot reads this automatically because of WHERE it is and WHAT it is called.</span>
 <span class="c"># Rename it and Boot silently ignores it — no warning, all defaults.</span>
 <span class="k">spring</span>:
   <span class="k">application</span>:
-    <span class="c"># Appears as [ecommerce] in every log line. In Phase 2 this is how each</span>
-    <span class="c"># of six services identifies itself to discovery, tracing and metrics.</span>
+    <span class="c"># Appears as [ecommerce] in every log line. In Phase 2, each of six</span>
+    <span class="c"># services uses its name to tell the monitoring tools who it is.</span>
     <span class="k">name</span>: <span class="s">ecommerce</span>
 
 <span class="k">server</span>:
@@ -927,9 +1174,11 @@ There was an unexpected error (type=Not Found, status=404).</code></pre>
   <span class="c"># when something else on your machine has taken 8080.</span>
   <span class="k">port</span>: <span class="n">8080</span></code></pre>
 
-      <p>YAML has two strict rules that it never forgives: <strong>two spaces for each level of indent, and spaces only</strong>. One tab character anywhere in this file is an error. It stops the application before it even starts.</p>
+      <p>Read the indentation as "belongs to". <code>name</code> is indented under <code>application</code>, which is indented under <code>spring</code>. So the full setting name is <code>spring.application.name</code>. In the same way, <code>port</code> under <code>server</code> is <code>server.port</code>.</p>
 
-      <h3>The test</h3>
+      <p>YAML has two strict rules that it never forgives: <strong>two spaces for each level of indent, and spaces only</strong>. One tab character anywhere in this file is an error. It stops the app before it even starts.</p>
+
+      <h3>6.2 The test</h3>
 
       <pre><code><span class="k">package</span> com.ecommerce;
 
@@ -947,13 +1196,34 @@ There was an unexpected error (type=Not Found, status=404).</code></pre>
     }
 }</code></pre>
 
-      <p>It looks like it tests nothing, but it tests a lot. A missing dependency. A broken <code>application.yml</code>. An object Spring cannot create. Two objects Spring cannot tell apart. Each of these makes startup throw an error, and that makes this test fail. It is the cheapest safety check in the project. From now on, <code>mvn test</code> is the one command that answers "did I just break the application?"</p>
+      <p>Here is what each part does:</p>
 
-      <h3>If a user interacted with this right now</h3>
+      <ul>
+        <li><code>@SpringBootTest</code> tells the test tools: "before any test in this class runs, start the whole Spring app".</li>
+        <li><code>@Test</code> marks <code>contextLoads()</code> as a test method. JUnit finds every method marked this way and runs it.</li>
+        <li>The method body is empty on purpose. A test fails when something throws an exception. Here, any exception happens during startup, before the method even runs.</li>
+      </ul>
+
+      <p>It looks like it tests nothing, but it tests a lot. Each of these makes startup throw an error, and so makes this test fail:</p>
+
+      <ul>
+        <li>a missing dependency;</li>
+        <li>a broken <code>application.yml</code>;</li>
+        <li>an object Spring cannot create;</li>
+        <li>two objects Spring cannot tell apart.</li>
+      </ul>
+
+      <p>It is the cheapest safety check in the project. From now on, <code>mvn test</code> is the one command that answers "did I just break the app?"</p>
+
+      <h3>6.3 The requests file</h3>
+
+      <p><code>api.http</code> is a plain text file. Each block in it is one HTTP request. In VS Code with the REST Client add-on, a "Send Request" link appears above each block. Click it, and the request goes to your running app. The response appears in a panel beside it. Today it holds two requests: the 404 probe asking for JSON, and the same probe asking for HTML.</p>
+
+      <h3>6.4 If a user interacted with this right now</h3>
 
       <ol>
-        <li>Someone types <code>http://localhost:8080/</code> into a browser and presses Enter.</li>
-        <li>The browser opens a network connection to port 8080 on this machine. It sends <code>GET / HTTP/1.1</code>, with an <code>Accept</code> header that lists <code>text/html</code> (a web page) first.</li>
+        <li>Someone types <code>http://localhost:8080/</code> into a browser and presses Enter. (<code>localhost</code> means "this same computer".)</li>
+        <li>The browser opens a network connection to port 8080 on this machine. It sends <code>GET / HTTP/1.1</code>. <code>GET</code> is the kind of request that means "give me something". The request has an <code>Accept</code> header that lists <code>text/html</code> (a web page) first.</li>
         <li>Embedded Tomcat, running inside our own program, accepts the connection. It reads the request and passes it to Spring's <code>DispatcherServlet</code>.</li>
         <li>The <code>DispatcherServlet</code> looks through its list for code that handles <code>GET /</code>. There is none, because we have written no controllers.</li>
         <li>It produces a 404, and passes the request on to <code>/error</code>, Boot's built-in error address.</li>
@@ -962,9 +1232,19 @@ There was an unexpected error (type=Not Found, status=404).</code></pre>
         <li>All of this takes a few milliseconds. Every layer worked. Only the endpoint is missing.</li>
       </ol>
 
-      <h3>Does the project still build, run and pass its tests?</h3>
+      <h3>6.5 Does the project still build, run and pass its tests?</h3>
 
-      <p><strong>Predicted: yes.</strong> I traced it by hand. <code>pom.xml</code> names a parent that exists on Maven Central (checked 2026-09-30), and two artifacts that exist at 4.1.1 (both checked). The one source file's package matches its folder path. <code>application.yml</code> is valid YAML, with two real Boot setting names. The test class only uses classes that <code>spring-boot-starter-webmvc-test</code> provides. <code>@SpringBootTest</code> finds <code>EcommerceApplication</code> by searching from the test's own package, and that is the same package. So <code>mvn clean package</code> should reach BUILD SUCCESS with <code>Tests run: 1, Failures: 0, Errors: 0, Skipped: 0</code>.</p>
+      <p><strong>Predicted: yes.</strong> I traced it by hand:</p>
+
+      <ul>
+        <li><code>pom.xml</code> names a parent that exists on Maven Central (checked 2026-09-30), and two artifacts that exist at 4.1.1 (both checked).</li>
+        <li>The one source file's package matches its folder path.</li>
+        <li><code>application.yml</code> is valid YAML, with two real Boot setting names.</li>
+        <li>The test class only uses classes that <code>spring-boot-starter-webmvc-test</code> provides.</li>
+        <li><code>@SpringBootTest</code> finds <code>EcommerceApplication</code> by searching from the test's own package, and that is the same package.</li>
+      </ul>
+
+      <p>So <code>mvn clean package</code> should reach BUILD SUCCESS with <code>Tests run: 1, Failures: 0, Errors: 0, Skipped: 0</code>.</p>
 
       <p>From this lesson on, every time the project changes, this claim gets made again. And every time, it is a prediction you can check with one command.</p>
     </section>
@@ -975,22 +1255,22 @@ There was an unexpected error (type=Not Found, status=404).</code></pre>
 
       <ul>
         <li>
-          <p><strong>Writing a <code>&lt;version&gt;</code> on a Spring dependency.</strong> Every tutorial shows versions, because a tutorial snippet has to work on its own, without a parent POM. If you copy one into our project, you override the BOM for that library. That breaks the promise that all forty jars were tested together. And the failure comes later, as a <code>NoSuchMethodError</code> that says nothing about versions. <strong>Avoid it by:</strong> never typing <code>&lt;version&gt;</code> under <code>&lt;dependencies&gt;</code> for anything Spring looks after. If you really must change one, change the BOM's setting in <code>&lt;properties&gt;</code> instead (for example <code>&lt;h2.version&gt;</code>). Then the change is visible in one place.</p>
+          <p><strong>Writing a <code>&lt;version&gt;</code> on a Spring dependency.</strong> Every tutorial shows versions, because a tutorial snippet has to work on its own, without a parent POM. If you copy one into our project, you override the BOM for that library. That breaks the promise that all forty JARs were tested together. The failure comes later, as a <code>NoSuchMethodError</code> that says nothing about versions. <strong>Avoid it by:</strong> never typing <code>&lt;version&gt;</code> under <code>&lt;dependencies&gt;</code> for anything Spring looks after. If you really must change one, change the BOM's property in <code>&lt;properties&gt;</code> instead (for example <code>&lt;h2.version&gt;</code>). Then the change is visible in one place.</p>
         </li>
         <li>
-          <p><strong>A package name that does not match the folder path.</strong> Say you move a file in the file explorer but do not update its <code>package</code> line, or the other way round. The compiler gives an odd-sounding error. It may say "class X is public, should be declared in a file named X.java", or just refuse to find the class. People make this mistake because in most languages, a file's location and its package have nothing to do with each other. In Java, they are the same fact, written twice. <strong>Avoid it by:</strong> moving files with the IDE's refactor command, which updates both.</p>
+          <p><strong>A package name that does not match the folder path.</strong> Say you move a file in the file explorer but do not update its <code>package</code> line, or the other way round. The compiler gives an odd-sounding error. It may say "class X is public, should be declared in a file named X.java", or just refuse to find the class. People make this mistake because in most languages, a file's location and its package are unrelated. In Java, they are the same fact, written twice. <strong>Avoid it by:</strong> moving files with the IDE's refactor command. "Refactor" here means a safe, automatic change that updates every place at once, so it fixes both.</p>
         </li>
         <li>
-          <p><strong>Expecting <code>mvn package</code> to skip the tests.</strong> Phases include everything before them, so <code>package</code> runs <code>test</code> first, and one failure stops everything. People then reach for <code>-DskipTests</code> to "just get a jar". That works, but it is almost always the wrong move. You now have a jar with no proof that it works. <strong>Avoid it by:</strong> fixing the test. Keep <code>-DskipTests</code> for the rare case where you need a build of broken code to investigate a problem. Never use it for anything you would ship.</p>
+          <p><strong>Expecting <code>mvn package</code> to skip the tests.</strong> Phases include everything before them. So <code>package</code> runs <code>test</code> first, and one failure stops everything. People then add <code>-DskipTests</code> to "just get a JAR". That works, but it is almost always the wrong move. You now have a JAR with no proof that it works. <strong>Avoid it by:</strong> fixing the test. Keep <code>-DskipTests</code> for the rare case where you need a build of broken code to investigate a problem. Never use it for anything you would ship.</p>
         </li>
         <li>
-          <p><strong>Tabs in <code>application.yml</code>.</strong> YAML does not allow tab characters for indenting. Full stop. If your editor inserts tabs, a two-line settings file becomes a startup crash. And the error message talks about "scanner exceptions" and character positions instead of saying "you used a tab". <strong>Avoid it by:</strong> setting your editor to insert spaces for this kind of file. VS Code and IntelliJ both do this by themselves for <code>.yml</code> files, but check if you ever changed that setting.</p>
+          <p><strong>Tabs in <code>application.yml</code>.</strong> YAML does not allow tab characters for indenting. Full stop. If your editor inserts tabs, a two-line settings file becomes a startup crash. And the error message talks about "scanner exceptions" and character positions. It does not say "you used a tab". <strong>Avoid it by:</strong> setting your editor to insert spaces for this kind of file. VS Code and IntelliJ both do this by themselves for <code>.yml</code> files. Check, in case you ever changed that setting.</p>
         </li>
         <li>
-          <p><strong>The <code>@</code> trap in <code>application.yml</code>.</strong> The Spring Boot parent sets <code>resource.delimiter</code> to <code>@</code>, and turns on "resource filtering" for <code>application*.yml</code>. That means Maven reads the file during the build. Anything shaped like <code>@name@</code> gets replaced with a Maven setting. So if you write an email address, or a log pattern with an <code>@…@</code> pair in it, Maven will either turn it into nonsense or fail the build. <strong>Avoid it by:</strong> knowing it exists. It is really useful on purpose: <code>@project.version@</code> writes the build version into your settings. It is only baffling if you meet it by accident.</p>
+          <p><strong>The <code>@</code> trap in <code>application.yml</code>.</strong> The Spring Boot parent sets <code>resource.delimiter</code> to <code>@</code>. It also turns on "resource filtering" for <code>application*.yml</code>. That means Maven reads the file during the build. Anything shaped like <code>@name@</code> gets replaced with a Maven property. So say you write an email address, or a log pattern with an <code>@…@</code> pair in it. Maven will either turn it into nonsense or fail the build. <strong>Avoid it by:</strong> knowing it exists. It is really useful on purpose: <code>@project.version@</code> writes the build version into your settings. It is only baffling if you meet it by accident.</p>
         </li>
         <li>
-          <p><strong>Committing <code>target/</code>.</strong> Everything in it is generated, and it holds a 20 MB jar. Committing it makes the repository bigger forever, because deleting the file later does not erase it from Git history. <strong>Avoid it by:</strong> keeping the <code>target/</code> line that is already in our <code>.gitignore</code>. Run <code>git status</code> before your first commit. If anything under <code>target/</code> is listed, stop and fix the ignore file before you commit.</p>
+          <p><strong>Committing <code>target/</code>.</strong> Everything in it is generated, and it holds a 20 MB JAR. Committing it makes the repository bigger forever, because deleting the file later does not erase it from Git history. <strong>Avoid it by:</strong> keeping the <code>target/</code> line that is already in our <code>.gitignore</code>. Run <code>git status</code> before your first commit. If anything under <code>target/</code> is listed, stop and fix the ignore file before you commit.</p>
         </li>
       </ul>
     </section>
@@ -999,33 +1279,48 @@ There was an unexpected error (type=Not Found, status=404).</code></pre>
     <section id="tradeoffs">
       <h2><span class="secno">8</span>Tradeoffs and When Not to Use This</h2>
 
-      <p><strong>The parent POM costs you some control.</strong> Inheriting four hundred version choices is wonderful, until you need a library at a version the BOM does not pin. Say a security fix came out this morning. You can override the version. But then you are knowingly stepping outside the tested set, and the next Boot upgrade may quietly undo your change. There is also a limit in how Maven works: a project can have only one parent. So a company with its own company-wide parent POM cannot also inherit from Spring's. The usual answer is to <em>import</em> <code>spring-boot-dependencies</code> as a BOM inside <code>&lt;dependencyManagement&gt;</code>, instead of inheriting from it. You still get the versions, and the parent slot stays free. The cost is that you lose the parent's plugin setup, and must write the <code>spring-boot-maven-plugin</code> version yourself. That is the right choice in a large company, and the wrong one for us.</p>
+      <h3>8.1 The parent POM costs you some control</h3>
 
-      <p><strong>The fat jar costs you size and rebuild time.</strong> Twenty megabytes for a few kilobytes of your own code is an odd ratio. And every rebuild rewrites all twenty. For a container image, that is really wasteful: a one-line code change makes a whole new 20 MB layer. Spring Boot's answer is <em>layered jars</em>. They put the dependencies and your own code in separate layers, so only the small layer that changes often is rebuilt. That is a Phase 3 topic. For now, it is enough to know the tradeoff exists.</p>
+      <p>Inheriting four hundred version choices is wonderful, until you need a library at a version the BOM does not pin. Say a security fix came out this morning. You can override the version. But then you knowingly step outside the tested set. And the next Boot upgrade may quietly undo your change.</p>
 
-      <p><strong>Maven's strictness costs you flexibility.</strong> Say your build needs to generate code, call an outside tool, or do something truly unusual. Maven makes you write or find a plugin. Gradle would let you write four lines of Kotlin. For a standard Spring Boot service, this never comes up. For a build with real custom logic, Gradle is the better tool, and choosing it there is perfectly fine.</p>
+      <p>Maven also has a limit: a project can have only one parent. So a company with its own company-wide parent POM cannot also inherit from Spring's. The usual answer works like this:</p>
 
-      <p><strong>When would you not build it this way at all?</strong> Three honest cases. First: you must deploy into a server your company already runs and will not change. Then you need <code>war</code> packaging, and Boot still supports it. Second: you are writing a <em>library</em> for other projects to use, not an application. Then you want a plain jar, with no repackaging, no embedded server, and no starter parent forcing versions on the people who use it. Third: your program must start in milliseconds, like a cloud function or a command-line tool. The JVM's warm-up time may rule out this whole approach. Compiling to a native program with GraalVM solves that. That is also in Phase 3.</p>
+      <ol>
+        <li>The company keeps its own parent.</li>
+        <li>Inside <code>&lt;dependencyManagement&gt;</code>, it <em>imports</em> <code>spring-boot-dependencies</code> as a BOM, instead of inheriting from it.</li>
+        <li>It still gets Spring's tested versions, and the parent slot stays free.</li>
+      </ol>
 
-      <p>For a web service that runs for a long time, which is exactly what our E-Commerce platform is, this setup is the right default. It will stay right for the rest of Phase 1.</p>
-    </section>
+      <p>The cost: you lose the parent's plugin setup, and must write the <code>spring-boot-maven-plugin</code> version yourself. That is the right choice in a large company, and the wrong one for us.</p>
 
-    <!-- ============================================================= -->
-    <section id="takeaways">
-      <h2><span class="secno">9</span>Key Takeaways</h2>
+      <h3>8.2 The fat JAR costs you size and rebuild time</h3>
+
+      <p>Twenty megabytes for a few kilobytes of your own code is an odd ratio. And every rebuild rewrites all twenty.</p>
+
+      <p>For a container this is wasteful. A container image (the saved template a container starts from) is built in <strong>layers</strong>, stacked like sheets of paper. When one layer changes, it must be rebuilt and sent again. So a one-line code change makes a whole new 20 MB layer.</p>
+
+      <p>Spring Boot's answer is <em>layered JARs</em>. They put the libraries and your own code in separate layers. Then only the small layer that changes often is rebuilt. That is a Phase 3 topic. For now, it is enough to know the tradeoff exists.</p>
+
+      <h3>8.3 Maven's strictness costs you flexibility</h3>
+
+      <p>Say your build needs to generate code, call an outside tool, or do something truly unusual. Maven makes you write or find a plugin. Gradle would let you write four lines of Kotlin. For a standard Spring Boot service, this never comes up. For a build with real custom logic, Gradle is the better tool, and choosing it there is perfectly fine.</p>
+
+      <h3>8.4 When you would not build it this way at all</h3>
+
+      <p>Here are three honest cases:</p>
 
       <ul>
-        <li>A Java project needs four jobs done: keep the list of what it needs, fetch those things and everything they need, make sure the versions fit together, and build the result the same way on every machine. Doing all four by hand leads to jar hell. Maven does them for you.</li>
-        <li>Our <code>pom.xml</code> has exactly one version number, on <code>spring-boot-starter-parent</code>. That parent brings a Bill of Materials that pins about four hundred libraries the Spring team tested together. So writing your own <code>&lt;version&gt;</code> on a Spring dependency is the fastest way to break a working project.</li>
-        <li>A starter is an empty jar. All its value is the list of dependencies in its POM. It states what you want to build. Spring Boot's auto-configuration then reads the classpath the starter filled, and sets things up to match.</li>
-        <li>Maven's phases always run in order, and each one includes all the phases before it. So <code>mvn package</code> compiles and tests first, and stops at the first failing test. Anything with a colon in it, such as <code>spring-boot:run</code>, is a plugin goal. It runs on its own and brings no phases with it.</li>
-        <li>In Spring Boot 4, the web starter is <code>spring-boot-starter-webmvc</code> and the web test starter is <code>spring-boot-starter-webmvc-test</code>. The whole internet still shows the old names, <code>spring-boot-starter-web</code> and <code>spring-boot-starter-test</code>. They still work today, but they are deprecated. Translating them on sight is a skill you will need from now on.</li>
+        <li><strong>You must deploy into a server your company already runs, and will not change.</strong> Then you need <code>war</code> packaging. Boot still supports it.</li>
+        <li><strong>You are writing a <em>library</em> for other projects to use, not an app.</strong> Then you want a plain JAR. No repackaging, no embedded server, and no starter parent forcing versions on the people who use it.</li>
+        <li><strong>Your program must start in milliseconds</strong>, like a cloud function or a command-line tool. The JVM needs a moment to warm up, and that may rule out this whole approach. Compiling to a native image with a tool called GraalVM solves that. That is also in Phase 3.</li>
       </ul>
+
+      <p>For a web service that runs for a long time, this setup is the right default. That is exactly what our E-Commerce platform is. It will stay right for the rest of Phase 1.</p>
     </section>
 
     <!-- ============================================================= -->
     <section id="challenge">
-      <h2><span class="secno">10</span>Coding Challenge</h2>
+      <h2><span class="secno">9</span>Coding Challenge</h2>
 
       <p>A colleague joins the project, opens <code>pom.xml</code>, and "improves" it. Here is their version. Think it through on paper before you run anything.</p>
 
@@ -1073,25 +1368,33 @@ There was an unexpected error (type=Not Found, status=404).</code></pre>
         <p><strong>1. The five mistakes.</strong></p>
         <ol>
           <li><strong><code>spring-boot-starter-web</code>: the deprecated 3.x name.</strong> It still works, so nothing warns you. But now the project does not match the rest of the course, or the module-by-module layout Boot 4 expects.</li>
-          <li><strong><code>&lt;version&gt;3.2.0&lt;/version&gt;</code> on that dependency.</strong> This is the worst one. It overrides the BOM. It pulls the whole Spring Boot 3.2 tree of dependencies, including Spring Framework 6, into an application whose parent is 4.1.1. Now two versions of Spring that do not work together are on one classpath.</li>
+          <li><strong><code>&lt;version&gt;3.2.0&lt;/version&gt;</code> on that dependency.</strong> This is the worst one. It overrides the BOM. It pulls the whole Spring Boot 3.2 tree of dependencies, including Spring Framework 6, into an app whose parent is 4.1.1. Now two versions of Spring that do not work together sit on one classpath.</li>
           <li><strong>The separate <code>spring-boot-starter-tomcat</code> dependency.</strong> Not needed. In Boot 4, the webmvc starter already brings in Tomcat. On its own it would be harmless, but it is a sign of copying from an old tutorial. Here it makes things worse: it adds a 4.1.1 Tomcat next to the 3.2 libraries.</li>
-          <li><strong><code>spring-boot-starter-webmvc-test</code> is missing <code>&lt;scope&gt;test&lt;/scope&gt;</code>.</strong> Without it, the scope defaults to <code>compile</code>. So JUnit, Mockito and AssertJ become part of the real application, and are shipped inside the deployed jar. It works, but it is wrong.</li>
+          <li><strong><code>spring-boot-starter-webmvc-test</code> has no <code>&lt;scope&gt;test&lt;/scope&gt;</code>.</strong> Without it, the scope defaults to <code>compile</code>, which means "needed by the real app". So JUnit, Mockito and AssertJ become part of the real app, and ship inside the deployed JAR. It works, but it is wrong.</li>
           <li><strong>The <code>spring-boot-maven-plugin</code> has been deleted.</strong> <code>&lt;plugins&gt;</code> is empty. This one has the most surprising result. See question 4.</li>
         </ol>
         <p>There is also a sixth, smaller problem: there is no <code>&lt;properties&gt;</code> block. That is question 3.</p>
 
         <p><strong>2. Which fail fast, and which fail late.</strong></p>
-        <p>Almost none of them fail fast. That is exactly what makes this POM dangerous. Every coordinate here really exists on Maven Central, so Maven fetches everything without complaint. Compiling works too. Our one source file only uses <code>SpringApplication</code> and <code>@SpringBootApplication</code>, and classes with those names exist in both versions of Spring.</p>
-        <p>The first thing that actually fails is the <strong>test phase</strong>. <code>@SpringBootTest</code> tries to start the application. Boot 4.1.1 code calls Spring Framework 6 classes, and those classes lack the methods it expects. So the application fails to start. Predicted: a <code>NoSuchMethodError</code> or <code>NoClassDefFoundError</code>, wrapped inside a <code>BeanCreationException</code>. The build stops at <code>test</code> with BUILD FAILURE. Mistake 4 (the missing scope) never shows itself at all. It just quietly makes the jar bigger. Mistake 1 stays hidden until Spring Boot finally deletes the old starter.</p>
+        <p>Almost none of them fail fast. That is exactly what makes this POM dangerous. Every coordinate here really exists on Maven Central, so Maven fetches everything without complaint. Compiling works too. Our one source file only uses <code>SpringApplication</code> and <code>@SpringBootApplication</code>. Classes with those names exist in both versions of Spring.</p>
+        <p>The first thing that actually fails is the <strong>test phase</strong>. <code>@SpringBootTest</code> tries to start the app. Boot 4.1.1 code calls Spring Framework 6 classes, and those classes lack the methods it expects. So the app fails to start. Predicted: a <code>NoSuchMethodError</code> or <code>NoClassDefFoundError</code>, wrapped inside a <code>BeanCreationException</code> (the error Spring throws when it cannot create a bean). The build stops at <code>test</code> with BUILD FAILURE.</p>
+        <p>Mistake 4 (the missing scope) never shows itself at all. It just quietly makes the JAR bigger. Mistake 1 stays hidden until Spring Boot finally deletes the old starter.</p>
 
-        <p><strong>3. Which Java version.</strong> <strong>Java 17</strong>, not 21. The <code>&lt;properties&gt;</code> block is gone. So <code>java.version</code> falls back to the value in <code>spring-boot-starter-parent</code>, which is <code>17</code> (checked in the published 4.1.1 parent POM). The parent makes <code>maven.compiler.release</code> follow <code>${java.version}</code>, so the compiler produces Java 17 bytecode. Our code uses no Java 21 features, so everything still compiles and nothing complains. The proof is in the build log: <code>Compiling 1 source file with javac [debug parameters release 17]</code>. That number is worth a glance after every build.</p>
+        <p><strong>3. Which Java version.</strong> <strong>Java 17</strong>, not 21. Here is the chain:</p>
+        <ol>
+          <li>The <code>&lt;properties&gt;</code> block is gone.</li>
+          <li>So <code>java.version</code> falls back to the value in <code>spring-boot-starter-parent</code>, which is <code>17</code> (checked in the published 4.1.1 parent POM).</li>
+          <li>The parent makes <code>maven.compiler.release</code> follow <code>${java.version}</code>.</li>
+          <li>So the compiler produces Java 17 bytecode.</li>
+        </ol>
+        <p>Our code uses no Java 21 features, so everything still compiles and nothing complains. The proof is in the build log: <code>Compiling 1 source file with javac [debug parameters release 17]</code>. That number is worth a glance after every build.</p>
 
         <p><strong>4. What happens on <code>java -jar</code>.</strong> First, the question itself is a bit off. With mistake 2 in place, the build would have stopped at the failing test. There would be no BUILD SUCCESS. So assume they used <code>-DskipTests</code>, because that is exactly what people do when a test is in their way.</p>
-        <p>Now the interesting part: mistake 5. Without the <code>spring-boot-maven-plugin</code>, the <code>repackage</code> goal never runs. The <code>package</code> phase still makes a jar, but an <em>ordinary</em> one. It holds our one class, our YAML file, and nothing else. There is no <code>BOOT-INF/lib/</code>, no dependencies inside, no launcher, and no <code>Main-Class</code> line in the manifest.</p>
+        <p>Now the interesting part: mistake 5. Without the <code>spring-boot-maven-plugin</code>, the <code>repackage</code> goal never runs. The <code>package</code> phase still makes a JAR, but an <em>ordinary</em> one. It holds our one class, our YAML file, and nothing else. There is no <code>BOOT-INF/lib/</code>, no dependencies inside, no launcher, and no <code>Main-Class</code> line in the manifest.</p>
         <pre><code>$ java -jar target/ecommerce-0.0.1-SNAPSHOT.jar
 <span class="hi">no main manifest attribute, in target/ecommerce-0.0.1-SNAPSHOT.jar</span></code></pre>
-        <p>One line. No stack trace, and no hint about the cause. This is a very common real-world error, and the cause is almost always one of two things. Either the plugin is missing from the POM, or <code>mvn package</code> was never run and the jar is old. Remember this one, because the message itself tells you nothing.</p>
-        <p>Also think about what would happen <em>if</em> the manifest were correct. The application would start, then crash while setting itself up, because of the version clash from question 2. That is two separate failures stacked on top of each other. A POM that has been "improved" several times usually looks like that.</p>
+        <p>One line. No stack trace, and no hint about the cause. This is a very common real-world error. The cause is almost always one of two things. Either the plugin is missing from the POM, or nobody ran <code>mvn package</code> and the JAR is old. Remember this one, because the message itself tells you nothing.</p>
+        <p>Also think about what would happen <em>if</em> the manifest were correct. The app would start, then crash while setting itself up, because of the version clash from question 2. That is two separate failures stacked on top of each other. A POM that has been "improved" several times usually looks like that.</p>
 
         <p><strong>5. The corrected file.</strong></p>
         <pre><code>&lt;parent&gt;
@@ -1135,27 +1438,101 @@ There was an unexpected error (type=Not Found, status=404).</code></pre>
         &lt;artifactId&gt;spring-boot-maven-plugin&lt;/artifactId&gt;
     &lt;/plugin&gt;
 &lt;/plugins&gt;&lt;/build&gt;</code></pre>
-        <p>This is, of course, the file we wrote in section 5. The point of the exercise is not to write something new. It is to look at a POM someone hands you and see exactly which lines will hurt you, and when.</p>
+        <p>This is, of course, the file we wrote in section 5. The point of the exercise is not to write something new. It is to look at a POM someone hands you, and see exactly which lines will hurt you, and when.</p>
 
         <div class="tryit">
-          <p>Want to watch it break for real? For a moment, comment out the <code>&lt;plugin&gt;</code> block in your own <code>pom.xml</code>. Run <code>mvn clean package</code>, then <code>java -jar target/ecommerce-0.0.1-SNAPSHOT.jar</code>. You should see the "no main manifest attribute" line above, and nothing else. Put the block back, rebuild, and check that it runs again. Breaking something on purpose and watching the predicted failure appear teaches more than reading about it.</p>
+          <p>Want to watch it break for real? Follow these steps:</p>
+          <ol>
+            <li>Comment out the <code>&lt;plugin&gt;</code> block in your own <code>pom.xml</code> for a moment.</li>
+            <li>Run <code>mvn clean package</code>, then <code>java -jar target/ecommerce-0.0.1-SNAPSHOT.jar</code>.</li>
+            <li>You should see the "no main manifest attribute" line above, and nothing else.</li>
+            <li>Put the block back, rebuild, and check that it runs again.</li>
+          </ol>
+          <p>Breaking something on purpose and watching the predicted failure appear teaches more than reading about it.</p>
         </div>
       </details>
     </section>
 
     <!-- ============================================================= -->
+    <section id="keywords">
+      <h2><span class="secno">10</span>Key Words</h2>
+
+      <p>Every new word from this lesson, with a one-line meaning.</p>
+
+      <dl class="keywords">
+        <dt>JAR hell</dt><dd>The mess of finding, matching and fixing library versions by hand.</dd>
+        <dt><code>NoSuchMethodError</code></dt><dd>A crash at run time: the class Java found does not have the method your code calls.</dd>
+        <dt>Build tool</dt><dd>A program that fetches libraries, compiles, tests and packages your project, the same way every time.</dd>
+        <dt>Coordinates</dt><dd>The three values that name any library: <code>groupId</code>, <code>artifactId</code> and <code>version</code>.</dd>
+        <dt>Artifact</dt><dd>A thing a build produces. Usually a JAR file.</dd>
+        <dt>Domain</dt><dd>The name part of a web address, like <code>springframework.org</code>.</dd>
+        <dt>Repository</dt><dd>A place where artifacts are stored. Maven Central is the public one.</dd>
+        <dt>Local repository</dt><dd>The folder <code>~/.m2/repository</code> on your machine, where Maven keeps every JAR it downloads.</dd>
+        <dt>Transitive dependency</dt><dd>A library that one of your libraries needs.</dd>
+        <dt>Nearest wins</dt><dd>Maven's own rule for clashing versions: use the one closest to your <code>pom.xml</code>.</dd>
+        <dt>YAML</dt><dd>A settings-file format that groups settings by indenting with spaces.</dd>
+        <dt>POM</dt><dd>Project Object Model: Maven's description of a project, kept in <code>pom.xml</code>.</dd>
+        <dt>Parent POM</dt><dd>A POM that your POM inherits settings and versions from.</dd>
+        <dt><code>&lt;dependencyManagement&gt;</code></dt><dd>A list that says which version to use <em>if</em> something is asked for. It downloads nothing.</dd>
+        <dt>BOM</dt><dd>Bill of Materials: a POM that pins tested versions for a whole set of libraries.</dd>
+        <dt>Property</dt><dd>A named value in a POM, like <code>java.version</code>.</dd>
+        <dt>UTF-8</dt><dd>The standard way to store letters as bytes, so accented letters survive.</dd>
+        <dt>Scope</dt><dd>When a dependency is needed. <code>test</code> means only for tests.</dd>
+        <dt>Assertion</dt><dd>A check in a test, like "this value must equal 5".</dd>
+        <dt>JUnit</dt><dd>The tool that finds and runs your tests.</dd>
+        <dt>Mockito</dt><dd>A tool that makes fake objects for tests.</dd>
+        <dt>MockMvc</dt><dd>A tool that sends pretend requests to your web code without a real server.</dd>
+        <dt>OAuth2</dt><dd>A standard way to log in through another service, like "Sign in with Google".</dd>
+        <dt><code>@SpringBootTest</code></dt><dd>An annotation that starts the whole Spring app inside a test.</dd>
+        <dt>Phase</dt><dd>One step in Maven's fixed list, such as <code>compile</code>, <code>test</code> or <code>package</code>.</dd>
+        <dt>Build lifecycle</dt><dd>The fixed, ordered list of phases. Naming one runs all the ones before it.</dd>
+        <dt>Goal</dt><dd>One action from one plugin, written with a colon, like <code>spring-boot:run</code>.</dd>
+        <dt>Build server</dt><dd>A computer that builds and tests code automatically each time someone pushes.</dd>
+        <dt>Fat JAR</dt><dd>One JAR that holds your code and every library it needs.</dd>
+        <dt><code>repackage</code></dt><dd>The step where Spring Boot's plugin turns a plain JAR into a fat JAR.</dd>
+        <dt>SNAPSHOT</dt><dd>A version still being worked on, like <code>0.0.1-SNAPSHOT</code>.</dd>
+        <dt>Spring Initializr</dt><dd>The website (start.spring.io) that creates a new Spring Boot project for you.</dd>
+        <dt>Controller</dt><dd>The class that answers web requests. Chapter 4 builds the first one.</dd>
+        <dt>curl</dt><dd>A terminal tool that sends a web request and shows what comes back.</dd>
+        <dt>Flag</dt><dd>An extra instruction added to a command, like <code>-jar</code> or <code>-i</code>.</dd>
+        <dt>Manifest</dt><dd>The small text file inside every JAR that says which class to start.</dd>
+        <dt>Class loader</dt><dd>The part of Java that finds and loads classes while a program runs.</dd>
+        <dt><code>JarLauncher</code></dt><dd>Spring Boot's starter class that can read JARs inside a JAR, then calls your <code>main</code>.</dd>
+        <dt>Header</dt><dd>A labelled line of extra information sent with a request or response.</dd>
+        <dt>Content negotiation</dt><dd>The server choosing a response format based on the caller's <code>Accept</code> header.</dd>
+        <dt><code>localhost</code></dt><dd>A name that means "this same computer".</dd>
+        <dt><code>GET</code></dt><dd>The kind of HTTP request that means "give me something".</dd>
+        <dt>Refactor</dt><dd>A safe, automatic code change that updates every place at once.</dd>
+        <dt>Layer (container image)</dt><dd>One slice of a container image. Only changed layers are rebuilt and sent.</dd>
+      </dl>
+    </section>
+
+    <!-- ============================================================= -->
+    <section id="recap">
+      <h2><span class="secno">11</span>Quick Recap</h2>
+
+      <ul>
+        <li>A build tool keeps the list of what your project needs, fetches it all, makes the versions fit, and builds the same way everywhere. Doing that by hand leads to JAR hell.</li>
+        <li>Our <code>pom.xml</code> has one version number, on the parent. The parent's BOM pins about four hundred tested libraries, so never write a <code>&lt;version&gt;</code> on a Spring dependency.</li>
+        <li>A starter is an empty JAR whose POM lists libraries. Auto-configuration then reads the classpath the starter filled.</li>
+        <li>Maven phases run in order, and each includes all the ones before it. So <code>mvn package</code> compiles and tests first. A goal like <code>spring-boot:run</code> runs on its own.</li>
+        <li>In Boot 4, use <code>spring-boot-starter-webmvc</code> and <code>spring-boot-starter-webmvc-test</code>. Translate the old <code>-web</code> and <code>-test</code> names on sight.</li>
+      </ul>
+    </section>
+
+    <!-- ============================================================= -->
     <section id="next">
-      <h2><span class="secno">11</span>What Is Next</h2>
+      <h2><span class="secno">12</span>What Is Next</h2>
 
-      <p>You have a running application. And one annotation on one class is doing a huge amount of work that we have only hinted at so far.</p>
+      <p>You have a running app. And one annotation on one class does a huge amount of work that we have only hinted at so far.</p>
 
-      <p><a href="lesson-03-the-main-application-class.html"><strong>Lesson 03</strong></a> takes <code>@SpringBootApplication</code> apart into the three annotations it really stands for. It explains what the <code>ApplicationContext</code> is, and why it is the brain of every Spring application. And it shows exactly how Spring decides which of your classes it can see, with a simulation where moving the main class changes the answer. That last part causes the most baffling beginner bug in Spring: a controller that is silently invisible.</p>
+      <p><a href="lesson-03-the-main-application-class.html"><strong>Lesson 03</strong></a> takes <code>@SpringBootApplication</code> apart into the three annotations it really stands for. It explains what the <code>ApplicationContext</code> is, and why it is the brain of every Spring app. And it shows exactly how Spring decides which of your classes it can see, with a simulation where moving the main class changes the answer. That last part causes the most baffling beginner bug in Spring: a controller that is silently invisible.</p>
     </section>
 
     <footer class="next">
       <p class="kicker">Next up</p>
       <h2><a href="lesson-03-the-main-application-class.html">Lesson 03 — The Main Application Class</a></h2>
-      <p><code>@SpringBootApplication</code> taken apart into its three parts. The <code>ApplicationContext</code> as the brain of the application. And the scanning boundary that decides which of your classes Spring can even see.</p>
+      <p><code>@SpringBootApplication</code> taken apart into its three parts. The <code>ApplicationContext</code> as the brain of the app. And the scanning boundary that decides which of your classes Spring can even see.</p>
     </footer>
 
     <p class="lesson-footer">Lesson 02 of 168 · Phase 1 · Chapter 1 — Getting Started</p>

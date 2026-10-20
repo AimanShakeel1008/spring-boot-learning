@@ -20,9 +20,10 @@
       <a href="#applied">6 · Applied to Our Project</a>
       <a href="#gotchas">7 · Gotchas</a>
       <a href="#tradeoffs">8 · Tradeoffs</a>
-      <a href="#takeaways">9 · Key Takeaways</a>
-      <a href="#challenge">10 · Challenge</a>
-      <a href="#next">11 · What Is Next</a>
+      <a href="#challenge">9 · Challenge</a>
+      <a href="#keywords">10 · Key Words</a>
+      <a href="#recap">11 · Quick Recap</a>
+      <a href="#next">12 · What Is Next</a>
     </nav>
     <div class="prevnext">
       <a class="prev disabled" href="#"><span class="nav-dir">← Prev</span><span class="nav-title">This is the first lesson</span></a>
@@ -36,24 +37,40 @@
     <header class="lesson">
       <p class="kicker">Phase 1 · Chapter 0 · Lesson 00</p>
       <h1>Getting Your Machine Ready</h1>
-      <p class="subtitle">Four tools, four commands that prove they work, and one folder that Git keeps a history of. No Spring yet. This lesson removes the wall that stops most beginners before they ever get to Spring.</p>
+      <p class="subtitle">Four tools. Four commands that prove they work. One folder that Git keeps a history of. No Spring yet. This lesson clears away the wall that stops most beginners before they ever reach Spring.</p>
       <p class="meta"><strong>Files created:</strong> <code>learning/.gitignore</code>, <code>learning/.gitattributes</code> · <strong>Prerequisites:</strong> none (this is lesson zero) · <strong>Pinned:</strong> Java 21 LTS · Maven 3.9.16 · Spring Boot 4.1.1</p>
     </header>
+
+    <div class="learn">
+      <ul>
+        <li>What the four tools are (the JDK, Maven, an IDE and Git), and why you need each one.</li>
+        <li>How Java turns the text you type into a program your computer can run.</li>
+        <li>How to install each tool, prove it works with one command, and start your project's history.</li>
+      </ul>
+    </div>
 
     <!-- ============================================================= -->
     <section id="problem">
       <h2><span class="secno">1</span>The Problem</h2>
 
-      <p>Imagine you sit down tomorrow to build the online store we are going to build together. You know Java. You can write a class, a loop, a method. You open a blank file and type out a perfectly good <code>Product</code> class. You save it. And then you stop, because there is nothing to press.</p>
+      <p>Imagine you sit down tomorrow to build our online store. You know Java. You can write a class, a loop and a method. You open a blank file and type a good <code>Product</code> class. You save it. And then you stop, because there is nothing to press.</p>
 
-      <p>Right now, your laptop has no idea what to do with a file full of Java. It cannot turn your typing into a running program. It has nothing to fetch the huge amount of ready-made code that Spring is made of. It has nothing to remember yesterday's version of your work when you break something today. The file just sits there, as useless as a shopping list.</p>
+      <p>Right now, your laptop does not know what to do with a file full of Java. It cannot turn your typing into a running program. It cannot fetch the huge amount of ready-made code that Spring is built from. It cannot keep yesterday's version of your work when you break something today. The file just sits there, as useless as a shopping list.</p>
 
-      <p>This is the wall. There is no clever idea hiding behind it. But it ends more attempts at programming than any hard idea does. People give up during setup, before they have written one real line of code. Setup fails in silent, confusing ways. A command "is not recognized". A download page offers five options and you pick the wrong one. An error message names something you have never heard of. Nothing is wrong with your <em>thinking</em>. Your machine just is not ready yet.</p>
+      <p>This is the wall. No clever idea hides behind it. But it ends more attempts at programming than any hard idea does. People give up during setup, before they write one real line of code. Setup fails in silent, confusing ways:</p>
 
-      <p>So we will get it ready on purpose, one tool at a time. And we will do the part most tutorials skip: we will <strong>prove</strong> each tool works before moving on. By the end of this lesson you will have typed four commands and seen four answers. You will know, not just hope, that everything is in place.</p>
+      <ul>
+        <li>A command "is not recognized".</li>
+        <li>A download page offers five options, and you pick the wrong one.</li>
+        <li>An error message names something you have never heard of.</li>
+      </ul>
+
+      <p>None of this means your <em>thinking</em> is wrong. Your machine just is not ready yet.</p>
+
+      <p>So we will get it ready on purpose, one tool at a time. And we will do the part most tutorials skip. We will <strong>prove</strong> each tool works before we move on. By the end, you will type four commands and see four answers. Then you will <em>know</em> everything is in place. You will not just hope.</p>
 
       <div class="note">
-        <p>Already installed these tools before? Do not skip the lesson. Jump to <a href="#right">section 5</a> and run the four check commands anyway. Checking takes ninety seconds. Fixing a half-installed setup three lessons from now takes a whole evening.</p>
+        <p>Have you installed these tools before? Do not skip the lesson. Jump to <a href="#right">section 5</a> and run the four check commands anyway. Checking takes ninety seconds. Fixing a half-installed setup three lessons from now takes a whole evening.</p>
       </div>
     </section>
 
@@ -61,7 +78,7 @@
     <section id="analogy">
       <h2><span class="secno">2</span>Real World Analogy</h2>
 
-      <p>Think about a restaurant kitchen on the morning it opens, before any food is served. The chef is skilled. But skill alone cooks nothing. A kitchen needs four things in place first:</p>
+      <p>Think about a restaurant kitchen on its first morning, before it serves any food. The chef is skilled. But skill alone cooks nothing. The kitchen needs four things in place first:</p>
 
       <div class="tablewrap">
         <table>
@@ -69,15 +86,15 @@
             <tr><th>In the kitchen</th><th>What it does there</th><th>On your machine</th></tr>
           </thead>
           <tbody>
-            <tr><td><strong>The stove and the knives</strong></td><td>Turn raw ingredients into a cooked dish. Without them, the recipe stays a piece of paper.</td><td>The <strong>JDK</strong>: turns your Java text into a running program</td></tr>
+            <tr><td><strong>The stove and the knives</strong></td><td>They turn raw food into a cooked dish. Without them, the recipe stays a piece of paper.</td><td>The <strong>JDK</strong>: turns your Java text into a running program</td></tr>
             <tr><td><strong>The supplier</strong></td><td>You do not grow your own vegetables. You phone in an order, and boxes arrive at the back door.</td><td><strong>Maven</strong>: fetches the ready-made code your project needs</td></tr>
-            <tr><td><strong>The workbench</strong></td><td>Good light and everything within reach. It even warns you before you cut yourself.</td><td>The <strong>IDE</strong>: where you write code, with the editor watching for mistakes</td></tr>
-            <tr><td><strong>The recipe logbook</strong></td><td>Every version of every dish, with a date. If tonight's change ruins a dish, last week's version is still there.</td><td><strong>Git and GitHub</strong>: a permanent history of every version of your work</td></tr>
+            <tr><td><strong>The workbench</strong></td><td>It has good light, and everything is within reach. It even warns you before you cut yourself.</td><td>The <strong>IDE</strong>: where you write code, while it watches for mistakes</td></tr>
+            <tr><td><strong>The recipe logbook</strong></td><td>It holds every version of every dish, with a date. If tonight's change ruins a dish, last week's version is still there.</td><td><strong>Git and GitHub</strong>: a permanent history of every version of your work</td></tr>
           </tbody>
         </table>
       </div>
 
-      <p>The kitchen teaches one more thing. A chef does not install a new stove every time they cook. They install it once, carefully, and then it is there for years. This lesson is the same. One careful morning, and then setup is behind you.</p>
+      <p>The kitchen teaches one more thing. A chef does not install a new stove every time they cook. They install it once, carefully. Then it is there for years. This lesson is the same. You spend one careful morning, and then setup is behind you.</p>
 
       <figure class="fig fig-narrow">
         <svg viewBox="0 0 760 250" role="img" aria-label="Diagram of the four tools surrounding your project. In the centre sits your E-Commerce project. Around it: the JDK, which compiles and runs your code; Maven, which fetches libraries and builds the project; the IDE, where you write the code; and Git with GitHub, which stores the history of every change.">
@@ -106,7 +123,7 @@
           <path class="fig-arrow" d="M230,199 H265 Q280,199 280,170 V155"/>
           <path class="fig-arrow" d="M530,199 H495 Q480,199 480,170 V155"/>
         </svg>
-        <figcaption>The four tools, all serving one project. Teal marks the tools that turn code into a running program. Grey marks the tools that help you, not the program. Green is your own work. Green means your work in every diagram in this course.</figcaption>
+        <figcaption>Four tools, all serving one project. Teal marks the tools that turn code into a running program. Grey marks the tools that help you, not the program. Green is your own work. In every diagram in this course, green means your work.</figcaption>
       </figure>
     </section>
 
@@ -114,19 +131,32 @@
     <section id="concept">
       <h2><span class="secno">3</span>The Concept Explained</h2>
 
-      <p>Before installing anything, it helps to know what each tool actually <em>is</em>. People who install tools they cannot describe end up with three versions of Java and no idea which one is running.</p>
+      <p>Before you install anything, it helps to know what each tool <em>is</em>. Some people install tools they cannot describe. They end up with three versions of Java and no idea which one is running. We will avoid that.</p>
 
-      <h3>3.1 What actually happens to Java code</h3>
+      <h3>3.1 Your computer cannot read Java</h3>
 
-      <p>Start with what you already do: you write Java into a file. That text is called <span class="term" tabindex="0" data-def="The human-readable text a programmer writes, before any translation.">source code</span>. It is called "source" because everything else is made from it. It is just text. You could read it aloud.</p>
+      <p>Start with what you already do. You write Java into a file. That text is called <span class="term" tabindex="0" data-def="The human-readable text a programmer writes, before any translation.">source code</span>. We call it "source" because everything else is made from it. It is just text. You could read it aloud.</p>
 
-      <p>Your computer's processor cannot read it. A processor understands only <span class="term" tabindex="0" data-def="The raw numeric instructions a physical processor executes directly.">machine code</span>. Machine code is raw numbers that mean things like "add these two values" or "copy this byte over there". Something has to turn "a Java class about products" into "numbers a chip can run". That something is a <strong>compiler</strong>.</p>
+      <p>Inside your computer is a <span class="term" tabindex="0" data-def="The chip inside a computer that carries out instructions. Also called the CPU.">processor</span>. The processor is the chip that does the real work. It is also called the CPU (Central Processing Unit). The processor cannot read Java. It understands only <span class="term" tabindex="0" data-def="The raw numeric instructions a physical processor executes directly.">machine code</span>. Machine code is a list of raw numbers. Each number means a tiny job, like "add these two values" or "copy this small piece of data over there".</p>
 
-      <p>A <span class="term" tabindex="0" data-def="A program that translates source code written by a human into a form a machine can execute.">compiler</span> is a program whose job is translation. Text goes in, and instructions a machine can run come out. Java's compiler is a command called <code>javac</code> (short for "java compile").</p>
+      <p>So something must turn "a Java class about products" into "numbers a chip can run". That something is a compiler. A <span class="term" tabindex="0" data-def="A program that translates source code written by a human into a form a machine can execute.">compiler</span> is a program whose only job is translation. Text goes in. Instructions a machine can run come out. Java's compiler is a command called <code>javac</code> (short for "java compile").</p>
 
-      <p>But Java does something unusual here. It is the most important thing to understand about how Java runs. <code>javac</code> does <strong>not</strong> produce machine code for your laptop. It produces an in-between format called <span class="term" tabindex="0" data-def="The in-between instruction format Java compiles to. It is not human text, and not machine code for any one processor.">bytecode</span>. Bytecode is saved in files ending in <code>.class</code>. It is a set of instructions for an imaginary computer that does not really exist.</p>
+      <h3>3.2 Java's unusual trick: bytecode and the JVM</h3>
 
-      <p>A real program then <em>pretends</em> to be that imaginary computer. This program is called the <span class="term" tabindex="0" data-def="The Java Virtual Machine: the program that reads bytecode and runs it on your real hardware.">JVM</span>, the Java Virtual Machine. The JVM reads bytecode and carries it out on your real hardware, translating as it goes.</p>
+      <p>Here Java does something unusual. It is the most important idea in how Java runs.</p>
+
+      <p><code>javac</code> does <strong>not</strong> make machine code for your laptop. It makes an in-between format called <span class="term" tabindex="0" data-def="The in-between instruction format Java compiles to. It is not human text, and not machine code for any one processor.">bytecode</span>. Bytecode lives in files that end in <code>.class</code>. It is a set of instructions for an imaginary computer. That computer does not really exist.</p>
+
+      <p>A real program then <em>pretends</em> to be that imaginary computer. This program is called the <span class="term" tabindex="0" data-def="The Java Virtual Machine: the program that reads bytecode and runs it on your real hardware.">JVM</span>, the Java Virtual Machine. "Virtual" here means "pretend". The JVM reads bytecode and carries it out on your real processor. It translates as it goes.</p>
+
+      <p>So running a Java program takes these steps:</p>
+
+      <ol>
+        <li>You write <code>Product.java</code>. This is source code.</li>
+        <li><code>javac</code> reads it and writes <code>Product.class</code>. This is bytecode.</li>
+        <li>The JVM reads <code>Product.class</code>.</li>
+        <li>The JVM turns each bytecode instruction into machine code, and your processor runs it.</li>
+      </ol>
 
       <figure class="fig">
         <svg viewBox="0 0 760 210" role="img" aria-label="The Java pipeline in four stages. Your Product dot java source file is compiled by javac, which is part of the JDK, into Product dot class bytecode. The JVM then reads that bytecode and executes it as machine instructions on your processor. The caption notes that bytecode is portable across operating systems because each one has its own JVM.">
@@ -159,117 +189,180 @@
           <text x="300" y="165" text-anchor="middle" class="fig-caption-accent">COMPILE ONCE</text>
           <text x="300" y="185" text-anchor="middle" class="fig-small">then any JVM, on any operating system, can run the result</text>
         </svg>
-        <figcaption>Why Java takes the long way round. Java compiles to bytecode, not straight to machine code. So the same compiled file runs on Windows, macOS and Linux. Each system has its own JVM, and any JVM can run the bytecode. This is what "write once, run anywhere" means. It is also why your app will later run, unchanged, inside a Linux container.</figcaption>
+        <figcaption>Why Java takes the long way round. Java compiles to bytecode, not straight to machine code. Windows, macOS and Linux each have their own JVM, and any JVM can run the same bytecode. So one compiled file runs on all of them. People call this "write once, run anywhere". It is also why your app will later run, unchanged, inside a Linux container. A container is a sealed box that holds an app and everything it needs. You meet it in Phase 3.</figcaption>
       </figure>
 
-      <p>Why design it this way? Look at the other choice. Suppose <code>javac</code> produced Windows machine code. That file would not work on a Mac. It would not work on the Linux server you later put your app on. It would not work on a colleague's different computer. You would have to compile your program again for every kind of machine. The bytecode-and-JVM design costs a little speed. In return, the compiled file works everywhere. In Phase 3 we will send this application to a cloud machine you will never see. This choice, made in 1995, is why that will be easy.</p>
+      <h3>3.3 Why Java was designed this way</h3>
 
-      <h3>3.2 JDK, JRE, JVM — three names, one set of nesting dolls</h3>
+      <p>Look at the other choice. Suppose <code>javac</code> made Windows machine code. That file would not work on a Mac. It would not work on a Linux server. (A <strong>server</strong> is a computer that runs your app all day, so other people can use it. Lesson 01 explains servers fully.) It would not work on a friend's different computer. You would have to compile your program again for every kind of machine.</p>
 
-      <p>People mix these three up all the time, and the mix-up causes real problems. So let us be exact. They fit inside each other, smallest first:</p>
+      <p>Windows, macOS and Linux are <span class="term" tabindex="0" data-def="The main program that runs a computer and lets other programs use it. Windows, macOS and Linux are examples.">operating systems</span>. An operating system is the main program that runs a computer. Every other program runs on top of it. Each operating system needs different machine code. Bytecode avoids that problem.</p>
+
+      <p>The bytecode-and-JVM design costs a little speed. In return, the compiled file works everywhere. In Phase 3 we will send this app to a cloud computer you will never see. This choice, made in 1995, is why that will be easy.</p>
+
+      <h3>3.4 JDK, JRE, JVM: three names, one set of nesting dolls</h3>
+
+      <p>People mix up these three names all the time. The mix-up causes real problems. So let us be exact. They fit inside each other, like nesting dolls. Here they are, smallest first:</p>
 
       <div class="tablewrap">
         <table>
           <thead><tr><th>Name</th><th>Stands for</th><th>What is in it</th><th>Lets you…</th></tr></thead>
           <tbody>
             <tr><td><strong>JVM</strong></td><td>Java Virtual Machine</td><td>The engine that runs bytecode</td><td>run bytecode</td></tr>
-            <tr><td><strong>JRE</strong></td><td>Java Runtime Environment</td><td>The JVM <em>plus</em> the standard library: thousands of ready-made classes like <code>String</code> and <code>List</code></td><td>run finished Java programs</td></tr>
-            <tr><td><strong>JDK</strong></td><td>Java Development <em>Kit</em></td><td>The JRE <em>plus</em> the tools for writing Java. The most important one is <code>javac</code>, the compiler</td><td>write and compile your own Java</td></tr>
+            <tr><td><strong>JRE</strong></td><td>Java Runtime Environment</td><td>The JVM <em>plus</em> the standard library. The <span class="term" tabindex="0" data-def="The thousands of ready-made classes that come with Java itself, such as String and List.">standard library</span> is thousands of ready-made classes that come with Java, like <code>String</code> and <code>List</code></td><td>run finished Java programs</td></tr>
+            <tr><td><strong>JDK</strong></td><td>Java Development <em>Kit</em></td><td>The JRE <em>plus</em> the tools for writing Java. The most important tool is <code>javac</code>, the compiler</td><td>write and compile your own Java</td></tr>
           </tbody>
         </table>
       </div>
 
-      <p>The word that matters is <strong>Kit</strong>. A JRE is for someone who only ever <em>runs</em> Java that someone else compiled. You are going to write Java. So you need the compiler, and so you need the <span class="term" tabindex="0" data-def="Java Development Kit: the JRE plus the tools for writing Java, most importantly the javac compiler. What you need to write Java, not just run it.">JDK</span>. If you install a JRE by mistake, you get one of the most confusing beginner errors there is. Java is clearly installed, yet nothing you write will compile.</p>
+      <p>"Runtime" means "while a program is running". So a Runtime Environment is everything a program needs while it runs.</p>
+
+      <p>The word that matters most is <strong>Kit</strong>. A JRE is for someone who only <em>runs</em> Java that another person compiled. You are going to write Java. So you need the compiler. So you need the <span class="term" tabindex="0" data-def="Java Development Kit: the JRE plus the tools for writing Java, most importantly the javac compiler. What you need to write Java, not just run it.">JDK</span>.</p>
+
+      <p>What if you install a JRE by mistake? You get one of the most confusing beginner errors there is. Java is clearly installed, yet nothing you write will compile.</p>
 
       <details class="check">
-        <summary>Check yourself: a colleague says "Java is definitely installed, I can run programs, but <code>javac</code> says command not found." What happened?</summary>
-        <p>They almost certainly have a <strong>JRE</strong>, not a <strong>JDK</strong>. The JRE contains the JVM, so it can run compiled programs. But it has no compiler. <code>javac</code> is a tool for writing Java, and those tools come only in the Kit. The fix is to install a JDK. (A broken <code>PATH</code> can also cause this; section 3.4 covers it. But if <code>java</code> works and <code>javac</code> does not, a JRE is by far the most likely cause.)</p>
+        <summary>Check yourself: a friend says "Java is installed. I can run programs. But <code>javac</code> says command not found." What happened?</summary>
+        <p>They almost certainly have a <strong>JRE</strong>, not a <strong>JDK</strong>. The JRE contains the JVM, so it can run compiled programs. But it has no compiler. <code>javac</code> is a tool for writing Java. Those tools come only in the Kit. The fix is to install a JDK. (A broken <code>PATH</code> can also cause this. Section 3.6 covers PATH. But if <code>java</code> works and <code>javac</code> does not, a JRE is by far the most likely cause.)</p>
       </details>
 
-      <h3>3.3 Why Java 21, and what "LTS" means</h3>
+      <h3>3.5 Why Java 21, and what "LTS" means</h3>
 
-      <p>A new version of Java comes out every six months. Most versions get fixes for only six months. That is long enough to try them, but too short to build a business on. Every few years, one version is marked <span class="term" tabindex="0" data-def="Long Term Support: a version that gets security and bug fixes for years, not months. Real systems are built on these.">LTS</span>, which stands for Long Term Support. An LTS version keeps getting security fixes for years.</p>
+      <p>A new version of Java comes out every six months. Most versions get fixes for only six months. That is long enough to try them. It is too short to build a business on.</p>
 
-      <p>Companies build on LTS versions. So most tutorials, libraries and answers to your questions are about them. We pin <strong>Java 21</strong>. It is an LTS version, and a huge number of tools support it. It is also the version that added virtual threads, a feature we study properly in Phase 3.</p>
+      <p>Every few years, the Java team marks one version as <span class="term" tabindex="0" data-def="Long Term Support: a version that gets security and bug fixes for years, not months. Real systems are built on these.">LTS</span>. LTS stands for Long Term Support. An LTS version keeps getting security fixes for years.</p>
 
-      <p>Spring Boot 4 needs at least Java 17, and it recommends the newest LTS. Java 21 is well within what it supports.</p>
+      <p>Companies build on LTS versions. So most tutorials, tools and answers to your questions are about them. We pin <strong>Java 21</strong>. It is an LTS version, and a huge number of tools support it. Java 21 also added "virtual threads". They let one program do many jobs at the same time, very cheaply. We study them properly in Phase 3.</p>
 
-      <h3>3.4 The terminal, and the one environment variable that breaks everything</h3>
+      <p>Spring Boot 4 needs at least Java 17. It recommends the newest LTS. Java 21 fits well within that.</p>
 
-      <p>A <span class="term" tabindex="0" data-def="A window where you type commands as text and the computer answers as text, instead of clicking buttons.">terminal</span> is a window where you talk to your computer by typing instead of clicking. On Windows it is PowerShell or Windows Terminal. On macOS and Linux it is Terminal. Nearly every tool in this course is used from the terminal. A typed command is exact, you can repeat it, and it is easy to paste into a lesson.</p>
+      <h3>3.6 The terminal, and the setting that breaks everything</h3>
 
-      <p>When you type <code>java</code> and press Enter, your computer has to find a program with that name. It does not search your whole hard disk; that would take forever. Instead it checks a list of folders called <span class="term" tabindex="0" data-def="An environment variable holding the list of folders the system searches when you type a command name.">PATH</span>. It looks in each folder, in order, for something called <code>java</code>. If no folder on the list has it, it gives up. This is the most common setup error there is:</p>
+      <p>A <span class="term" tabindex="0" data-def="A window where you type commands as text and the computer answers as text, instead of clicking buttons.">terminal</span> is a window where you talk to your computer by typing instead of clicking. On Windows it is PowerShell or Windows Terminal. On macOS and Linux it is called Terminal. You will use nearly every tool in this course from the terminal. Why? A typed command is exact. You can repeat it. And it is easy to paste into a lesson.</p>
+
+      <p>Your computer keeps some named settings that every program can read. Each one is an <span class="term" tabindex="0" data-def="A named setting that belongs to your whole computer session, which every program you start can read.">environment variable</span>. The name comes from the idea that these settings are part of the "environment" your programs run in. Think of a notice board in an office. Anyone who walks in can read it.</p>
+
+      <p>The best-known environment variable is <span class="term" tabindex="0" data-def="An environment variable holding the list of folders the system searches when you type a command name.">PATH</span>. Here is why it matters. When you type <code>java</code> and press Enter, your computer must find a program with that name. It does not search your whole hard disk. That would take forever. Instead it follows these steps:</p>
+
+      <ol>
+        <li>It reads PATH. PATH holds a list of folders.</li>
+        <li>It looks in the first folder for a program called <code>java</code>.</li>
+        <li>If it is not there, it tries the next folder, and the next.</li>
+        <li>If no folder on the list has it, it gives up and shows an error.</li>
+      </ol>
+
+      <p>That error is the most common setup error there is. On Windows it looks like this:</p>
 
       <pre><code><span class="hi">java : The term 'java' is not recognized as the name of a cmdlet, function,
 script file, or operable program.</span></code></pre>
 
-      <p>Read that message again with what you now know, and it stops being scary. It does not mean Java failed. It does not mean Java is broken. It means: <em>I looked in every folder on my PATH list, and none of them had a program called java.</em> Either Java is not installed, or it is installed in a folder that is not on the list. That is all the message says.</p>
+      <p>The word "cmdlet" just means a built-in PowerShell command. Now read the message again with what you know. It stops being scary. It does not mean Java failed. It does not mean Java is broken. It means: <em>"I looked in every folder on my PATH list. None of them had a program called java."</em> Either Java is not installed, or it sits in a folder that is not on the list. That is all the message says.</p>
+
+      <p>Many Java tools also read a second environment variable, <span class="term" tabindex="0" data-def="An environment variable that holds the folder where your JDK is installed. Many Java tools read it to find Java.">JAVA_HOME</span>. It holds the folder where your JDK is installed. Maven uses it to decide which Java to use. You will see it again in section 5.</p>
 
       <div class="note">
-        <p><strong>Why "environment variable"?</strong> It is a named setting that belongs to your whole computer session, not to one program. It is part of the "environment" your programs run in. <code>PATH</code> is the best-known one. We meet environment variables again in <strong>Lesson 39</strong>, for a different reason. There, they become the right place to keep passwords and secret keys.</p>
+        <p>We meet environment variables again in <strong>Lesson 39</strong>, for a different reason. There, they become the safe place to keep passwords and secret keys, so those never go into your code.</p>
       </div>
 
-      <h3>3.5 What a build tool is, and the problem that created it</h3>
+      <h3>3.7 Libraries, and the mess they cause without help</h3>
 
-      <p>Say you have your JDK and you write one file. You can compile it by hand: <code>javac Product.java</code>. Fine. Now let us grow it into something real, and watch the by-hand method fall apart.</p>
+      <p>Say you have your JDK and you write one file. You can compile it by hand: <code>javac Product.java</code>. Fine. Now let us grow it into something real. Watch the by-hand method fall apart, one problem at a time.</p>
 
-      <p><strong>First:</strong> real projects have hundreds of files in many folders. The files depend on each other, so they must be compiled in the right order. Compiling them by hand means typing out every path, every time.</p>
+      <p><strong>Problem one: many files.</strong> Real projects have hundreds of files in many folders. The files depend on each other. So you must compile them in the right order. By hand, that means typing every path, every time.</p>
 
-      <p><strong>Second, and much worse:</strong> you will not write everything yourself. Nobody does. You will use <span class="term" tabindex="0" data-def="A bundle of ready-made, reusable code that someone else wrote and published, which your project can use.">libraries</span>. A library is a bundle of ready-made code that someone else wrote to solve a common problem. Spring Boot is made of dozens of them. A library comes as a <span class="term" tabindex="0" data-def="Java ARchive: one zip-like file holding many compiled Java classes. The standard way Java code is packaged and shared.">JAR</span> file. JAR stands for Java ARchive: one file holding many compiled classes. To use a library by hand, you find the right website and download the right JAR. Then you put it somewhere sensible and tell <code>javac</code> where it is.</p>
+      <p><strong>Problem two: other people's code.</strong> You will not write everything yourself. Nobody does. You will use <span class="term" tabindex="0" data-def="A bundle of ready-made, reusable code that someone else wrote and published, which your project can use.">libraries</span>. A library is a bundle of ready-made code that someone else wrote to solve a common problem. Think of it as a box of parts you can use in your own work. Spring Boot is built from dozens of libraries.</p>
 
-      <p><strong>Third, and this is what really breaks people:</strong> libraries use other libraries. You want library A. A was built using B and C. C needs D and E. Miss one, and you get an error while the program runs, often long after it started. The error names a class you have never heard of. Get two different versions of the same library, and you get a harder, nastier failure. Chasing these down by hand is called "JAR hell". Before build tools existed, it could easily eat a week.</p>
-
-      <p>A <span class="term" tabindex="0" data-def="A program that automates compiling, testing and packaging a project, and fetches the libraries it depends on.">build tool</span> takes all of that over. You write down <em>what</em> you want, and it works out <em>how</em>. <strong>Maven</strong>, the build tool we use, works like this:</p>
+      <p>A library comes as a <span class="term" tabindex="0" data-def="Java ARchive: one zip-like file holding many compiled Java classes. The standard way Java code is packaged and shared.">JAR</span> file. JAR stands for Java ARchive. It is one file that holds many compiled classes, a bit like a zip file. To use a library by hand, you must:</p>
 
       <ol>
-        <li>You list what your project needs in a file called <code>pom.xml</code>. Each item on the list is a <span class="term" tabindex="0" data-def="A library your project needs in order to compile or run.">dependency</span>.</li>
-        <li>Maven reads the list and downloads each item from <strong>Maven Central</strong>. Maven Central is a huge public store of Java libraries.</li>
-        <li>For each library, Maven reads <em>that</em> library's own list of needs and downloads those too. It keeps going down the chain until nothing is missing. This automatic chasing is called <strong>transitive dependency resolution</strong>. It is the feature that ended JAR hell.</li>
-        <li>It saves everything in a local folder (<code>.m2</code> in your home folder). So the second build does not download it all again.</li>
-        <li>Then it compiles your code in the right order, runs your tests, and packages the result.</li>
+        <li>find the right website,</li>
+        <li>download the right JAR,</li>
+        <li>put it somewhere sensible,</li>
+        <li>and tell <code>javac</code> where it is.</li>
+      </ol>
+
+      <p><strong>Problem three, the one that really breaks people: libraries use other libraries.</strong> Here is an example. You want library A. The people who wrote A used libraries B and C. C, in turn, needs D and E. So to use A, you really need A, B, C, D and E.</p>
+
+      <ul>
+        <li>Miss one, and your program crashes while it runs. Often this happens long after it started. The error names a class you have never heard of.</li>
+        <li>Get two different versions of the same library, and you get a harder, nastier failure.</li>
+      </ul>
+
+      <p>Chasing these down by hand is called "JAR hell". Before build tools existed, it could easily eat a week.</p>
+
+      <h3>3.8 What a build tool is, and how Maven solves the mess</h3>
+
+      <p>A <span class="term" tabindex="0" data-def="A program that automates compiling, testing and packaging a project, and fetches the libraries it depends on.">build tool</span> takes over all of that work. You write down <em>what</em> you want. It works out <em>how</em>. The build tool we use is called <strong>Maven</strong>. Here is how Maven works:</p>
+
+      <ol>
+        <li>You list what your project needs in a file called <code>pom.xml</code>. Each item on the list is a <span class="term" tabindex="0" data-def="A library your project needs in order to compile or run.">dependency</span>: a library your project depends on.</li>
+        <li>Maven reads the list. It downloads each item from <strong>Maven Central</strong>. Maven Central is a huge, free, public store of Java libraries on the internet.</li>
+        <li>For each library, Maven reads <em>that</em> library's own list of needs. It downloads those too. It keeps going down the chain until nothing is missing. This automatic chasing is called <span class="term" tabindex="0" data-def="Maven's automatic fetching of the libraries your libraries need, and the libraries those need, all the way down.">transitive dependency resolution</span>. "Transitive" means "passed along the chain". This is the feature that ended JAR hell.</li>
+        <li>It saves everything in a local folder called <code>.m2</code>, inside your home folder. So the next build does not download it all again.</li>
+        <li>It compiles your code in the right order.</li>
+        <li>It runs your tests. A <strong>test</strong> is a small piece of code that checks your real code still does what it should. We write our first tests in Lesson 02.</li>
+        <li>It packages the result into one file, a JAR, that you can run or hand to someone.</li>
       </ol>
 
       <p>This is why one line in a file can give you a whole web server. It is also why Lesson 02 spends its time on <code>pom.xml</code>, not on <code>javac</code>.</p>
 
-      <h3>3.6 The IDE</h3>
+      <h3>3.9 The IDE</h3>
 
-      <p>An <span class="term" tabindex="0" data-def="Integrated Development Environment: a text editor built for writing code, with error-checking, navigation and safe renaming built in.">IDE</span> is a text editor that understands the language you are writing. It underlines a typo before you compile. It jumps to where a method is defined. It suggests how to finish what you are typing. It can safely rename something everywhere in a project. You could do this course in Notepad. You would just be slower, and make more mistakes that a machine could have caught for free.</p>
-
-      <h3>3.7 Git and GitHub: two different things with similar names</h3>
-
-      <p><span class="term" tabindex="0" data-def="A tool that records a permanent history of every change to your files, stored on your own machine.">Git</span> is a program on your machine that records the history of your files. <span class="term" tabindex="0" data-def="A website that keeps copies of Git repositories online, for backup and sharing.">GitHub</span> is a website that keeps a copy of that history online. Git is the tool. GitHub is one place to keep a copy. You can use Git without a GitHub account at all.</p>
-
-      <p>Four words cover almost all of Git. Each is worth getting clear:</p>
+      <p>An <span class="term" tabindex="0" data-def="Integrated Development Environment: a text editor built for writing code, with error-checking, navigation and safe renaming built in.">IDE</span> is a text editor that understands the language you write. IDE stands for Integrated Development Environment. It helps you in many ways:</p>
 
       <ul>
-        <li>A <strong>repository</strong> (or "repo") is a folder whose contents Git is tracking. Ours will be the <code>learning</code> folder.</li>
-        <li>A <strong>commit</strong> is one saved snapshot of the whole project, with a message saying what changed and why. It is not a backup of one file. It is a photo of everything, at that moment.</li>
-        <li>A <strong>remote</strong> is a copy of the repository kept somewhere else. Ours will be on GitHub. By habit, it is named <code>origin</code>.</li>
-        <li>To <strong>push</strong> is to send your new commits to the remote.</li>
+        <li>It underlines a typo before you compile.</li>
+        <li>It jumps to the place where you defined a method.</li>
+        <li>It suggests how to finish what you are typing.</li>
+        <li>It can safely rename something everywhere in a project at once.</li>
       </ul>
 
-      <p>Why does this matter on day one, before there is anything to lose? Because of what it does to your nerve. With a history, breaking things costs nothing. The last working version is one command away, so you can experiment freely. Without a history, every change is a small gamble. Beginners react by not changing anything, and that is exactly how you stop learning. Git is not just record-keeping. It gives you permission to be brave.</p>
+      <p>You could do this course in Notepad. You would just be slower. You would also make more mistakes that a machine could have caught for free.</p>
+
+      <h3>3.10 Git and GitHub: two different things with similar names</h3>
+
+      <p><span class="term" tabindex="0" data-def="A tool that records a permanent history of every change to your files, stored on your own machine.">Git</span> is a program on your machine. It records the history of your files. <span class="term" tabindex="0" data-def="A website that keeps copies of Git repositories online, for backup and sharing.">GitHub</span> is a website. It keeps a copy of that history online. Git is the tool. GitHub is one place to keep a copy. You can use Git with no GitHub account at all.</p>
+
+      <p>A few words cover almost all of Git. Each one is worth getting clear:</p>
+
+      <ul>
+        <li>A <strong>repository</strong> (or "repo") is a folder that Git is watching. Ours will be the <code>learning</code> folder.</li>
+        <li>A <strong>commit</strong> is one saved snapshot of the whole project. It comes with a message that says what changed and why. It is not a backup of one file. It is a photo of everything, at that moment.</li>
+        <li>To <strong>stage</strong> a file means to choose it for the next commit. Think of putting items in a box before you seal it.</li>
+        <li>A <strong>branch</strong> is a named line of commits, one after another. Our main line will be called <code>main</code>.</li>
+        <li>A <strong>remote</strong> is a copy of the repository kept somewhere else. Ours will be on GitHub. By habit, people name it <code>origin</code>.</li>
+        <li>To <strong>push</strong> means to send your new commits up to the remote.</li>
+      </ul>
+
+      <h3>3.11 Why Git matters on day one</h3>
+
+      <p>Why set up Git now, before there is anything to lose? Because of what it does to your nerve.</p>
+
+      <p>With a history, breaking things costs nothing. The last working version is one command away. So you can try ideas freely. Without a history, every change is a small gamble. Beginners react by not changing anything. And that is exactly how you stop learning. Git is not just record-keeping. It gives you permission to be brave.</p>
 
       <div class="realworld">
-        <p>A public GitHub repository with real commits is the closest thing a self-taught developer has to a CV. An interviewer can see what you built and how you work. They can see you stuck with something for months. By the end of this course, yours will hold a complete microservices system with an AI assistant in it. When someone says "show me something you have built", that is a much better answer than a certificate.</p>
+        <p>For a self-taught developer, a public GitHub repository with real commits works like a CV. An interviewer can see what you built and how you work. They can see you stuck with something for months. By the end of this course, yours will hold a complete microservices system with an AI assistant in it. (Microservices means one big app split into several small programs that work together. You build that in Phase 2.) When someone says "show me something you built", that beats a certificate.</p>
       </div>
 
-      <h3>3.8 Pinning versions, and why this course does it out loud</h3>
+      <h3>3.12 Pinning versions, and why this course does it out loud</h3>
 
       <p>To <strong>pin</strong> a version means to choose one on purpose and write it down. You do not just take whatever is newest that day. This course pins Java 21, Maven 3.9.16 and Spring Boot 4.1.1.</p>
 
-      <p>Pinning matters more than usual here, for one reason. All through this course, you will see <strong>predicted output</strong>: exactly what a command or a request should print. Then you will compare it with what your machine really prints. That comparison only works if we both use the same versions. With a different major version, the output really does change. Then you could not tell a real mistake from a harmless version difference.</p>
+      <p>Pinning matters even more than usual here. Why? All through this course, you will see <strong>predicted output</strong>. That is exactly what a command or a request should print. Then you compare it with what your machine really prints. That comparison only works if we both use the same versions.</p>
+
+      <p>A version number like 4.1.1 has three parts. The first number (4) is the <strong>major version</strong>. A new major version can change how things behave and what they print. With a different major version, your output could differ for harmless reasons. Then you could not tell a real mistake from a version difference.</p>
 
       <div class="v4">
-        <p>Here is a promise, made now and kept in every lesson. This course is built on <strong>Spring Boot 4</strong>. Nearly everything you will find online was written for Spring Boot 2 or 3. That includes tutorials, books, videos and Stack Overflow answers. Several things were renamed since then. Here is the first one you will meet, in Lesson 02:</p>
+        <p>Here is a promise for every lesson. This course is built on <strong>Spring Boot 4</strong>. But nearly everything online was written for Spring Boot 2 or 3. That includes tutorials, books, videos and Stack Overflow answers. (Stack Overflow is a big question-and-answer website for programmers.) The Spring team renamed several things since then. Here is the first renamed thing you will meet, in Lesson 02:</p>
         <span class="v4-old">spring-boot-starter-web</span>
         <span class="v4-new">spring-boot-starter-webmvc</span>
-        <p>If you copy the old name from a 2024 tutorial, it still works for now. But it is <em>deprecated</em>: marked as old, and due to be removed in a later version. It also no longer matches the rest of this course. Other renamed things simply break, with an error that does not say why. So when Boot 4 differs from the rest of the internet, a card like this one will appear right there. It will tell you what changed, why it changed, and how to translate the older material you are reading. You will not be left to find out alone.</p>
+        <p>Say you copy the old name from a 2024 tutorial. It still works for now. But it is <em>deprecated</em>. That means it is marked as old, and a later version will remove it. It also no longer matches the rest of this course. Other renamed things simply break, and the error does not say why.</p>
+        <p>So whenever Boot 4 differs from the rest of the internet, a card like this one appears right there. It tells you three things: what changed, why it changed, and how to read the older material. You will not have to find out alone.</p>
       </div>
 
       <details class="check">
-        <summary>Check yourself: why not just teach Spring Boot 3, since that is what most tutorials use?</summary>
-        <p>Because free support for Spring Boot 3 ended on 30 June 2026. It gets no more security fixes. If you learned it, you would have to move to version 4 straight away. It is better to learn the current version and be taught the differences clearly. That way you get the modern skill <em>and</em> you can still read the older material.</p>
+        <summary>Check yourself: why not just teach Spring Boot 3, since most tutorials use it?</summary>
+        <p>Because free support for Spring Boot 3 ended on 30 June 2026. It gets no more security fixes. If you learned it, you would have to move to version 4 straight away. It is better to learn the current version, with the differences taught clearly. That way you get the modern skill <em>and</em> you can still read the older material.</p>
       </details>
     </section>
 
@@ -279,10 +372,12 @@ script file, or operable program.</span></code></pre>
 
       <p class="approach-wrong">Wrong approach — "I'll install things when something breaks"</p>
 
-      <p>The tempting shortcut is to skip ahead. You grab a Spring Boot project from somewhere and only install what the errors ask for. Here is what that really looks like, step by step.</p>
+      <p>The tempting shortcut is to skip ahead. You grab a Spring Boot project from somewhere. You only install what the errors ask for. Here is what that really looks like, step by step.</p>
+
+      <h3>4.1 Attempt 1: nothing installed</h3>
 
       <div class="warn">
-        <p><strong>Attempt 1 — nothing installed.</strong> You download a project and try to build it.</p>
+        <p>You download a project and try to build it.</p>
       </div>
 
       <pre><code>PS D:\Projects\store&gt; mvn spring-boot:run</code></pre>
@@ -293,10 +388,12 @@ script file, or operable program.</span></code></pre>
 file, or operable program. Check the spelling of the name, or if a path was
 included, verify that the path is correct and try again.</span></code></pre>
 
-      <p>Nothing in that message says "install Maven". It talks about cmdlets and spelling. So a beginner thinks they made a typo. They try again, more carefully, and get the same result.</p>
+      <p>Nothing in that message says "install Maven". It talks about cmdlets and spelling. So a beginner thinks they made a typo. They try again, more carefully. They get the same result.</p>
+
+      <h3>4.2 Attempt 2: Maven installed, but only a JRE</h3>
 
       <div class="warn">
-        <p><strong>Attempt 2 — Maven installed, but only a JRE.</strong> You install Maven. Then you install "Java" by clicking the first big download button you see. On many sites, that button gives you a JRE.</p>
+        <p>You install Maven. Then you install "Java" by clicking the first big download button you see. On many sites, that button gives you a JRE, not a JDK.</p>
       </div>
 
       <p><strong>Predicted output:</strong></p>
@@ -306,10 +403,14 @@ included, verify that the path is correct and try again.</span></code></pre>
 on a JRE rather than a JDK?</span>
 [INFO] BUILD FAILURE</code></pre>
 
-      <p>This message is unusually kind. It names the real problem. Most error messages do not. And you have now spent an hour finding out something that section 3.2 told you in a table.</p>
+      <p>The first line names <code>maven-compiler-plugin</code>. A <strong>plugin</strong> is an add-on that does one job for Maven. This one runs the compiler. It found no compiler to run.</p>
+
+      <p>This message is unusually kind. It names the real problem. Most error messages do not. But you have now spent an hour learning what the table in section 3.4 already told you.</p>
+
+      <h3>4.3 Attempt 3: the wrong JDK version</h3>
 
       <div class="warn">
-        <p><strong>Attempt 3 — JDK installed, but the wrong version.</strong> You install the first JDK you find, an older Java 11. Then you build a Spring Boot 4 project.</p>
+        <p>You install the first JDK you find. It is an older Java 11. Then you build a Spring Boot 4 project.</p>
       </div>
 
       <p><strong>Predicted output:</strong></p>
@@ -317,11 +418,15 @@ on a JRE rather than a JDK?</span>
       <pre><code><span class="hi">[ERROR] Fatal error compiling: error: invalid target release: 21</span>
 [INFO] BUILD FAILURE</code></pre>
 
-      <p>"Invalid target release" means: "You asked me to produce Java 21 output. I am an older compiler, and I have never heard of 21." Once you know how the pieces fit, you can read it. Before that, it means nothing.</p>
+      <p>"Target release" means the Java version the compiler is asked to produce. So the message says: <em>"You asked me for Java 21 output. I am an older compiler. I have never heard of 21."</em> Once you know how the pieces fit, you can read it. Before that, it means nothing.</p>
 
-      <p><strong>And the failure with no error message at all:</strong> you get everything working and build for a week. On Friday you break something badly. Then you find there is no history to go back to, because Git was "something to set up later". There is no red text for this one. There is just lost work.</p>
+      <h3>4.4 The failure with no error message at all</h3>
 
-      <p>All four failures have the same pattern. Each one is <em>cheap to prevent</em> and <em>costly to track down</em>. That is the whole reason to do setup on purpose, in order, checking as you go.</p>
+      <p>You get everything working, and you build for a week. On Friday you break something badly. Then you find there is no history to go back to. You left Git as "something to set up later". There is no red text for this one. There is just lost work.</p>
+
+      <h3>4.5 What all four failures share</h3>
+
+      <p>Each failure is <em>cheap to prevent</em> and <em>costly to track down</em>. That is the whole reason to do setup on purpose, in order, and to check as you go.</p>
     </section>
 
     <!-- ============================================================= -->
@@ -330,11 +435,11 @@ on a JRE rather than a JDK?</span>
 
       <p class="approach-right">Correct approach — install in dependency order, and prove each step before the next</p>
 
-      <p>The order below matters. Maven needs a JDK to run, so the JDK comes first. Git comes before the project folder. That way, the very first file the folder ever holds is a <code>.gitignore</code>. Follow the steps from top to bottom.</p>
+      <p>The order below matters. Maven needs a JDK to run, so the JDK comes first. Git comes before the project folder. That way, the first file the folder ever holds is a <code>.gitignore</code>. Follow the steps from top to bottom.</p>
 
       <h3>5.1 Step one: install the JDK (Java 21 LTS)</h3>
 
-      <p>Several companies publish their own build of Java 21. It is the same language in every one. They differ only in packaging and support. Any of these is fine. <strong>Eclipse Temurin</strong> is the common choice, and it needs no account:</p>
+      <p>Several companies publish their own copy of Java 21. The language is the same in every one. They differ only in packaging and support. Any of these is fine. <strong>Eclipse Temurin</strong> is the common choice, and it needs no account:</p>
 
       <ul>
         <li><strong>Eclipse Temurin 21 (LTS)</strong> — <code>adoptium.net</code></li>
@@ -342,7 +447,13 @@ on a JRE rather than a JDK?</span>
         <li><strong>Amazon Corretto 21</strong>, <strong>Azul Zulu 21</strong> — also fine</li>
       </ul>
 
-      <p>Download the <strong>JDK</strong> (not the JRE) for Java <strong>21</strong>, for your operating system. Run the installer. On Windows, the installer may offer a checkbox like <em>"Set JAVA_HOME variable"</em> or <em>"Add to PATH"</em>. Tick it. That solves the PATH problem from section 3.4 for you.</p>
+      <p>Now follow these steps:</p>
+
+      <ol>
+        <li>Download the <strong>JDK</strong> (not the JRE) for Java <strong>21</strong>, for your operating system.</li>
+        <li>Run the installer.</li>
+        <li>On Windows, the installer may show a checkbox like <em>"Set JAVA_HOME variable"</em> or <em>"Add to PATH"</em>. Tick both. They fill in the two environment variables from section 3.6 for you.</li>
+      </ol>
 
       <div class="tryit">
         <p><strong>Prove it works.</strong> Open a <em>brand-new</em> terminal window. (A window that was already open still has the old PATH.) Run both of these:</p>
@@ -358,25 +469,32 @@ OpenJDK 64-Bit Server VM Temurin-21.0.9+7 (build 21.0.9+7, mixed mode, sharing)
 
 <span class="hi">javac 21.0.9</span></code></pre>
 
-      <p>What to check, most important first:</p>
+      <p>You can ignore the middle lines. They name the exact build. Check these three things, most important first:</p>
       <ol>
         <li>Both commands answered at all. So both are on your PATH.</li>
-        <li>Both say <strong>21</strong>. If <code>java</code> says 21 and <code>javac</code> says something else, you have two JDKs fighting. See <a href="#gotchas">section 7</a>.</li>
+        <li>Both say <strong>21</strong>. If <code>java</code> says 21 and <code>javac</code> says something else, two JDKs are fighting. See <a href="#gotchas">section 7</a>.</li>
         <li><code>javac</code> answered. So you have a JDK, not a JRE.</li>
       </ol>
 
       <h3>5.2 Step two: install Maven 3.9.16</h3>
 
-      <p>Maven has no installer. It is just a folder of files plus a <code>PATH</code> entry. On Windows:</p>
+      <p>Maven has no installer. It is just a folder of files, plus an entry in PATH. On Windows:</p>
 
       <ol>
         <li>Download <code>apache-maven-3.9.16-bin.zip</code> from <code>maven.apache.org/download.cgi</code>.</li>
         <li>Unzip it somewhere permanent, in a path with no spaces. For example: <code>C:\tools\apache-maven-3.9.16</code>. (Some older tools still get confused by spaces in folder names.)</li>
-        <li>Add <code>C:\tools\apache-maven-3.9.16\bin</code> to your <code>PATH</code>. Press Start and type <em>"environment variables"</em>. Open <em>Edit the system environment variables</em> → <em>Environment Variables…</em> → select <code>Path</code> → <em>Edit</em> → <em>New</em>. Paste the path, then click OK in all three windows.</li>
+        <li>Add <code>C:\tools\apache-maven-3.9.16\bin</code> to your PATH:
+          <ol>
+            <li>Press Start and type <em>"environment variables"</em>.</li>
+            <li>Open <em>Edit the system environment variables</em>, then click <em>Environment Variables…</em></li>
+            <li>Select <code>Path</code>, then click <em>Edit</em>, then <em>New</em>.</li>
+            <li>Paste the path. Click OK in all three windows.</li>
+          </ol>
+        </li>
         <li><strong>Close every terminal window and open a new one.</strong> A terminal reads PATH only when it starts. Windows that are already open will not see the change.</li>
       </ol>
 
-      <p>On macOS with Homebrew: <code>brew install maven</code>. On Debian or Ubuntu: <code>sudo apt install maven</code>. Then check which version it gave you.</p>
+      <p>On a Mac, you can use Homebrew. Homebrew is a free tool that installs programs from the terminal. Type <code>brew install maven</code>. On Debian or Ubuntu (two common kinds of Linux), type <code>sudo apt install maven</code>. Here <code>apt</code> is Linux's installer, and <code>sudo</code> runs the command with administrator rights. Afterwards, check which version you got.</p>
 
       <div class="tryit">
         <p><strong>Prove it works.</strong> In a new terminal:</p>
@@ -391,30 +509,30 @@ Maven home: C:\tools\apache-maven-3.9.16
 Default locale: en_GB, platform encoding: UTF-8
 OS name: "windows 11", version: "10.0", arch: "amd64", family: "windows"</code></pre>
 
-      <p>Look at the third line. <code>mvn -version</code> tells you which Java <em>Maven</em> found. That is the most useful thing on the screen. It is how you catch Maven using a different JDK from the one you expect. It must say <strong>21</strong>.</p>
+      <p>Look at the third line. <code>mvn -version</code> tells you which Java <em>Maven</em> found. That is the most useful thing on the screen. It shows you when Maven uses a different JDK from the one you expect. It must say <strong>21</strong>.</p>
 
       <h3>5.3 Step three: install an IDE</h3>
 
-      <p>Two good choices, both free:</p>
+      <p>Here are two good choices. Both are free:</p>
 
       <div class="tablewrap">
         <table>
           <thead><tr><th></th><th>IntelliJ IDEA Community Edition</th><th>Visual Studio Code</th></tr></thead>
           <tbody>
             <tr><td>Best at</td><td>Java. It has the strongest Java tools there are</td><td>Being light, and handling every other kind of file well</td></tr>
-            <tr><td>Setup</td><td>Install it and open the project. It understands Maven by itself</td><td>Install it, then add the <em>Extension Pack for Java</em></td></tr>
-            <tr><td>Suits you if</td><td>You want the most help while learning Java</td><td>You already use VS Code and would rather not switch</td></tr>
+            <tr><td>Setup</td><td>Install it and open the project. It understands Maven by itself</td><td>Install it, then add the <em>Extension Pack for Java</em> (an add-on that teaches VS Code about Java)</td></tr>
+            <tr><td>Suits you if</td><td>You want the most help while you learn Java</td><td>You already use VS Code and would rather not switch</td></tr>
           </tbody>
         </table>
       </div>
 
-      <p>If you have no preference, choose <strong>IntelliJ IDEA Community Edition</strong>. It will teach you things about Java by pointing them out as you type. There is no check command for this step. If it opens, it works.</p>
+      <p>If you have no preference, choose <strong>IntelliJ IDEA Community Edition</strong>. It points out things about Java as you type, so it teaches you as you go. This step has no check command. If it opens, it works.</p>
 
       <h3>5.4 Step four: install Git and create a GitHub account</h3>
 
-      <p>Download Git from <code>git-scm.com</code> and install it. On Windows, the installer asks a long list of questions. The default answers are fine. Only one is worth a thought: the default editor. Pick one you know how to close, such as Notepad++ or VS Code. Avoid Vim for now.</p>
+      <p>Download Git from <code>git-scm.com</code> and install it. On Windows, the installer asks a long list of questions. The default answers are fine. Only one needs a thought: the default editor. Git opens this editor when it wants you to type a message. Pick one you know how to close, such as Notepad++ or VS Code. Avoid Vim for now. Vim is a powerful editor, but it is famously hard to close if you have never used it.</p>
 
-      <p>Then create a free account at <code>github.com</code>. Create a <strong>new, completely empty repository</strong>:</p>
+      <p>Next, create a free account at <code>github.com</code>. Then create a <strong>new, completely empty repository</strong>:</p>
 
       <ul>
         <li>Name it something like <code>spring-boot-learning</code>.</li>
@@ -423,7 +541,7 @@ OS name: "windows 11", version: "10.0", arch: "amd64", family: "windows"</code><
       </ul>
 
       <div class="tryit">
-        <p><strong>Prove it works, and tell Git who you are.</strong> Git puts this name and email on every commit, so set them once, now:</p>
+        <p><strong>Prove it works, and tell Git who you are.</strong> Git writes this name and email on every commit. So set them once, now. The <code>--global</code> part means "for every repository on this computer".</p>
         <pre><code>git --version
 git config --global user.name <span class="s">"Your Name"</span>
 git config --global user.email <span class="s">"you@example.com"</span></code></pre>
@@ -435,13 +553,15 @@ git config --global user.email <span class="s">"you@example.com"</span></code></
 
       <p>It takes time to get used to silence meaning success. Many terminal tools print nothing when they work. They only speak up when something is wrong.</p>
 
+      <h3>5.5 Check all four tools at once</h3>
+
       <div class="tryit">
         <p><strong>All four tools at once.</strong> Run these four lines in one new terminal. You want four answers and no "not recognized". That means your machine is ready. This is the goal of the whole lesson.</p>
         <pre><code>java -version
 javac -version
 mvn -version
 git --version</code></pre>
-        <p>Compare each answer with the predictions above. If one differs in a way you did not expect, the machine is right and the lesson is wrong. Tell me exactly what you saw, and we will work out why.</p>
+        <p>Compare each answer with the predictions above. Does one differ in a way you did not expect? Then the machine is right and the lesson is wrong. Tell me exactly what you saw, and we will work out why.</p>
       </div>
     </section>
 
@@ -449,13 +569,19 @@ git --version</code></pre>
     <section id="applied">
       <h2><span class="secno">6</span>Applied to Our Project</h2>
 
-      <p>This lesson teaches no Spring Boot feature. There is no annotation to write and no code to run. Twenty minutes ago, the tools to run it did not even exist. So there is no project code here. That is correct, not a shortcut. What we <em>can</em> do now is create the folder everything else will live in. And we put it under Git before it holds anything worth losing.</p>
+      <p>This lesson teaches no Spring Boot feature. There is no annotation to write and no code to run. Twenty minutes ago, the tools to run code did not even exist. So there is no project code here. That is correct, not a shortcut.</p>
 
-      <h3>6.1 Create the folder and make the first file a <code>.gitignore</code></h3>
+      <p>What we <em>can</em> do now is create the folder where everything else will live. And we put it under Git before it holds anything worth losing.</p>
 
-      <p>The order here matters more than it seems. Git only tracks the files you tell it to. But the usual first command tells it to track <em>everything</em>. If an unwanted file is in the folder at that moment, it goes in. Git history is built to be permanent, so taking that file out later is hard. So the ignore list is written <strong>before</strong> the first <code>git add</code>, never after.</p>
+      <h3>6.1 Why the first file must be a <code>.gitignore</code></h3>
 
-      <p>Create a folder called <code>learning</code> wherever you keep projects. Inside it, create a file named exactly <code>.gitignore</code>. It starts with a dot and has no extension. Put this in it:</p>
+      <p>The order here matters more than it seems. Git only tracks the files you tell it to. But the usual first command tells it to track <em>everything</em> in the folder. If an unwanted file is in the folder at that moment, it goes into the history.</p>
+
+      <p>Git keeps its history forever, on purpose. So taking a file out later is hard. That is why you write the ignore list <strong>before</strong> the first <code>git add</code>, never after. A <code>.gitignore</code> file is that ignore list. It tells Git which files to leave alone.</p>
+
+      <h3>6.2 Write the <code>.gitignore</code></h3>
+
+      <p>Create a folder called <code>learning</code> wherever you keep projects. Inside it, create a file named exactly <code>.gitignore</code>. The name starts with a dot and has no extension. Put this in it:</p>
 
       <pre><code><span class="c"># Local-only course control files - never commit these</span>
 CLAUDE.md
@@ -482,49 +608,51 @@ target/
 
       <ul>
         <li><strong>The three course files</strong> are your local control files. They belong to you, not to the project.</li>
-        <li><strong><code>target/</code> and <code>*.class</code></strong> are what Maven produces: compiled bytecode, made fresh from your source on every build. Storing these in Git makes the history huge and causes pointless clashes. A simple rule: if a build can make it again, do not store it.</li>
+        <li><strong><code>target/</code> and <code>*.class</code></strong> are what Maven produces. They hold compiled bytecode, made fresh from your source on every build. Storing them in Git makes the history huge and causes pointless clashes. A simple rule: if a build can make it again, do not store it.</li>
         <li><strong>IDE folders</strong> hold your personal window layout and preferences. Another developer's copy would clash with yours. Neither is part of the program.</li>
-        <li><strong><code>application-local.yml</code> and <code>.env</code></strong> are where real passwords and API keys will live, from Lesson 39 onwards. This line goes in <em>now</em>, months early, so a secret can never land in the history by accident later. Git history lasts forever. A leaked key stays leaked, even if the next commit deletes it.</li>
+        <li><strong><code>application-local.yml</code> and <code>.env</code></strong> will hold real passwords and API keys from Lesson 39 onwards. (An API key is a secret code that lets your app use an online service, often a paid one.) This line goes in <em>now</em>, months early. Then a secret can never land in the history by accident later. Remember: Git history lasts forever. A leaked key stays leaked, even if the next commit deletes it.</li>
       </ul>
+
+      <h3>6.3 Write the <code>.gitattributes</code></h3>
 
       <p>Add one more file next to it, called <code>.gitattributes</code>:</p>
 
       <pre><code><span class="c"># Normalise line endings so the repo behaves identically on Windows and Linux</span>
 * text=auto eol=lf</code></pre>
 
-      <p>Windows and Linux end a line of text differently. Windows uses two invisible characters; Linux uses one. If you ignore this, Git may say that every line of a file changed, even when you changed nothing. That is maddening. This one line fixes it for good.</p>
+      <p>Why? Windows and Linux end a line of text differently. Windows uses two hidden characters. Linux uses one. Without this file, Git may say every line of a file changed, even when you changed nothing. That is maddening. This one line fixes it for good. It tells Git to always store line endings the Linux way.</p>
 
-      <h3>6.2 Put it under version control</h3>
+      <h3>6.4 Put it under version control</h3>
 
-      <p>Now, and only now, from inside the <code>learning</code> folder:</p>
+      <p>Now, and only now, run these commands from inside the <code>learning</code> folder:</p>
 
-      <pre><code><span class="c"># 1. Start tracking this folder. Creates the hidden .git directory that IS the history.</span>
+      <pre><code><span class="c"># 1. Start tracking this folder. This creates the hidden .git folder, which IS the history.</span>
 git init
 
-<span class="c"># 2. Stage everything not excluded by .gitignore, ready for the first snapshot.</span>
+<span class="c"># 2. Stage every file that .gitignore does not exclude, ready for the first snapshot.</span>
 git add .
 
-<span class="c"># 3. Take the snapshot, with a message explaining it.</span>
+<span class="c"># 3. Take the snapshot, with a message that explains it.</span>
 git commit -m <span class="s">"chore: initial course setup"</span>
 
-<span class="c"># 4. Name the main line of development 'main' (the modern default).</span>
+<span class="c"># 4. Name the main branch 'main' (the modern default).</span>
 git branch -M main
 
-<span class="c"># 5. Record where the online copy lives. Use YOUR repository URL from GitHub.</span>
+<span class="c"># 5. Save the address of the online copy. Use YOUR repository URL from GitHub.</span>
 git remote add origin https://github.com/your-username/your-repo.git
 
-<span class="c"># 6. Send the commit up, and remember this destination for future pushes (-u).</span>
+<span class="c"># 6. Send the commit up, and remember this destination for later pushes (-u).</span>
 git push -u origin main</code></pre>
 
-      <h3>6.3 What would happen, step by step</h3>
+      <h3>6.5 What happens, step by step</h3>
 
       <ol>
-        <li><code>git init</code> creates a hidden <code>.git</code> folder. That folder <em>is</em> the repository. Delete it and you have plain files again, with no history.</li>
-        <li><code>git add .</code> goes through the folder and checks <code>.gitignore</code>. It gets every file that is not ignored ready for the snapshot. This is called "staging". You wrote the ignore list first, so your three local-only files are skipped. You never have to remember to leave them out.</li>
-        <li><code>git commit</code> saves the staged snapshot for good, and labels it with your message.</li>
-        <li><code>git branch -M main</code> renames your main line of work to <code>main</code>. That matches GitHub's default name.</li>
-        <li><code>git remote add origin …</code> just saves an address under the nickname <code>origin</code>. Nothing is sent yet.</li>
-        <li><code>git push -u origin main</code> uploads the commit. It also links your local <code>main</code> to the one on GitHub. After this, a plain <code>git push</code> is enough. The first time, a browser window or a login prompt may appear, so GitHub can check it is you.</li>
+        <li><code>git init</code> creates a hidden folder called <code>.git</code>. That folder <em>is</em> the repository. Delete it, and you have plain files again, with no history.</li>
+        <li><code>git add .</code> goes through the folder and checks <code>.gitignore</code>. It stages every file that is not ignored. You wrote the ignore list first. So Git skips your three local-only files. You never have to remember to leave them out.</li>
+        <li><code>git commit</code> saves the staged snapshot for good. It labels the snapshot with your message.</li>
+        <li><code>git branch -M main</code> renames your main branch to <code>main</code>. That matches GitHub's default name.</li>
+        <li><code>git remote add origin …</code> just saves an address under the nickname <code>origin</code>. It sends nothing yet.</li>
+        <li><code>git push -u origin main</code> uploads the commit. The <code>-u</code> also links your local <code>main</code> to the one on GitHub. After this, a plain <code>git push</code> is enough. The first time, a browser window or a login box may appear. That is GitHub checking it is really you.</li>
       </ol>
 
       <p><strong>Predicted output of the commit and the push:</strong></p>
@@ -543,20 +671,22 @@ To https://github.com/your-username/your-repo.git
 <span class="hi"> * [new branch]      main -&gt; main</span>
 branch 'main' set up to track 'origin/main'.</code></pre>
 
+      <p>The short code <code>a1b2c3d</code> is the commit's ID. Yours will be different. Git makes a new, unique ID for every commit.</p>
+
       <div class="tryit">
-        <p><strong>Run it, then check two things.</strong> First, <code>git status</code> should report a clean tree:</p>
+        <p><strong>Run it, then check two things.</strong> First, <code>git status</code> should say there is nothing new to save:</p>
         <pre><code>git status</code></pre>
         <p><strong>Predicted:</strong></p>
         <pre><code>On branch main
 Your branch is up to date with 'origin/main'.
 
 <span class="hi">nothing to commit, working tree clean</span></code></pre>
-        <p>Second, and this is the one that matters: refresh your repository page on GitHub. You should see <code>.gitattributes</code> and <code>.gitignore</code>. You <strong>should not see</strong> <code>CLAUDE.md</code>, <code>curriculum.md</code> or <code>progress-tracker.md</code>. If those three are on your disk but not on GitHub, the ignore list did its job.</p>
+        <p>Second, and this is the one that matters: refresh your repository page on GitHub. You should see <code>.gitattributes</code> and <code>.gitignore</code>. You <strong>should not see</strong> <code>CLAUDE.md</code>, <code>curriculum.md</code> or <code>progress-tracker.md</code>. Are those three on your disk but not on GitHub? Then the ignore list did its job.</p>
       </div>
 
       <details class="check">
-        <summary>Check yourself: why write <code>.gitignore</code> before <code>git add .</code> and not after?</summary>
-        <p>Because <code>git add .</code> stages every file that is not ignored, and a commit is permanent. Say a secret or a local-only file is in the folder the first time you run <code>git add .</code>. It gets saved into the history. Deleting it in a <em>later</em> commit does not remove it from the earlier one. Anyone with the repository can still read it there. If you write the ignore list first, the unwanted files are never staged at all. It is much easier to keep something out than to get it back out.</p>
+        <summary>Check yourself: why write <code>.gitignore</code> before <code>git add .</code>, and not after?</summary>
+        <p>Because <code>git add .</code> stages every file that is not ignored, and a commit is permanent. Say a secret or a local-only file is in the folder the first time you run <code>git add .</code>. Git saves it into the history. Deleting it in a <em>later</em> commit does not remove it from the earlier one. Anyone with the repository can still read it there. If you write the ignore list first, Git never stages the unwanted files at all. It is much easier to keep something out than to get it back out.</p>
       </details>
     </section>
 
@@ -565,12 +695,12 @@ Your branch is up to date with 'origin/main'.
       <h2><span class="secno">7</span>Gotchas and Common Mistakes</h2>
 
       <ul>
-        <li><strong>Changing PATH and leaving the terminal open.</strong> A terminal reads PATH once, when it starts. If you change PATH, the window you already had open still says <code>mvn</code> does not exist. The fix is to close it and open a new one. On Windows, signing out and back in sometimes helps too. People reinstall Maven three times because of this.</li>
-        <li><strong>Two JDKs, and the wrong one in charge.</strong> The sign: <code>java -version</code> and <code>mvn -version</code> show different Java versions. Or <code>javac</code> shows a different version from <code>java</code>. The cause: an old JDK is still on the machine, and PATH finds it first. The fix: set <code>JAVA_HOME</code> to your Java 21 folder, and remove the old entry from PATH. Always trust the version line in <code>mvn -version</code> over what you think is installed.</li>
+        <li><strong>Changing PATH and leaving the terminal open.</strong> A terminal reads PATH once, when it starts. So after you change PATH, the old window still says <code>mvn</code> does not exist. The fix: close it and open a new one. On Windows, signing out and back in sometimes helps too. People reinstall Maven three times because of this.</li>
+        <li><strong>Two JDKs, and the wrong one in charge.</strong> The sign: <code>java -version</code> and <code>mvn -version</code> show different Java versions. Or <code>javac</code> shows a different version from <code>java</code>. The cause: an old JDK is still on the machine, and PATH finds it first. The fix: set <code>JAVA_HOME</code> to your Java 21 folder, and remove the old entry from PATH. Always trust the Java line in <code>mvn -version</code> over what you think you installed.</li>
         <li><strong>Installing a JRE instead of a JDK.</strong> Download pages often push the JRE, because most visitors only want to run Java. Then <code>java</code> works and <code>javac</code> does not. The build error you get later talks about a compiler, not a download. Always check with <code>javac -version</code>, not just <code>java -version</code>.</li>
-        <li><strong>Committing something that should have stayed local.</strong> This usually happens when you run <code>git add .</code> before writing <code>.gitignore</code>. It also happens if you force a file in with <code>git add -f</code>. Never use <code>-f</code> on the three course files. If a real secret does get committed, treat it as leaked. Change the key first. Worry about cleaning the history after that.</li>
-        <li><strong>Spaces and non-English characters in folder paths.</strong> Some tools still get confused by a path with spaces or accented letters. Their error messages then point somewhere far from the real cause. Keep the paths to your tools and projects plain.</li>
-        <li><strong>Thinking the IDE uses the same JDK as your terminal.</strong> IntelliJ can download and use its own JDK. So the IDE may compile fine while <code>mvn</code> in a terminal fails, because they are using different Javas. In this course, trust the terminal. That is where every command in these lessons is run.</li>
+        <li><strong>Committing something that should have stayed local.</strong> This usually happens when you run <code>git add .</code> before you write <code>.gitignore</code>. It also happens if you force a file in with <code>git add -f</code> (the <code>-f</code> means "force"). Never use <code>-f</code> on the three course files. If a real secret does get committed, treat it as leaked. Change the key first. Worry about cleaning the history after that.</li>
+        <li><strong>Spaces and non-English letters in folder paths.</strong> Some tools still get confused by a path with spaces or accented letters. Their error messages then point far away from the real cause. Keep the paths to your tools and projects plain.</li>
+        <li><strong>Thinking the IDE uses the same JDK as your terminal.</strong> IntelliJ can download and use its own JDK. So the IDE may compile fine while <code>mvn</code> fails in a terminal. They are using different Javas. In this course, trust the terminal. You run every command in these lessons there.</li>
       </ul>
     </section>
 
@@ -578,35 +708,38 @@ Your branch is up to date with 'origin/main'.
     <section id="tradeoffs">
       <h2><span class="secno">8</span>Tradeoffs and When Not to Use This</h2>
 
-      <p><strong>Maven versus Gradle.</strong> Gradle is the main other build tool. Its build files are shorter, and it is usually faster on big projects. That is because a Gradle build file is written in a programming language, not a fixed format. But that freedom has a cost. A Gradle build can turn into a program of its own, and someone then has to fix its bugs. Maven is strict, so every Maven project looks like every other one. That is dull, but it helps a lot when you are learning: a tutorial's project looks just like yours. Pick Gradle when a build is truly complex, or if you are used to it from Android work. For learning, Maven's predictability wins.</p>
+      <h3>8.1 Maven or Gradle?</h3>
 
-      <p><strong>Installing by hand versus a version manager.</strong> We installed everything by hand, so you could see every piece. That is worth doing once. Tools such as SDKMAN! (macOS and Linux) or <code>winget</code> and Chocolatey (Windows) can do it for you. They are better once you need several Java versions side by side. So why not start with them? They hide exactly the PATH details that cause the errors in section 7. Then, when something breaks, you have no idea what happened.</p>
+      <p>Gradle is the main other build tool. Its build files are shorter. It is usually faster on big projects. That is because you write a Gradle build file in a programming language, not a fixed format.</p>
 
-      <p><strong>Pinning versus always taking the newest.</strong> Pinning means you get the same results every time. The cost is that a pinned project slowly falls behind, and one day needs a planned upgrade. In this course, the predicted output must match your screen, so getting the same results matters far more. Real teams think the same way, with one addition: they pin, and they plan their upgrades instead of letting them happen by accident.</p>
+      <p>But that freedom has a cost. A Gradle build can turn into a program of its own. Then someone has to fix its bugs. Maven is strict, so every Maven project looks like every other one. That is dull. But it helps a lot when you learn: a tutorial's project looks just like yours.</p>
 
-      <p><strong>When this lesson does not apply.</strong> Some workplaces give you a ready-made development setup. Tools like Dev Containers and GitHub Codespaces do the same. In those cases, every tool arrives already installed, and this setup is done for you. That is a real option, and more and more common. It is the same idea behind Docker, which we meet properly in Lesson 120. Even then, knowing what is inside the box is what lets you fix it when something in the box is wrong.</p>
-    </section>
+      <p>Pick Gradle when a build is truly complex, or if you know it from Android work. For learning, Maven's predictability wins.</p>
 
-    <!-- ============================================================= -->
-    <section id="takeaways">
-      <h2><span class="secno">9</span>Key Takeaways</h2>
+      <h3>8.2 Install by hand, or use a version manager?</h3>
 
-      <ul>
-        <li><code>javac</code> compiles Java into bytecode, not machine code. The JVM then runs that bytecode on whatever computer it is on. That is why one compiled program runs unchanged on Windows, macOS, Linux and inside a container.</li>
-        <li>The JDK contains the JRE, and the JRE contains the JVM. You need the full JDK, because only the JDK has the compiler. If you install a JRE by mistake, Java runs but nothing you write will build.</li>
-        <li>Real projects use libraries, and those libraries use other libraries. Maven fetches that whole chain for you, from a list you write in <code>pom.xml</code>. That is why one dependency line can give you a complete web server.</li>
-        <li>Git keeps a permanent history of every version of your work. On day one, its real value is courage. Last week's version is always one command away, so you can experiment freely instead of fearing every change.</li>
-        <li>You write <code>.gitignore</code> before the first <code>git add</code> on purpose. Commits are permanent. It is far easier to keep a secret out of the history than to remove it afterwards.</li>
-      </ul>
+      <p>We installed everything by hand, so you could see every piece. That is worth doing once. A <strong>version manager</strong> is a tool that installs Java for you. It can also switch between several versions. Examples are SDKMAN! (macOS and Linux), and <code>winget</code> or Chocolatey (Windows). They are better once you need several Java versions side by side.</p>
+
+      <p>So why not start with one? Because they hide exactly the PATH details that cause the errors in section 7. Then, when something breaks, you have no idea what happened.</p>
+
+      <h3>8.3 Pin, or always take the newest?</h3>
+
+      <p>Pinning means you get the same results every time. The cost: a pinned project slowly falls behind. One day it needs a planned upgrade. In this course, the predicted output must match your screen. So the same results matter far more. Real teams think the same way. They pin, and they plan their upgrades. They do not let upgrades happen by accident.</p>
+
+      <h3>8.4 When this lesson does not apply</h3>
+
+      <p>Some workplaces give you a ready-made coding setup. Tools like Dev Containers and GitHub Codespaces do the same. They give you a coding machine in a box, or in your browser, with every tool already installed. Then this setup is done for you.</p>
+
+      <p>That is a real option, and more and more common. It uses the same idea as Docker. Docker is a tool that runs programs inside sealed boxes called containers. We meet it properly in Lesson 120. Even then, you should know what is inside the box. That knowledge is what lets you fix the box when something in it goes wrong.</p>
     </section>
 
     <!-- ============================================================= -->
     <section id="challenge">
-      <h2><span class="secno">10</span>Challenge</h2>
+      <h2><span class="secno">9</span>Challenge</h2>
 
       <p>No code for this one. Think it through on paper, then check your answer.</p>
 
-      <p>A friend has just set up their machine. They send you this terminal session and say: "I think something's wrong, but I don't know what."</p>
+      <p>A friend has just set up their machine. They send you this terminal session. They say: "I think something's wrong, but I don't know what."</p>
 
       <pre><code>PS C:\Users\sam&gt; java -version
 openjdk version "17.0.11" 2024-04-16
@@ -626,51 +759,119 @@ git version 2.51.0.windows.1</code></pre>
       <ol>
         <li>All four commands answered. So is the machine ready? If not, exactly what is wrong?</li>
         <li>Which single line in that output is the most alarming, and why?</li>
-        <li>Predict what happens when they build a Spring Boot 4 project pinned to Java 21, and write the error you would expect.</li>
+        <li>They build a Spring Boot 4 project pinned to Java 21. Predict what happens. Write the error you expect.</li>
         <li>What would you tell them to do, in order?</li>
       </ol>
 
       <details>
         <summary>Click to reveal the answer</summary>
 
-        <p><strong>1. No, the machine is not ready.</strong> Every command answered, but that only proves all four tools are on the PATH. It says nothing about whether they agree with each other. Here, they do not. There are <strong>two JDKs installed</strong>. <code>java</code> is Java 17, but <code>javac</code> is Java 21. The runtime and the compiler come from different installs.</p>
+        <p><strong>1. No, the machine is not ready.</strong> Every command answered. But that only proves all four tools are on the PATH. It says nothing about whether they agree with each other. Here, they do not. There are <strong>two JDKs installed</strong>. <code>java</code> is Java 17, but <code>javac</code> is Java 21. The runtime and the compiler come from different installs.</p>
 
-        <p><strong>2. The most alarming line is <code>Java version: 17.0.11</code> in the <code>mvn -version</code> output.</strong> That line decides everything. Maven is what will build this course's projects, and it says it is using Java <strong>17</strong>, not 21. Sam might see <code>javac 21.0.9</code> and think they are on Java 21. Maven's line tells the truth about what the build will really use. That is why section 5.2 called it the most useful line on the screen.</p>
+        <p><strong>2. The most alarming line is <code>Java version: 17.0.11</code> in the <code>mvn -version</code> output.</strong> That line decides everything. Maven will build this course's projects. And Maven says it uses Java <strong>17</strong>, not 21. Sam might see <code>javac 21.0.9</code> and think they are on Java 21. But Maven's line tells the truth about what the build will really use. That is why section 5.2 called it the most useful line on the screen.</p>
 
-        <p><strong>3. Predicted build error.</strong> The project asks for Java 21 output. But Maven is using the Java 17 JDK, which has never heard of version 21:</p>
+        <p><strong>3. Predicted build error.</strong> The project asks for Java 21 output. But Maven uses the Java 17 JDK, which has never heard of version 21:</p>
 
         <pre><code>[INFO] --- maven-compiler-plugin:3.13.0:compile (default-compile) @ ecommerce ---
 <span class="hi">[ERROR] Fatal error compiling: error: invalid target release: 21</span>
 [INFO] BUILD FAILURE</code></pre>
 
-        <p>(Spring Boot 4 works with Java 17 or newer. So Boot is not the one refusing here. The compiler is being asked for a version newer than itself. If the project had been pinned to 17, this build would have worked. That is why this kind of mismatch is so easy to miss.)</p>
+        <p>(Spring Boot 4 works with Java 17 or newer. So Boot is not the one refusing here. The project asks the compiler for a version newer than itself. If the project were pinned to 17, this build would work. That is why this kind of mismatch is so easy to miss.)</p>
 
         <p><strong>4. What to tell them, in order:</strong></p>
         <ol>
           <li>Find both JDKs. On Windows, look in <code>C:\Program Files\Eclipse Adoptium\</code> and similar folders.</li>
           <li>Set <code>JAVA_HOME</code> to the Java <strong>21</strong> folder.</li>
-          <li>Edit PATH. Remove the Java 17 <code>bin</code> entry, and make sure the Java 21 one is there. (If nothing else needs Java 17, think about uninstalling it.)</li>
-          <li><strong>Close every terminal and open a new one.</strong> If they skip this, nothing above seems to work, and they will think the fix failed.</li>
+          <li>Edit PATH. Remove the Java 17 <code>bin</code> entry. Make sure the Java 21 one is there. (If nothing else needs Java 17, think about uninstalling it.)</li>
+          <li><strong>Close every terminal and open a new one.</strong> If they skip this, nothing above seems to work. They will think the fix failed.</li>
           <li>Run all four check commands again. Success means <code>java</code>, <code>javac</code> and the Java line of <code>mvn -version</code> all say 21.</li>
         </ol>
 
-        <p><strong>The real lesson here:</strong> "the command answered" and "the setup is correct" are two different things. Checking means reading what came back, not just seeing that something came back.</p>
+        <p><strong>The real lesson here:</strong> "the command answered" and "the setup is correct" are two different things. To check, you must read what came back, not just see that something came back.</p>
       </details>
     </section>
 
     <!-- ============================================================= -->
+    <section id="keywords">
+      <h2><span class="secno">10</span>Key Words</h2>
+
+      <p>Every new word from this lesson, with a one-line meaning. Come back here whenever a word slips your mind.</p>
+
+      <dl class="keywords">
+        <dt>Source code</dt><dd>The Java text you write, before any translation.</dd>
+        <dt>Processor (CPU)</dt><dd>The chip inside your computer that carries out instructions.</dd>
+        <dt>Machine code</dt><dd>Raw number instructions that a processor can run directly.</dd>
+        <dt>Compiler</dt><dd>A program that translates source code into something a machine can run.</dd>
+        <dt><code>javac</code></dt><dd>Java's compiler. It turns <code>.java</code> files into <code>.class</code> files.</dd>
+        <dt>Bytecode</dt><dd>Java's in-between format, stored in <code>.class</code> files. Any JVM can run it.</dd>
+        <dt>JVM</dt><dd>Java Virtual Machine: the program that reads bytecode and runs it on your real processor.</dd>
+        <dt>Operating system</dt><dd>The main program that runs a computer, such as Windows, macOS or Linux.</dd>
+        <dt>Server</dt><dd>A computer that runs an app all day so other people can use it.</dd>
+        <dt>Standard library</dt><dd>The ready-made classes that come with Java, like <code>String</code> and <code>List</code>.</dd>
+        <dt>Runtime</dt><dd>"While a program is running".</dd>
+        <dt>JRE</dt><dd>Java Runtime Environment: the JVM plus the standard library. It runs Java but cannot compile it.</dd>
+        <dt>JDK</dt><dd>Java Development Kit: the JRE plus tools like <code>javac</code>. You need it to write Java.</dd>
+        <dt>LTS</dt><dd>Long Term Support: a version that gets fixes for years, not months.</dd>
+        <dt>Terminal</dt><dd>A window where you type commands and the computer answers in text.</dd>
+        <dt>Environment variable</dt><dd>A named setting on your computer that every program can read.</dd>
+        <dt>PATH</dt><dd>The environment variable that lists the folders your computer searches for commands.</dd>
+        <dt>JAVA_HOME</dt><dd>The environment variable that holds the folder where your JDK lives.</dd>
+        <dt>Library</dt><dd>Ready-made code that someone else wrote, which your project can use.</dd>
+        <dt>JAR</dt><dd>Java ARchive: one file that holds many compiled classes, a bit like a zip file.</dd>
+        <dt>Build tool</dt><dd>A program that fetches libraries, compiles, tests and packages your project for you.</dd>
+        <dt>Maven</dt><dd>The build tool this course uses.</dd>
+        <dt><code>pom.xml</code></dt><dd>The file where you tell Maven what your project needs.</dd>
+        <dt>Dependency</dt><dd>A library your project needs in order to compile or run.</dd>
+        <dt>Maven Central</dt><dd>The big free online store where Maven downloads libraries from.</dd>
+        <dt>Transitive dependency resolution</dt><dd>Maven fetching the libraries your libraries need, all the way down the chain.</dd>
+        <dt>Plugin</dt><dd>An add-on that does one job for Maven, such as running the compiler.</dd>
+        <dt>Test</dt><dd>A small piece of code that checks your real code still works.</dd>
+        <dt>IDE</dt><dd>Integrated Development Environment: a code editor that catches mistakes and helps you move around.</dd>
+        <dt>Git</dt><dd>A program that keeps a permanent history of your files on your machine.</dd>
+        <dt>GitHub</dt><dd>A website that stores a copy of your Git history online.</dd>
+        <dt>Repository (repo)</dt><dd>A folder that Git is watching.</dd>
+        <dt>Commit</dt><dd>One saved snapshot of the whole project, with a message.</dd>
+        <dt>Stage</dt><dd>To choose a file for the next commit.</dd>
+        <dt>Branch</dt><dd>A named line of commits. Our main one is called <code>main</code>.</dd>
+        <dt>Remote / <code>origin</code></dt><dd>A copy of the repository somewhere else, such as GitHub. <code>origin</code> is its usual nickname.</dd>
+        <dt>Push</dt><dd>To send your new commits to the remote.</dd>
+        <dt><code>.gitignore</code></dt><dd>A file that lists the files Git must never track.</dd>
+        <dt><code>.gitattributes</code></dt><dd>A file that sets rules for how Git stores files, such as line endings.</dd>
+        <dt>Pin (a version)</dt><dd>To choose one version on purpose and write it down.</dd>
+        <dt>Major version</dt><dd>The first number in a version, like the 4 in 4.1.1. A new one can change behaviour.</dd>
+        <dt>Deprecated</dt><dd>Marked as old. It still works for now, but a later version will remove it.</dd>
+        <dt>API key</dt><dd>A secret code that lets your app use an online service.</dd>
+        <dt>Version manager</dt><dd>A tool that installs several Java versions and switches between them.</dd>
+        <dt>Container</dt><dd>A sealed box that holds an app and everything it needs to run. Covered in Phase 3.</dd>
+      </dl>
+    </section>
+
+    <!-- ============================================================= -->
+    <section id="recap">
+      <h2><span class="secno">11</span>Quick Recap</h2>
+
+      <ul>
+        <li><code>javac</code> compiles Java into bytecode, not machine code. The JVM then runs that bytecode on any computer. So one compiled program runs unchanged on Windows, macOS, Linux and inside a container.</li>
+        <li>The JDK contains the JRE, and the JRE contains the JVM. You need the full JDK, because only the JDK has the compiler.</li>
+        <li>Libraries use other libraries. Maven fetches that whole chain for you, from the list in <code>pom.xml</code>.</li>
+        <li>Git keeps a permanent history of your work. So last week's version is always one command away, and you can experiment without fear.</li>
+        <li>You write <code>.gitignore</code> before the first <code>git add</code>. Commits are permanent, so it is far easier to keep a secret out than to get it out.</li>
+      </ul>
+    </section>
+
+    <!-- ============================================================= -->
     <section id="next">
-      <h2><span class="secno">11</span>What Is Next</h2>
+      <h2><span class="secno">12</span>What Is Next</h2>
 
-      <p>Your machine can now compile Java, fetch libraries, and remember every change you make. But one question is still open. Why are we about to hand all that work to a framework, instead of writing a web application ourselves?</p>
+      <p>Your machine can now compile Java, fetch libraries, and remember every change you make. But one question is still open. Why hand all that work to a framework, instead of writing a web app ourselves? (A <strong>framework</strong> is a large set of ready-made code that runs your code for you. Lesson 01 explains it fully.)</p>
 
-      <p><a href="../chapter-01-getting-started/lesson-01-what-is-spring-boot-and-why-it-exists.html"><strong>Lesson 01</strong></a> answers that. It goes back to how Java web applications were built before Spring Boot. There were piles of setup files and separately installed servers. It took a whole afternoon to send back the word "hello". Then it shows what Spring Boot replaced all that with, and how its famous "magic" really works. No magic will be left unexplained.</p>
+      <p><a href="../chapter-01-getting-started/lesson-01-what-is-spring-boot-and-why-it-exists.html"><strong>Lesson 01</strong></a> answers that question. It goes back to how people built Java web apps before Spring Boot. They needed piles of setup files and a separately installed server. It took a whole afternoon to send back the word "hello". Then the lesson shows what Spring Boot replaced all that with. It also takes apart Spring Boot's famous "magic", so you see how it really works.</p>
     </section>
 
     <footer class="next">
       <p class="kicker">Next up</p>
       <h2><a href="../chapter-01-getting-started/lesson-01-what-is-spring-boot-and-why-it-exists.html">Lesson 01 — What Is Spring Boot and Why It Exists</a></h2>
-      <p>From raw servlets to Spring to Spring Boot, and the problem each one was invented to solve. What "opinionated defaults" really means. And auto-configuration taken apart, to see how it decides what your application needs, with a rule engine you can click through.</p>
+      <p>From raw servlets to Spring to Spring Boot, and the problem each one solved. What "opinionated defaults" really means. And auto-configuration, taken apart piece by piece, with a rule engine you can click through.</p>
     </footer>
 
     <p class="lesson-footer">Lesson 00 of 168 · Phase 1 · Chapter 0 — Setup and First Run</p>

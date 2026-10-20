@@ -20,9 +20,10 @@
       <a href="#applied">6 · Applied to Our Project</a>
       <a href="#gotchas">7 · Gotchas</a>
       <a href="#tradeoffs">8 · Tradeoffs</a>
-      <a href="#takeaways">9 · Key Takeaways</a>
-      <a href="#challenge">10 · Challenge</a>
-      <a href="#next">11 · What Is Next</a>
+      <a href="#challenge">9 · Challenge</a>
+      <a href="#keywords">10 · Key Words</a>
+      <a href="#recap">11 · Quick Recap</a>
+      <a href="#next">12 · What Is Next</a>
     </nav>
     <div class="prevnext">
       <a class="prev" href="lesson-02-project-setup-and-structure.html"><span class="nav-dir">← Prev · Lesson 02</span><span class="nav-title">Project Setup and Structure</span></a>
@@ -40,13 +41,36 @@
       <p class="meta"><strong>Files modified:</strong> <code>EcommerceApplication.java</code> (comments corrected, behaviour unchanged) · <strong>Files created:</strong> <code>EcommerceApplicationAnnotationTests.java</code> · <code>EcommerceApplicationContextTests.java</code> · <code>demos/mainclass/AutoConfigurationSwitchesDemoTests.java</code> · <strong>Prerequisites:</strong> <a href="lesson-01-what-is-spring-boot-and-why-it-exists.html">Lesson 01</a>, <a href="lesson-02-project-setup-and-structure.html">Lesson 02</a> · <strong>Pinned:</strong> Spring Boot 4.1.1 · Java 21 · Maven 3.9.16</p>
     </header>
 
+    <div class="learn">
+      <ul>
+        <li>The three annotations hidden inside <code>@SpringBootApplication</code>, and what each one does.</li>
+        <li>How Spring finds your classes, and why a class in the wrong package silently disappears.</li>
+        <li>What the <code>ApplicationContext</code> is, where the embedded Tomcat comes from, and why the program keeps running after <code>main()</code> ends.</li>
+      </ul>
+    </div>
+
     <!-- ============================================================= -->
     <section id="problem">
       <h2><span class="secno">1</span>The Problem</h2>
 
-      <p>Open <code>EcommerceApplication.java</code>. Take away the comments, and only two lines really do anything. One is an annotation, <code>@SpringBootApplication</code>. The other is a method call, <code>SpringApplication.run(...)</code>. Those two lines give you a lot. A web server listening on port 8080. A front door that sends every request to the right place. A JSON converter. A default error page. Settings read from a file. And about a hundred and fifty objects, all connected. You wrote none of them.</p>
+      <h3>1.1 Two lines that do a lot</h3>
 
-      <p>That should feel a little uncomfortable. When a two-line program does that much, the work is happening somewhere you cannot see. And code you cannot see is code you cannot fix. To show how much is hidden, here is roughly what a <code>main</code> method looked like before Spring Boot existed. It is a simplified sketch. The real thing was longer:</p>
+      <p>Open <code>EcommerceApplication.java</code>. Take away the comments. Only two lines really do anything. One is an annotation, <code>@SpringBootApplication</code>. The other is a method call, <code>SpringApplication.run(...)</code>. Those two lines give you a lot:</p>
+
+      <ul>
+        <li>a web server listening on port 8080;</li>
+        <li>a front door that sends every request to the right place;</li>
+        <li>a JSON converter;</li>
+        <li>a default error page;</li>
+        <li>settings read from a file;</li>
+        <li>and about a hundred and fifty objects, all connected.</li>
+      </ul>
+
+      <p>You wrote none of them.</p>
+
+      <h3>1.2 What it used to take</h3>
+
+      <p>That should feel a little uncomfortable. When a two-line program does that much, the work happens somewhere you cannot see. And code you cannot see is code you cannot fix. To show how much is hidden, here is roughly what a <code>main</code> method looked like before Spring Boot. It is a simplified sketch. The real thing was longer:</p>
 
       <pre><code><span class="k">public class</span> <span class="t">Main</span> {
     <span class="k">public static void</span> <span class="fn">main</span>(<span class="t">String</span>[] args) <span class="k">throws</span> <span class="t">Exception</span> {
@@ -73,9 +97,25 @@
     }
 }</code></pre>
 
-      <p>Look at step 1. Every class that Spring should know about had to be written into that list by hand. Add a new <code>ShippingService</code> next month and forget to list it? Nothing complains. The class compiles, and the program starts. The service is simply missing, and the first sign of it is an error somewhere else, much later. Step 2 sets the port with a number written into the Java code, so changing it means compiling again. Steps 2 and 3 must happen in exactly the right order. If you get the order wrong, the errors come from deep inside Tomcat. They do not mention your mistake at all.</p>
+      <p>(A <strong>connector</strong>, in the comment, is the part of Tomcat that accepts network connections.) Look at what each step costs you:</p>
 
-      <p>Spring Boot replaced all of that with one annotation and one call. So this lesson answers some very concrete questions. <strong>What exactly is inside that one annotation? Where does the Tomcat server come from, if we never wrote <code>new Tomcat()</code>? What is the "container" that step 1 built by hand, and where is ours?</strong> And one more, which trips up nearly every beginner in their first month. <strong>Spring no longer needs a list of your classes. So how does it find them? And why does moving one file to another folder make an endpoint quietly disappear?</strong></p>
+      <ul>
+        <li><strong>Step 1</strong> lists, by hand, every class Spring should know about. Add a new <code>ShippingService</code> next month and forget to list it? Nothing complains. The class compiles, and the program starts. The service is simply missing. The first sign of it is an error somewhere else, much later.</li>
+        <li><strong>Step 2</strong> writes the port number into the Java code. Changing it means compiling again.</li>
+        <li><strong>Steps 2 and 3</strong> must happen in exactly the right order. Get the order wrong, and the errors come from deep inside Tomcat. They do not mention your mistake at all.</li>
+      </ul>
+
+      <h3>1.3 The questions this lesson answers</h3>
+
+      <p>Spring Boot replaced all of that with one annotation and one call. So this lesson answers some very concrete questions:</p>
+
+      <ul>
+        <li>What exactly is inside that one annotation?</li>
+        <li>Where does the Tomcat server come from, if we never wrote <code>new Tomcat()</code>?</li>
+        <li>What is the "container" that step 1 built by hand, and where is ours?</li>
+      </ul>
+
+      <p>And one more, which trips up nearly every beginner in their first month. <strong>Spring no longer needs a list of your classes. So how does it find them? And why does moving one file to another folder make an endpoint quietly disappear?</strong></p>
     </section>
 
     <!-- ============================================================= -->
@@ -84,14 +124,18 @@
 
       <p>Think of opening a new branch of a restaurant chain.</p>
 
-      <p>The branch does not invent its own kitchen. Head office sends a <strong>founding charter</strong>, and it is pinned up by the front door. The charter has three rules.</p>
+      <p>The branch does not invent its own kitchen. Head office sends a <strong>founding charter</strong>, and staff pin it up by the front door. The charter has three rules:</p>
       <ul>
         <li><em>Rule one:</em> "This building is an official branch. It may write house recipes of its own."</li>
         <li><em>Rule two:</em> "Install the chain's standard equipment: ovens, fridges, the till, the front desk. Only install what this building can support. No gas pipe means no gas oven. And if the branch already brought its own till, do not fit a second one."</li>
         <li><em>Rule three:</em> "Hire every cook whose address is this building, including the floors below it. Hire nobody from anywhere else."</li>
       </ul>
 
-      <p>On opening day, the <strong>general manager</strong> takes the keys and works through the charter. They install the equipment and hire the staff. They tell everyone who they will work with. Then they open the doors. The manager's office holds the full staff list. It is the one place that knows every person in the building. The front door and its host desk are <em>part of the building</em>. The restaurant is not renting a table in someone else's food court. Once the doors are open, the manager's setup job is done, and they can go home. The restaurant stays open because the host at the door is still on shift. At closing time, the host finishes seating the last guests and locks up. Only then is the building empty.</p>
+      <p>On opening day, the <strong>general manager</strong> takes the keys and works through the charter. They install the equipment and hire the staff. They tell everyone who they will work with. Then they open the doors.</p>
+
+      <p>The manager's office holds the full staff list. It is the one place that knows every person in the building. The front door and its host desk are <em>part of the building</em>. The restaurant is not renting a table in someone else's food court.</p>
+
+      <p>Once the doors are open, the manager's setup job is done, and they can go home. The restaurant stays open because the host at the door is still on shift. At closing time, the host finishes seating the last guests and locks up. Only then is the building empty.</p>
 
       <div class="tablewrap">
         <table>
@@ -102,11 +146,11 @@
             <tr><td>Rule two: standard equipment, only what the building supports, never a second till</td><td><strong><code>@EnableAutoConfiguration</code></strong>: recipes with conditions, which step back when you brought your own</td></tr>
             <tr><td>Rule three: hire everyone whose address is this building or the floors below</td><td><strong><code>@ComponentScan</code></strong>: find classes in this package and every package beneath it</td></tr>
             <tr><td>Turning the key on opening day</td><td><code>main()</code> calling <code>SpringApplication.run(...)</code></td></tr>
-            <tr><td>The general manager's office and its staff list</td><td>The <strong><code>ApplicationContext</code></strong></td></tr>
+            <tr><td>The general manager's office and its staff list</td><td>The <strong><code>ApplicationContext</code></strong> (section 3.12)</td></tr>
             <tr><td>The front door built into the building</td><td>The <strong>embedded Tomcat</strong> server</td></tr>
             <tr><td>The manager going home once the doors are open</td><td><code>run()</code> returning, then <code>main()</code> ending</td></tr>
-            <tr><td>The host still on shift, keeping the place open</td><td>Tomcat's <strong>non-daemon thread</strong>, keeping the Java process alive</td></tr>
-            <tr><td>Closing time, with the last guests seated before locking up</td><td><kbd>Ctrl</kbd>+<kbd>C</kbd>, the shutdown hook, and <strong>graceful shutdown</strong></td></tr>
+            <tr><td>The host still on shift, keeping the place open</td><td>Tomcat's <strong>non-daemon thread</strong>, keeping the Java program alive (section 3.15)</td></tr>
+            <tr><td>Closing time, with the last guests seated before locking up</td><td><kbd>Ctrl</kbd>+<kbd>C</kbd>, the shutdown hook, and <strong>graceful shutdown</strong> (section 3.15)</td></tr>
           </tbody>
         </table>
       </div>
@@ -118,17 +162,19 @@
     <section id="concept">
       <h2><span class="secno">3</span>The Concept Explained</h2>
 
-      <h3>3.1 First: what is actually inside an annotation?</h3>
+      <h3>3.1 What is actually inside an annotation?</h3>
 
-      <p><a href="lesson-01-what-is-spring-boot-and-why-it-exists.html">Lesson 01</a> described an <span class="term" tabindex="0" data-def="A marker written with an at-sign that attaches information to a class, method or field, which other code can read and act on.">annotation</span> as a marker written with an at-sign that other code can read. To take <code>@SpringBootApplication</code> apart, we need three more facts about annotations. Each one is small.</p>
+      <p><a href="lesson-01-what-is-spring-boot-and-why-it-exists.html">Lesson 01</a> described an <span class="term" tabindex="0" data-def="A marker written with an at-sign that attaches information to a class, method or field, which other code can read and act on.">annotation</span> as a marker written with an at-sign, which other code can read. To take <code>@SpringBootApplication</code> apart, we need three more facts about annotations. Each one is small.</p>
 
-      <p><strong>Fact 1: an annotation is declared in Java code, like a class.</strong> Someone wrote <code>@SpringBootApplication</code> just as someone wrote <code>String</code>. The declaration uses the keyword <code>@interface</code>. It can list <em>attributes</em>: named settings you can fill in when you use the annotation. You will see this shape in a moment: <code>@Target(ElementType.TYPE)</code>. Here <code>@Target</code> is the annotation, and <code>ElementType.TYPE</code> is the value given to its attribute.</p>
+      <p><strong>Fact 1: someone declares an annotation in Java code, like a class.</strong> Someone wrote <code>@SpringBootApplication</code>, just as someone wrote <code>String</code>. The declaration uses the keyword <code>@interface</code>. It can list <em>attributes</em>. An attribute is a named setting you can fill in when you use the annotation. You will see this shape in a moment: <code>@Target(ElementType.TYPE)</code>. Here <code>@Target</code> is the annotation, and <code>ElementType.TYPE</code> is the value given to its attribute.</p>
 
-      <p><strong>Fact 2: an annotation only exists while the program runs if its declaration says so.</strong> When it compiles, the Java compiler can either keep an annotation in the <code>.class</code> file or drop it. The declaration decides, using <code>@Retention</code>. <code>@Retention(RetentionPolicy.RUNTIME)</code> means "keep me in the compiled class, and let a running program see me". Every annotation Spring reads at startup has <code>RUNTIME</code> retention. Without it, the marker would be gone before Spring ever looked.</p>
+      <p><strong>Fact 2: an annotation only exists while the program runs if its declaration says so.</strong> When the compiler compiles your code, it can either keep an annotation in the <code>.class</code> file or drop it. The declaration decides, using <code>@Retention</code>. <code>@Retention(RetentionPolicy.RUNTIME)</code> means "keep me in the compiled class, and let a running program see me". Every annotation Spring reads at startup has <code>RUNTIME</code> retention. Without it, the marker would be gone before Spring ever looked.</p>
 
-      <p><strong>Fact 3: a running program can look at its own classes.</strong> While the program runs, Java can ask a class "what methods do you have?" or "what annotations are written on you?". A program's ability to look at its own structure while it runs is called <span class="term" tabindex="0" data-def="A running Java program examining its own classes: asking what methods, fields or annotations they have.">reflection</span>. It is how Spring notices your annotations at all. <code>EcommerceApplication.class.isAnnotationPresent(SpringBootApplication.class)</code> is a reflection question, and the answer is <code>true</code>.</p>
+      <p><strong>Fact 3: a running program can look at its own classes.</strong> While the program runs, Java can ask a class "what methods do you have?" or "what annotations are written on you?". A program's ability to look at its own structure while it runs is called <span class="term" tabindex="0" data-def="A running Java program examining its own classes: asking what methods, fields or annotations they have.">reflection</span>. Think of a person looking at themselves in a mirror. Reflection is how Spring notices your annotations at all. For example, <code>EcommerceApplication.class.isAnnotationPresent(SpringBootApplication.class)</code> is a reflection question. The answer is <code>true</code>.</p>
 
-      <p>Now the key step. An annotation's declaration can itself carry annotations. Here is the real declaration of <code>@SpringBootApplication</code>, from the Spring Boot 4.1.1 source (checked on 2026-09-30, documentation comments removed):</p>
+      <h3>3.2 Annotations on annotations</h3>
+
+      <p>Now the key step. An annotation's declaration can itself carry annotations. Here is the real declaration of <code>@SpringBootApplication</code>, from the Spring Boot 4.1.1 source (checked on 2026-09-30, with documentation comments removed):</p>
 
       <pre><code><span class="an">@Target</span>(<span class="t">ElementType</span>.TYPE)                 <span class="c">// may be written on a class</span>
 <span class="an">@Retention</span>(<span class="t">RetentionPolicy</span>.RUNTIME)      <span class="c">// survives into the running program</span>
@@ -159,18 +205,39 @@
     <span class="k">boolean</span> <span class="fn">proxyBeanMethods</span>() <span class="k">default true</span>;
 }</code></pre>
 
-      <p>Look at the three highlighted lines. <code>@SpringBootApplication</code> is not a feature of its own. It is a <em>bundle</em>. It exists to carry three other annotations, so you can write one line instead of three. Sometimes an annotation is placed on another annotation's declaration. Then using the outer one brings the inner one along too. The inner one is called a <span class="term" tabindex="0" data-def="An annotation placed on another annotation's declaration, so that using the outer one applies the inner one too.">meta-annotation</span>.</p>
+      <p>The first four lines describe the annotation itself:</p>
 
-      <p>There is a catch, and it tells you something important about Spring. <strong>Plain Java does not follow meta-annotations.</strong> Ask Java's reflection whether <code>EcommerceApplication</code> has <code>@Configuration</code>, and it says <em>no</em>. That is because <code>@Configuration</code> is not written on the class. Follow the chain: <code>@Configuration</code> is written on <code>@SpringBootConfiguration</code>, which is written on <code>@SpringBootApplication</code>, which is written on the class. Java only looks at the outermost layer. So Spring wrote its own annotation reader. It opens every layer, like opening a set of boxes inside boxes, and collects what it finds. Our new test <code>EcommerceApplicationAnnotationTests</code> checks both sides. Plain Java answers <code>false</code>. Spring's <code>AnnotatedElementUtils</code> answers <code>true</code>.</p>
+      <ul>
+        <li><code>@Target(ElementType.TYPE)</code>: you may write it on a class. ("Type" is Java's general word for a class or interface.)</li>
+        <li><code>@Retention(RetentionPolicy.RUNTIME)</code>: it survives into the running program (fact 2).</li>
+        <li><code>@Documented</code>: it shows up in the generated reference pages for the code. People call those pages "API docs". (An <strong>API</strong> is the set of classes and methods that a library offers to other code.)</li>
+        <li><code>@Inherited</code>: if a class extends the main class, it gets this annotation too.</li>
+      </ul>
 
-      <p>What about <code>@AliasFor</code> on the attributes? It is how the bundle passes your settings on to the right inner annotation. Write <code>@SpringBootApplication(scanBasePackages = "com.shop")</code>, and Spring treats it exactly as if you had written <code>@ComponentScan(basePackages = "com.shop")</code>. Write <code>exclude = ...</code>, and that setting reaches <code>@EnableAutoConfiguration</code>. So you keep one line, and still control every part of it.</p>
+      <p>Now look at the three highlighted lines. <code>@SpringBootApplication</code> is not a feature of its own. It is a <em>bundle</em>. It exists to carry three other annotations, so you can write one line instead of three.</p>
+
+      <p>Sometimes someone places an annotation on another annotation's declaration. Then using the outer one brings the inner one along too. The inner one is called a <span class="term" tabindex="0" data-def="An annotation placed on another annotation's declaration, so that using the outer one applies the inner one too.">meta-annotation</span>. ("Meta" here means "about another one of the same kind".)</p>
+
+      <h3>3.3 Plain Java cannot see inside the bundle, but Spring can</h3>
+
+      <p>There is a catch, and it tells you something important about Spring. <strong>Plain Java does not follow meta-annotations.</strong> Ask Java's reflection whether <code>EcommerceApplication</code> has <code>@Configuration</code>, and it says <em>no</em>. Follow the chain to see why:</p>
+
+      <ol>
+        <li><code>@Configuration</code> is written on <code>@SpringBootConfiguration</code>.</li>
+        <li><code>@SpringBootConfiguration</code> is written on <code>@SpringBootApplication</code>.</li>
+        <li><code>@SpringBootApplication</code> is written on the class.</li>
+      </ol>
+
+      <p>Java only looks at the outermost layer. So Spring wrote its own annotation reader. It opens every layer, like opening a set of boxes inside boxes, and collects what it finds. Our new test <code>EcommerceApplicationAnnotationTests</code> checks both sides. Plain Java answers <code>false</code>. Spring's <code>AnnotatedElementUtils</code> answers <code>true</code>.</p>
+
+      <p>What about <code>@AliasFor</code> on the attributes? It is how the bundle passes your settings on to the right inner annotation. Write <code>@SpringBootApplication(scanBasePackages = "com.shop")</code>, and Spring treats it exactly as if you wrote <code>@ComponentScan(basePackages = "com.shop")</code>. Write <code>exclude = ...</code>, and that setting reaches <code>@EnableAutoConfiguration</code>. So you keep one line, and still control every part of it.</p>
 
       <details class="check">
         <summary>Check yourself: Java's own reflection says <code>EcommerceApplication</code> does <em>not</em> have <code>@Configuration</code>. So how can Spring treat it as a configuration class?</summary>
         <p>Because Spring does not ask Java's reflection that question directly. Spring's annotation reader starts with the annotations written on the class. Then it opens each annotation's own declaration and reads the annotations on <em>that</em>. It keeps going until it finds nothing new. <code>@SpringBootApplication</code> leads to <code>@SpringBootConfiguration</code>, which leads to <code>@Configuration</code>. Following this chain is a Spring idea, built on top of Java. It is not a Java feature. That is why a plain Java tool would miss it.</p>
       </details>
 
-      <h3>3.2 The whole thing unpacked, in one picture</h3>
+      <h3>3.4 The whole thing unpacked, in one picture</h3>
 
       <figure class="fig">
         <svg viewBox="0 0 940 440" role="img" aria-label="A tree diagram. At the top, a green box: at-SpringBootApplication, written on EcommerceApplication. Three arrows lead down to three teal boxes. The first is at-SpringBootConfiguration, with a note that it carries at-Configuration, which in turn carries at-Component, meaning the main class is itself a managed object and a configuration class. The second is at-EnableAutoConfiguration, with a note that it carries at-AutoConfigurationPackage, which records com.ecommerce, and at-Import of AutoConfigurationImportSelector, which reads the recipe lists from every jar and applies those whose conditions pass. The third is at-ComponentScan with two exclude filters, which searches com.ecommerce and every package beneath it.">
@@ -224,39 +291,50 @@
           <text x="779" y="394" text-anchor="middle" class="fig-small">auto-configuration recipes that</text>
           <text x="779" y="410" text-anchor="middle" class="fig-small">happen to sit in our packages</text>
         </svg>
-        <figcaption>One annotation, three jobs, each with a further layer underneath. Green is what you write; teal is the three Spring annotations it stands for; neutral is what each one carries in turn. Every box in this diagram is checked by a test in section 6. None of it is a claim you have to take on trust.</figcaption>
+        <figcaption>One annotation, three jobs, each with a further layer underneath. Green is what you write. Teal is the three Spring annotations it stands for. Neutral is what each one carries in turn. A test in section 6 checks every box in this diagram. None of it is a claim you have to take on trust.</figcaption>
       </figure>
 
       <p>Now let us take each of the three in turn, going as deep as each one needs.</p>
 
-      <h3>3.3 Part one: <code>@SpringBootConfiguration</code> — "this class is a source of setup instructions"</h3>
+      <h3>3.5 Two words first: bean and configuration class</h3>
 
-      <p>To understand this part, we need two words that are central to all of Spring. Lesson 04 gives each of them a full lesson. Here is just enough to move forward.</p>
+      <p>To understand part one, we need two words that are central to all of Spring. Lesson 01 gave you a one-line meaning for the first. Lesson 04 gives each a full lesson. Here is just enough to move forward.</p>
 
-      <p><strong>A bean.</strong> Normally, when your code needs an object, it creates it itself with <code>new</code>. Spring offers a different deal. You describe the objects your application needs. Spring creates them, keeps them, and hands them to whoever needs them. Think of a hotel cloakroom. You do not carry your coat around all evening. The attendant takes it, keeps it on a numbered hook, and gives it back when you ask. An object that Spring creates and looks after like this is called a <span class="term" tabindex="0" data-def="An object that Spring creates, keeps and hands out, instead of your code creating it with new. Covered fully in Lesson 04.">bean</span>. Your code does not call <code>new</code> for it. Each bean has a name, like the number on a cloakroom hook. In section 6, our test looks up the bean named <code>"dispatcherServlet"</code> by exactly that kind of name.</p>
+      <p><strong>A bean.</strong> Normally, when your code needs an object, it creates it itself with <code>new</code>. Spring offers a different deal. You describe the objects your app needs. Spring creates them, keeps them, and hands them to whoever needs them.</p>
 
-      <p><strong>A configuration class.</strong> Some beans need to be set up in a certain way before they are useful. For example, a database connection needs an address and a password. A class can hold those setup instructions as Java methods. Each method creates and returns one bean. Such a class is called a <span class="term" tabindex="0" data-def="A class holding setup instructions for Spring, usually methods marked @Bean that each create one object. Marked with @Configuration. Covered fully in Lesson 07.">configuration class</span>. The class is marked with <code>@Configuration</code>, and each of those methods is marked <code>@Bean</code>. We write our first one in Lesson 07. Before Spring Boot, a typical application had several of them, such as <code>WebConfig</code>, <code>JsonConfig</code> and <code>DatabaseConfig</code>. Those are the classes that step 1 of the old <code>main</code> listed by hand.</p>
+      <p>Think of a hotel cloakroom. You do not carry your coat around all evening. The attendant takes it, keeps it on a numbered hook, and gives it back when you ask. An object that Spring creates and looks after like this is called a <span class="term" tabindex="0" data-def="An object that Spring creates, keeps and hands out, instead of your code creating it with new. Covered fully in Lesson 04.">bean</span>. Your code does not call <code>new</code> for it. Each bean has a name, like the number on a cloakroom hook. In section 6, our test looks up the bean named <code>"dispatcherServlet"</code> by exactly that kind of name.</p>
 
-      <p>With those two words, <code>@SpringBootConfiguration</code> is simple. It carries <code>@Configuration</code>, so it makes our main class a configuration class. That has two results you can check today. <strong>First</strong>, the main class may later hold <code>@Bean</code> methods. (Good practice is to keep them in separate classes, though.) <strong>Second</strong>, <code>@Configuration</code> itself carries <code>@Component</code>. That is a marker meaning "Spring should manage this class", covered in Lesson 05. So <strong>the main class is itself a bean.</strong> Spring creates an <code>EcommerceApplication</code> object and keeps it under the name <code>ecommerceApplication</code>. The default name is the class name with a lower-case first letter. Our context test looks it up by that name.</p>
+      <p><strong>A configuration class.</strong> Some beans need setting up in a certain way before they are useful. For example, a database connection needs an address and a password. A class can hold those setup instructions as Java methods. Each method creates and returns one bean. Such a class is called a <span class="term" tabindex="0" data-def="A class holding setup instructions for Spring, usually methods marked @Bean that each create one object. Marked with @Configuration. Covered fully in Lesson 07.">configuration class</span>. You mark the class with <code>@Configuration</code>, and each of those methods with <code>@Bean</code>. We write our first one in Lesson 07.</p>
 
-      <p><strong>Why a special Boot version, instead of plain <code>@Configuration</code>?</strong> Because there is one job only the main configuration class can do: tests have to find it. In <a href="lesson-02-project-setup-and-structure.html">Lesson 02</a>, <code>@SpringBootTest</code> started the whole application without being told which class to start from. It found <code>EcommerceApplication</code> by <em>searching</em>. Here is how the search works:</p>
+      <p>Before Spring Boot, a typical app had several configuration classes, such as <code>WebConfig</code>, <code>JsonConfig</code> and <code>DatabaseConfig</code>. Those are the classes that step 1 of the old <code>main</code> listed by hand.</p>
+
+      <h3>3.6 Part one: <code>@SpringBootConfiguration</code>, "this class is a source of setup instructions"</h3>
+
+      <p>With those two words, <code>@SpringBootConfiguration</code> is simple. It carries <code>@Configuration</code>, so it makes our main class a configuration class. That has two results you can check today:</p>
+
+      <ol>
+        <li>The main class may later hold <code>@Bean</code> methods. (Good practice is to keep them in separate classes, though.)</li>
+        <li><code>@Configuration</code> itself carries <code>@Component</code>. That is a marker meaning "Spring should manage this class", covered in Lesson 05. So <strong>the main class is itself a bean.</strong> Spring creates an <code>EcommerceApplication</code> object and keeps it under the name <code>ecommerceApplication</code>. The default name is the class name with a lower-case first letter. Our context test looks it up by that name.</li>
+      </ol>
+
+      <p><strong>Why a special Boot version, instead of plain <code>@Configuration</code>?</strong> Because only the main configuration class can do one job: tests have to find it. In <a href="lesson-02-project-setup-and-structure.html">Lesson 02</a>, <code>@SpringBootTest</code> started the whole app without being told which class to start from. It found <code>EcommerceApplication</code> by <em>searching</em>. Here is how the search works:</p>
       <ol>
         <li>It starts in the test's own package.</li>
         <li>It looks through that package, and every package inside it, for exactly one class marked <code>@SpringBootConfiguration</code>.</li>
         <li>If it finds none, it moves up one package and tries again.</li>
       </ol>
-      <p>Plain <code>@Configuration</code> would not work for this search, because an application can have dozens of configuration classes. <code>@SpringBootConfiguration</code> means "the <em>main</em> one", and there must be exactly one. If the search finds none, you get this message, quoted from the 4.1.1 source:</p>
+      <p>Plain <code>@Configuration</code> would not work for this search, because an app can have dozens of configuration classes. <code>@SpringBootConfiguration</code> means "the <em>main</em> one", and there must be exactly one. If the search finds none, you get this message, quoted from the 4.1.1 source:</p>
 
       <pre><code><span class="hi">Unable to find a @SpringBootConfiguration by searching packages upwards from the test.</span>
 You can use @ContextConfiguration, @SpringBootTest(classes=...) or other Spring Test
 supported mechanisms to explicitly declare the configuration classes to load. Classes
 annotated with @TestConfiguration are not considered.</code></pre>
 
-      <p>It carries one setting, <code>proxyBeanMethods</code>, which is <code>true</code> by default. It controls a behaviour of <code>@Bean</code> methods that only matters once one of them calls another. We meet it properly in Lesson 07. For now, leave it at the default.</p>
+      <p>It carries one setting, <code>proxyBeanMethods</code>, which is <code>true</code> by default. It controls how <code>@Bean</code> methods behave when one of them calls another. We meet it properly in Lesson 07. For now, leave it at the default.</p>
 
-      <h3>3.4 Part two: <code>@EnableAutoConfiguration</code> — "switch on the recipe engine"</h3>
+      <h3>3.7 Part two: <code>@EnableAutoConfiguration</code>, "switch on the recipe engine"</h3>
 
-      <p><a href="lesson-01-what-is-spring-boot-and-why-it-exists.html">Lesson 01</a> explained auto-configuration as a rule engine: every jar brings recipes, each recipe has conditions, and the recipes whose conditions pass get applied. What Lesson 01 left open is <em>who turns that engine on</em>. The answer is this annotation, and here is exactly how.</p>
+      <p><a href="lesson-01-what-is-spring-boot-and-why-it-exists.html">Lesson 01</a> explained auto-configuration as a rule engine. Every JAR brings recipes. Each recipe has conditions. Boot uses the recipes whose conditions pass. What Lesson 01 left open is <em>who turns that engine on</em>. The answer is this annotation. Here is exactly how.</p>
 
       <p>From the 4.1.1 source, <code>@EnableAutoConfiguration</code> carries two meta-annotations:</p>
 
@@ -268,26 +346,30 @@ annotated with @TestConfiguration are not considered.</code></pre>
     <span class="t">String</span>[] <span class="fn">excludeName</span>() <span class="k">default</span> {};
 }</code></pre>
 
-      <p><strong><code>@Import</code></strong> is a Spring annotation that says "while you are reading this configuration class, read that one too". It lets one configuration class pull in others. Normally you name a configuration class directly. But the imported class here, <code>AutoConfigurationImportSelector</code>, is special. It is a <em>selector</em>. It holds no setup instructions itself. Instead, Spring asks it: "which configuration classes should I import?". It works out the answer while the application starts. That decision, made at startup, is the whole of auto-configuration. Step by step, here is what the selector does:</p>
+      <p><strong><code>@Import</code></strong> is a Spring annotation that says "while you read this configuration class, read that one too". It lets one configuration class pull in others. Normally you name a configuration class directly. But the imported class here, <code>AutoConfigurationImportSelector</code>, is special. It is a <em>selector</em>. It holds no setup instructions itself. Instead, Spring asks it: "which configuration classes should I import?". It works out the answer while the app starts. That decision, made at startup, is the whole of auto-configuration.</p>
+
+      <p>Step by step, here is what the selector does:</p>
 
       <ol>
-        <li><strong>Collect the candidates.</strong> It looks for every file named exactly <code>META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports</code>, <em>in every jar on the classpath</em>. Each one is a plain text file with one class name per line. That is the "recipe list" from Lesson 01, and this is its real file name, confirmed in the 4.1.1 source. In Boot 4, each technology module brings its own list. For example, the list in <code>spring-boot-tomcat</code> names five recipes, including <code>TomcatServletWebServerAutoConfiguration</code>. If no such file is found anywhere, startup stops with <em>"No auto configuration classes found in META-INF/spring/…imports"</em>.</li>
+        <li><strong>Collect the candidates.</strong> It looks for every file named exactly <code>META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports</code>, <em>in every JAR on the classpath</em>. Each one is a plain text file with one class name per line. That is the "recipe list" from Lesson 01. This is its real file name, confirmed in the 4.1.1 source. In Boot 4, each technology module brings its own list. For example, the list in <code>spring-boot-tomcat</code> names five recipes, including <code>TomcatServletWebServerAutoConfiguration</code>. If no such file exists anywhere, startup stops with <em>"No auto configuration classes found in META-INF/spring/…imports"</em>.</li>
         <li><strong>Remove the exclusions.</strong> It collects everything you asked it to skip. That can come from three places, and it combines them all:
           <ul>
-            <li>the <code>exclude</code> attribute (classes),</li>
-            <li>the <code>excludeName</code> attribute (class names written as text),</li>
+            <li>the <code>exclude</code> attribute (classes);</li>
+            <li>the <code>excludeName</code> attribute (class names written as text);</li>
             <li>the setting <code>spring.autoconfigure.exclude</code>, in <code>application.yml</code> or on the command line.</li>
           </ul>
           Then it deletes those recipes from the list.</li>
-        <li><strong>Check the exclusions make sense.</strong> Say you excluded a class that <em>is</em> on the classpath but is <em>not</em> an auto-configuration recipe. Then startup fails with <em>"The following classes could not be excluded because they are not auto-configuration classes"</em>. But say you excluded a name that is <em>not on the classpath at all</em>. Then nothing happens. It is quietly ignored. Remember that. The Boot 4 card below turns it into a real trap.</li>
-        <li><strong>Check the conditions, and use the recipes that pass.</strong> Each remaining recipe's <code>@ConditionalOn…</code> checks run, just as Lesson 01's simulation showed. The recipes that pass are read as configuration classes, and their <code>@Bean</code> methods create beans.</li>
+        <li><strong>Check the exclusions make sense.</strong> Say you excluded a class that <em>is</em> on the classpath but is <em>not</em> an auto-configuration recipe. Then startup fails with <em>"The following classes could not be excluded because they are not auto-configuration classes"</em>. But say you excluded a name that is <em>not on the classpath at all</em>. Then nothing happens. Boot quietly ignores it. Remember that. The Boot 4 card in section 3.8 turns it into a real trap.</li>
+        <li><strong>Check the conditions, and use the recipes that pass.</strong> Each remaining recipe's <code>@ConditionalOn…</code> checks run, just as Lesson 01's simulation showed. Spring reads the recipes that pass as configuration classes, and their <code>@Bean</code> methods create beans.</li>
       </ol>
 
-      <p>One detail makes the whole design safe. <strong>Your own configuration is read first. The auto-configuration recipes are read last, on purpose.</strong> This is what makes <code>@ConditionalOnMissingBean</code> work. The Tomcat recipe asks: "has anyone already defined a web server factory?". By then, every bean <em>you</em> defined is already registered. So if you brought your own, the recipe steps aside. The order is built into the design. It is not luck.</p>
+      <p>One detail makes the whole design safe. <strong>Spring reads your own configuration first. It reads the auto-configuration recipes last, on purpose.</strong> This is what makes <code>@ConditionalOnMissingBean</code> work. The Tomcat recipe asks: "has anyone already defined a web server factory?". By then, every bean <em>you</em> defined is already registered. So if you brought your own, the recipe steps aside. The order is part of the design. It is not luck.</p>
 
-      <p><strong><code>@AutoConfigurationPackage</code></strong> is the second meta-annotation. It writes down the package of the class carrying it, <code>com.ecommerce</code>, in a small list the context keeps. That list is not used to find our classes; that is the next part's job. Other features use it later, as "the place where the application's own code lives". The first one will be the database layer in Chapter 5, which uses it to find our entity classes. Our test asks Spring Boot's <code>AutoConfigurationPackages.get(context)</code> helper, and expects exactly <code>["com.ecommerce"]</code>.</p>
+      <p><strong><code>@AutoConfigurationPackage</code></strong> is the second meta-annotation. It writes down the package of the class that carries it, <code>com.ecommerce</code>, in a small list the context keeps. Spring does not use that list to find our classes; that is part three's job. Other features use it later, as "the place where the app's own code lives". The first one will be the database layer in Chapter 5. It uses the list to find our <strong>entity</strong> classes (classes whose objects are saved as rows in a database). Our test asks Spring Boot's <code>AutoConfigurationPackages.get(context)</code> helper, and expects exactly <code>["com.ecommerce"]</code>.</p>
 
-      <p><strong>Switching recipes off.</strong> Sometimes a recipe applies and you do not want it. The classic case: a database library is on the classpath, but you are not ready to set up a database yet. You have two tools that do the same thing:</p>
+      <h3>3.8 Switching recipes off</h3>
+
+      <p>Sometimes a recipe applies and you do not want it. The classic case: a database library is on the classpath, but you are not ready to set up a database yet. You have two tools that do the same thing:</p>
 
       <pre><code><span class="c">// 1. In code, on the main class, by class. A typo is a compile error, which is good.</span>
 <span class="an">@SpringBootApplication</span>(exclude = <span class="t">DataSourceAutoConfiguration</span>.<span class="k">class</span>)
@@ -297,19 +379,24 @@ annotated with @TestConfiguration are not considered.</code></pre>
   <span class="k">autoconfigure</span>:
     <span class="k">exclude</span>: <span class="s">org.springframework.boot.jdbc.autoconfigure.DataSourceAutoConfiguration</span></code></pre>
 
-      <p>Use the first one when you can. The compiler checks a class reference. Nobody checks a name written as text. There is also a master switch, <code>spring.boot.enableautoconfiguration=false</code>, which turns off the whole engine. It exists mostly for unusual test setups. Try it once, and you will see exactly the failure in section 4.</p>
+      <p>Use the first one when you can. The compiler checks a class reference. Nobody checks a name written as text.</p>
+
+      <p>There is also a master switch, <code>spring.boot.enableautoconfiguration=false</code>. It turns off the whole engine. It exists mostly for unusual test setups. Try it once, and you will see exactly the failure in section 4.</p>
 
       <div class="v4">
         <p><strong>Auto-configuration classes moved, and old exclusions can fail without telling you.</strong> <a href="lesson-01-what-is-spring-boot-and-why-it-exists.html">Lesson 01</a> described how Boot 4 split things into modules. Because of that split, most auto-configuration recipes now live in a new package, inside their own technology's module. Here is the one you will copy from Stack Overflow most often:</p>
         <span class="v4-old">org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration</span>
         <span class="v4-new">org.springframework.boot.jdbc.autoconfigure.DataSourceAutoConfiguration</span>
-        <p><strong>What 3.x did:</strong> nearly every recipe lived in one jar, <code>spring-boot-autoconfigure</code>, under <code>org.springframework.boot.autoconfigure.&lt;technology&gt;</code>. Tomcat was set up by <code>ServletWebServerFactoryAutoConfiguration</code>, in <code>org.springframework.boot.autoconfigure.web.servlet</code>.</p>
-        <p><strong>What 4.x does:</strong> each technology module carries its own recipes, under <code>org.springframework.boot.&lt;technology&gt;.autoconfigure</code>. Tomcat's recipe is now <code>org.springframework.boot.tomcat.autoconfigure.servlet.TomcatServletWebServerAutoConfiguration</code>. The core <code>spring-boot-autoconfigure</code> jar keeps only about a dozen general recipes. I checked its 4.1.1 recipe list: admin, AOP, availability, configuration properties, lifecycle, messages, placeholders, project info, JMX, SSL, task execution and task scheduling.</p>
-        <p><strong>Why it changed:</strong> it is the same split into modules. A recipe belongs with the technology it sets up. So a jar you do not have brings no recipes you do not need. A nice side effect: the <code>--debug</code> report (below) gets much shorter. In 3.x it listed well over a hundred <em>negative matches</em> for technologies you never used, because their recipes were always there. In 4.x those recipes are simply not on your classpath, so there is nothing to report.</p>
-        <p><strong>What this means for you:</strong> in Boot 4, an old tutorial's <code>exclude = DataSourceAutoConfiguration.class</code> becomes a compile error: <code>package org.springframework.boot.autoconfigure.jdbc does not exist</code>. That is annoying, but at least it is loud. The dangerous version is the <em>text</em> form. Put the old name in <code>spring.autoconfigure.exclude</code> or <code>excludeName</code>, and it names a class that no longer exists. Step 3 above means it is then <strong>quietly ignored</strong>. The recipe you meant to switch off stays on, and nothing tells you. Whenever you copy an exclusion, look up the class's current package first. Our demo test <code>excludingANameThatDoesNotExistIsSilentlyIgnored</code> shows the silence on your own machine.</p>
+        <p><strong>What 3.x did:</strong> nearly every recipe lived in one JAR, <code>spring-boot-autoconfigure</code>, under <code>org.springframework.boot.autoconfigure.&lt;technology&gt;</code>. Tomcat was set up by <code>ServletWebServerFactoryAutoConfiguration</code>, in <code>org.springframework.boot.autoconfigure.web.servlet</code>.</p>
+        <p><strong>What 4.x does:</strong> each technology module carries its own recipes, under <code>org.springframework.boot.&lt;technology&gt;.autoconfigure</code>. Tomcat's recipe is now <code>org.springframework.boot.tomcat.autoconfigure.servlet.TomcatServletWebServerAutoConfiguration</code>. The core <code>spring-boot-autoconfigure</code> JAR keeps only about a dozen general recipes. I checked its 4.1.1 recipe list. You do not need to know these names yet: admin, AOP, availability, configuration properties, lifecycle, messages, placeholders, project info, JMX, SSL, task execution and task scheduling.</p>
+        <p><strong>Why it changed:</strong> it is the same split into modules. A recipe belongs with the technology it sets up. So a JAR you do not have brings no recipes you do not need. A nice side effect: the <code>--debug</code> report (section 3.9) gets much shorter. In 3.x it listed well over a hundred <em>negative matches</em> for technologies you never used, because their recipes were always there. In 4.x those recipes are simply not on your classpath, so there is nothing to report.</p>
+        <p><strong>What this means for you:</strong> in Boot 4, an old tutorial's <code>exclude = DataSourceAutoConfiguration.class</code> becomes a compile error: <code>package org.springframework.boot.autoconfigure.jdbc does not exist</code>. That is annoying, but at least it is loud.</p>
+        <p>The dangerous version is the <em>text</em> form. Put the old name in <code>spring.autoconfigure.exclude</code> or <code>excludeName</code>, and it names a class that no longer exists. Step 3 in section 3.7 means Boot then <strong>quietly ignores it</strong>. The recipe you meant to switch off stays on, and nothing tells you. Whenever you copy an exclusion, look up the class's current package first. Our demo test <code>excludingANameThatDoesNotExistIsSilentlyIgnored</code> shows the silence on your own machine.</p>
       </div>
 
-      <p><strong>Seeing the engine's decisions.</strong> Add <code>--debug</code> to the command line, and Boot prints its <em>conditions evaluation report</em>, which Lesson 01 introduced. It lists every recipe Boot considered, and why it was used or skipped. Here is a predicted piece of it for our project. The condition messages follow the pattern Boot has used for years. The class names are the checked 4.1.1 ones:</p>
+      <h3>3.9 Seeing the engine's decisions</h3>
+
+      <p>Add <code>--debug</code> to the command line, and Boot prints its <em>conditions evaluation report</em>, which Lesson 01 introduced. It lists every recipe Boot considered, and why it used or skipped each one. Here is a predicted piece of it for our project. The condition messages follow the pattern Boot has used for years. The class names are the checked 4.1.1 ones:</p>
 
       <pre><code>============================
 CONDITIONS EVALUATION REPORT
@@ -335,26 +422,49 @@ Negative matches:
 -----------------
    ...recipes whose conditions failed, each with the reason...</code></pre>
 
-      <p>Read the second highlighted block slowly. It is the whole story of where Tomcat comes from. The recipe <code>TomcatServletWebServerAutoConfiguration</code> has a <code>@Bean</code> method named <code>tomcatServletWebServerFactory</code>. That method is guarded by <code>@ConditionalOnMissingBean(ServletWebServerFactory.class)</code>. We defined no web server factory of our own, so the condition passes and the method runs. That method is the first link in the chain that ends with Tomcat listening on port 8080. Section 3.7 follows the rest of the chain.</p>
+      <p>How to read one entry:</p>
 
-      <h3>3.5 Part three: <code>@ComponentScan</code> — "search this package and below"</h3>
+      <ul>
+        <li>The first line names the recipe and says <code>matched</code>.</li>
+        <li>Each line under it, starting with a dash, is one condition that passed. The name in brackets at the end, like <code>(OnClassCondition)</code>, is the kind of check.</li>
+        <li><code>found 'session' scope (OnWebApplicationCondition)</code> is Boot's way of saying "this is a servlet web app".</li>
+        <li>A name with a <code>#</code> in it, like <code>…AutoConfiguration#tomcatServletWebServerFactory</code>, means one <code>@Bean</code> method inside that recipe.</li>
+      </ul>
+
+      <p>Read the second highlighted block slowly. It is the whole story of where Tomcat comes from:</p>
+
+      <ol>
+        <li>The recipe <code>TomcatServletWebServerAutoConfiguration</code> has a <code>@Bean</code> method named <code>tomcatServletWebServerFactory</code>.</li>
+        <li><code>@ConditionalOnMissingBean(ServletWebServerFactory.class)</code> guards that method.</li>
+        <li>We defined no web server factory of our own, so the condition passes and the method runs.</li>
+        <li>That method is the first link in the chain that ends with Tomcat listening on port 8080. Section 3.14 follows the rest of the chain.</li>
+      </ol>
+
+      <h3>3.10 Part three: <code>@ComponentScan</code>, "search this package and below"</h3>
 
       <p>Step 1 of the old <code>main</code> listed every class by hand. Component scanning replaces that list with a search. Here is the search, step by step.</p>
 
       <ol>
         <li><strong>Decide where to start.</strong> <code>@ComponentScan</code> has a <code>basePackages</code> attribute. <code>@SpringBootApplication</code> leaves it empty. But <strong>empty does not mean "search nothing"</strong>. The rule is: if no starting package is given, use the package of the class that carries the annotation. Our main class is in <code>com.ecommerce</code>, so the search starts there. This one rule is why Lesson 02 said the main class's package "really matters".</li>
-        <li><strong>Turn the package into a file search.</strong> Dots become slashes. Then a pattern is added that means "everything below here". So <code>com.ecommerce</code> becomes <code>classpath*:com/ecommerce/**/*.class</code>. The <code>**</code> means "any number of folders deep". Spring then lists every compiled class file that matches, in <code>target/classes</code> and in every jar.</li>
+        <li><strong>Turn the package into a file search.</strong> Dots become slashes. Then Spring adds a pattern that means "everything below here". So <code>com.ecommerce</code> becomes <code>classpath*:com/ecommerce/**/*.class</code>. The <code>**</code> means "any number of folders deep". Spring then lists every compiled class file that matches, in <code>target/classes</code> and in every JAR.</li>
         <li><strong>Read each class file quickly.</strong> Spring does not load every class into memory; that would be slow. It reads just enough of each raw class file to see its annotations.</li>
-        <li><strong>Keep the components.</strong> A class is kept if it carries <code>@Component</code>, either directly or through a meta-annotation. Annotations such as <code>@Service</code>, <code>@Repository</code> and <code>@RestController</code> all carry <code>@Component</code>. That family is Lesson 05's topic. Each kept class is registered as a bean definition: a written plan for a bean that will be created later.</li>
-        <li><strong>Apply the exclude filters.</strong> <code>@SpringBootApplication</code> adds two filters that throw classes back out. <code>AutoConfigurationExcludeFilter</code> throws out any auto-configuration recipe that happens to sit inside a searched package. That stops a recipe from sneaking in through the search and skipping its conditions. <code>TypeExcludeFilter</code> is a hook that other tools can plug into. Spring Boot's test support uses it to keep test-only configuration classes out of the main application.</li>
+        <li><strong>Keep the components.</strong> Spring keeps a class if it carries <code>@Component</code>, either directly or through a meta-annotation. Annotations such as <code>@Service</code>, <code>@Repository</code> and <code>@RestController</code> all carry <code>@Component</code>. That family is Lesson 05's topic. Spring registers each kept class as a <strong>bean definition</strong>: a written plan for a bean that it will create later.</li>
+        <li><strong>Apply the exclude filters.</strong> <code>@SpringBootApplication</code> adds two filters that throw classes back out:
+          <ul>
+            <li><code>AutoConfigurationExcludeFilter</code> throws out any auto-configuration recipe that happens to sit inside a searched package. That stops a recipe from sneaking in through the search and skipping its conditions.</li>
+            <li><code>TypeExcludeFilter</code> is a <strong>hook</strong>: a place where other code can plug in its own rule. Spring Boot's test support uses it to keep test-only configuration classes out of the main app.</li>
+          </ul>
+        </li>
       </ol>
 
-      <p>The result is a boundary, and it is strict. <strong>Classes in <code>com.ecommerce</code>, or in any package inside it, are found. Classes anywhere else are not, and nothing tells you.</strong> Three details about this boundary catch people out:</p>
+      <h3>3.11 The scan boundary</h3>
+
+      <p>The result is a boundary, and it is strict. <strong>Spring finds classes in <code>com.ecommerce</code>, or in any package inside it. It does not find classes anywhere else, and nothing tells you.</strong> Three details about this boundary catch people out:</p>
 
       <ul>
-        <li><strong>"Inside" means inside by whole names, not by spelling.</strong> <code>com.ecommerceadmin</code> <em>starts with the same letters</em> as <code>com.ecommerce</code>, but it is a different package. It sits next to <code>com.ecommerce</code>, not inside it, so it is not searched. The file pattern <code>com/ecommerce/**</code> needs a slash after <code>ecommerce</code>.</li>
-        <li><strong>Packages above are invisible too.</strong> Move the main class down into <code>com.ecommerce.app</code>, and the search now starts there. <code>com.ecommerce.product</code> sits next to <code>app</code>, not inside it, so it is left out.</li>
-        <li><strong>Setting the packages yourself <em>replaces</em> the default. It does not add to it.</strong> <code>@SpringBootApplication(scanBasePackages = {"com.ecommerce", "com.ecommerceadmin"})</code> searches exactly those two package trees. If you list only <code>"com.ecommerceadmin"</code>, your own main package is no longer searched. <code>scanBasePackageClasses = SomeClass.class</code> does the same job, but it names a class instead of a package written as text. So a typo is a compile error, instead of a silent miss.</li>
+        <li><strong>"Inside" means inside by whole names, not by spelling.</strong> <code>com.ecommerceadmin</code> <em>starts with the same letters</em> as <code>com.ecommerce</code>, but it is a different package. It sits next to <code>com.ecommerce</code>, not inside it, so Spring does not search it. The file pattern <code>com/ecommerce/**</code> needs a slash after <code>ecommerce</code>.</li>
+        <li><strong>Packages above are invisible too.</strong> Move the main class down into <code>com.ecommerce.app</code>, and the search now starts there. <code>com.ecommerce.product</code> sits next to <code>app</code>, not inside it, so the search leaves it out.</li>
+        <li><strong>Setting the packages yourself <em>replaces</em> the default. It does not add to it.</strong> <code>@SpringBootApplication(scanBasePackages = {"com.ecommerce", "com.ecommerceadmin"})</code> searches exactly those two package trees. If you list only <code>"com.ecommerceadmin"</code>, Spring no longer searches your own main package. <code>scanBasePackageClasses = SomeClass.class</code> does the same job, but it names a class instead of a package written as text. So a typo is a compile error, instead of a silent miss.</li>
       </ul>
 
       <figure class="fig fig-narrow">
@@ -399,14 +509,21 @@ Negative matches:
         <figcaption>The search boundary is the main class's package, plus everything inside it. Green is searched. The teal box is the main class that sets the boundary. The neutral box on the right sits outside it. The class names are examples only. Our project has no controllers or services yet (they arrive from Chapter 4), but this is exactly where they will go.</figcaption>
       </figure>
 
-      <p>Why have a boundary at all, instead of searching everything? Because "everything" on the classpath is huge. Our forty jars hold tens of thousands of classes, mostly Spring's own and Tomcat's. Searching all of them would be slow. Worse, it would pick up any class in any library that happens to carry <code>@Component</code>. That class would then be created in <em>your</em> application without you asking. A boundary around your own code is fast, predictable, and yours. The price is that you must keep your code inside it. Nearly every Spring project follows one simple habit: <strong>the main class goes in the top package, and every other class goes in that package or inside it.</strong></p>
+      <p><strong>Why have a boundary at all, instead of searching everything?</strong> Because "everything" on the classpath is huge. Our forty JARs hold tens of thousands of classes, mostly Spring's own and Tomcat's.</p>
+
+      <ul>
+        <li>Searching all of them would be slow.</li>
+        <li>Worse, it would pick up any class in any library that happens to carry <code>@Component</code>. Spring would then create that class in <em>your</em> app without you asking.</li>
+      </ul>
+
+      <p>A boundary around your own code is fast, predictable, and yours. The price is that you must keep your code inside it. Nearly every Spring project follows one simple habit. <strong>The main class goes in the top package. Every other class goes in that package or inside it.</strong></p>
 
       <div class="note">
-        <p><strong>The extreme case: no package at all.</strong> A class file with no <code>package</code> line lives in the <em>default package</em>. Put the main class there, and the search starts from "the top of everything": every class in every jar. Spring Boot notices this at startup and prints a warning much like <code>** WARNING ** : Your ApplicationContext is unlikely to start due to a @ComponentScan of the default package.</code> (This is a prediction. The wording has stayed the same for many versions, but check it against what your machine prints.) As the warning says, the application usually fails to start soon after. Always give your classes a package.</p>
+        <p><strong>The extreme case: no package at all.</strong> A class file with no <code>package</code> line lives in the <em>default package</em>. Put the main class there, and the search starts from "the top of everything": every class in every JAR. Spring Boot notices this at startup. It prints a warning much like <code>** WARNING ** : Your ApplicationContext is unlikely to start due to a @ComponentScan of the default package.</code> (This is a prediction. The wording has stayed the same for many versions, but check it against what your machine prints.) As the warning says, the app usually fails to start soon after. Always give your classes a package.</p>
       </div>
 
       <div class="sim">
-        <p class="sim-hint">Move the main class, then start the application. Watch which classes Spring can see, and what that means for a customer. Then switch on <code>scanBasePackages</code>, and see how it replaces the default. The class names match the figure above.</p>
+        <p class="sim-hint">Move the main class, then start the app. Watch which classes Spring can see, and what that means for a customer. Then switch on <code>scanBasePackages</code>, and see how it replaces the default. The class names match the figure above.</p>
 
         <div class="sim-controls">
           <button type="button" class="sim-btn active" id="sim3-root">Main class in com.ecommerce</button>
@@ -422,7 +539,7 @@ Negative matches:
         <div class="sim-tree" id="sim3-tree" aria-live="polite"></div>
         <div class="sim-console" id="sim3-out" aria-live="polite">Pick where the main class lives, then press “Start the application”.</div>
 
-        <p class="sim-note">This is a model of component scanning, not the real thing. Five made-up classes stand in for a real project. "Found" here means "matched by the package rule". Your machine has the final say. From Lesson 05 on, you will write real components. Then <code>mvn spring-boot:run</code>, plus a request from <code>api.http</code>, will show you what Spring really found. You can also learn a lot today by moving <code>EcommerceApplication</code> into a sub-package and running <code>mvn test</code>. See the challenge in section 10.</p>
+        <p class="sim-note">This is a model of component scanning, not the real thing. Five made-up classes stand in for a real project. "Found" here means "matched by the package rule". Your machine has the final say. From Lesson 05 on, you will write real components. Then <code>mvn spring-boot:run</code>, plus a request from <code>api.http</code>, will show you what Spring really found. You can also learn a lot today by moving <code>EcommerceApplication</code> into a sub-package and running <code>mvn test</code>. See the challenge in section 9.</p>
       </div>
 
       <script>
@@ -533,21 +650,26 @@ Negative matches:
         <p><strong>Not searched:</strong> <code>com.ecommerce2.Legacy</code>. It starts with the same letters, but it sits next to <code>com.ecommerce</code>, not inside it. And <code>com.Tools</code> is <em>above</em> the starting point. Neither gives any error. Each one is simply missing.</p>
       </details>
 
-      <h3>3.6 The <code>ApplicationContext</code> — the brain of the application</h3>
 
-      <p>Every section so far has said "Spring registers…", "Spring keeps…", "the container holds…". It is time to name the object doing all of it. In the old <code>main</code> in section 1, you could see it. Step 1 created it by hand: <code>new AnnotationConfigWebApplicationContext()</code>. In our <code>main</code>, it is created inside <code>SpringApplication.run</code>, and <code>run</code> <em>hands it back</em>. The return type is <code>ConfigurableApplicationContext</code>. We just never kept the value it returned.</p>
+      <h3>3.12 The <code>ApplicationContext</code>: the brain of the app</h3>
 
-      <p>A <span class="term" tabindex="0" data-def="The object at the centre of every Spring application: it holds every bean, creates and connects them, owns the settings, publishes events and controls startup and shutdown.">container</span> in Spring is the object that creates your beans, keeps them, and connects them to each other. Spring's full-featured container is called the <strong><code>ApplicationContext</code></strong>. Calling it the brain is not just a figure of speech. Everything the application knows is stored in it. Everything that happens goes through it. In practice, it has five jobs:</p>
+      <p>Every section so far has said "Spring registers…", "Spring keeps…", "the container holds…". It is time to name the object that does all of it.</p>
+
+      <p>In the old <code>main</code> in section 1, you could see it. Step 1 created it by hand: <code>new AnnotationConfigWebApplicationContext()</code>. In our <code>main</code>, <code>SpringApplication.run</code> creates it, and <code>run</code> <em>hands it back</em>. The return type is <code>ConfigurableApplicationContext</code>. We just never kept the value it returned.</p>
+
+      <p>A <span class="term" tabindex="0" data-def="The object at the centre of every Spring application: it holds every bean, creates and connects them, owns the settings, publishes events and controls startup and shutdown.">container</span> in Spring is the object that creates your beans, keeps them, and connects them to each other. Spring's full-featured container is called the <strong><code>ApplicationContext</code></strong>. Calling it the brain is not just a figure of speech. It stores everything the app knows. Everything that happens goes through it. In practice, it has five jobs:</p>
 
       <ol>
         <li><strong>The register: it knows every bean.</strong> For every bean, it keeps a name, a type, and the plan for creating it. You can ask for a bean by name, as in <code>context.getBean("dispatcherServlet")</code>. Or you can ask by type, as in <code>context.getBean(EcommerceApplication.class)</code>. <code>getBeanDefinitionCount()</code> tells you how many beans it knows about. Our project has exactly one class we wrote, yet the number is well over a hundred. Every other bean came from auto-configuration.</li>
         <li><strong>The factory: it creates beans in the right order and connects them.</strong> If bean A needs bean B, the context creates B first and hands it to A. Connecting beans like this is called dependency injection. It is the whole subject of Chapter 2.</li>
-        <li><strong>The settings: it owns the <code>Environment</code>.</strong> Settings come from <code>application.yml</code>, from environment variables, and from the command line. They are all combined into one object, the <code>Environment</code>. There is a clear order of priority: a command-line setting beats <code>application.yml</code>. <code>context.getEnvironment().getProperty("spring.application.name")</code> returns <code>"ecommerce"</code>, read from our YAML file. Profiles and the full priority order come in Chapter 6.</li>
-        <li><strong>The announcements: it sends out events.</strong> It announces moments such as "startup finished" and "shutting down", and any bean can listen for them. Lesson 10 uses this.</li>
-        <li><strong>The lifecycle: it starts and stops everything.</strong> First the context goes through <em>refresh</em>. It reads every configuration, creates every bean, and starts everything that needs starting. Later it goes through <em>close</em>. It stops everything and destroys every bean, in reverse order. The embedded web server is started and stopped as part of this. That is why closing the context shuts Tomcat down.</li>
+        <li><strong>The settings: it owns the <code>Environment</code>.</strong> Settings come from <code>application.yml</code>, from environment variables (Lesson 00), and from the command line. Spring combines them all into one object, the <code>Environment</code>. There is a clear order of priority: a command-line setting beats <code>application.yml</code>. <code>context.getEnvironment().getProperty("spring.application.name")</code> returns <code>"ecommerce"</code>, read from our YAML file. Profiles and the full priority order come in Chapter 6.</li>
+        <li><strong>The announcements: it sends out events.</strong> An <strong>event</strong> is a message that says "this just happened". The context announces moments such as "startup finished" and "shutting down". Any bean can listen for them. Lesson 10 uses this.</li>
+        <li><strong>The lifecycle: it starts and stops everything.</strong> First the context goes through <em>refresh</em>. It reads every configuration, creates every bean, and starts everything that needs starting. Later it goes through <em>close</em>. It stops everything and destroys every bean, in reverse order. The context starts and stops the embedded web server as part of this. That is why closing the context shuts Tomcat down.</li>
       </ol>
 
-      <p><code>ApplicationContext</code> is a Java <em>interface</em>: a list of promised abilities. Several different types keep that promise, and each adds a bit more. They form a small ladder. It is worth knowing, because you will see every step of it in error messages:</p>
+      <h3>3.13 The context's family tree, and which one Boot picks</h3>
+
+      <p><code>ApplicationContext</code> is a Java <em>interface</em>: a list of promised abilities, with no code of its own. Several different types keep that promise, and each adds a bit more. They form a small ladder. It is worth knowing, because you will see every step of it in error messages:</p>
 
       <div class="tablewrap">
         <table>
@@ -556,15 +678,15 @@ Negative matches:
             <tr><td><code>BeanFactory</code></td><td>The bare minimum: "give me the bean called X". The original, most basic container.</td><td>Deep inside stack traces</td></tr>
             <tr><td><code>ApplicationContext</code></td><td>Everything above, plus the <code>Environment</code>, events, messages, and loading files. What people mean by "the context".</td><td>Anywhere you ask Spring for something</td></tr>
             <tr><td><code>ConfigurableApplicationContext</code></td><td>Everything above, plus control: <code>refresh()</code>, <code>close()</code>, <code>isActive()</code>.</td><td>What <code>SpringApplication.run</code> returns</td></tr>
-            <tr><td><code>ServletWebServerApplicationContext</code></td><td>Everything above, plus it <em>owns an embedded web server</em> that it creates during refresh and stops on close.</td><td>The actual class of our context</td></tr>
+            <tr><td><code>ServletWebServerApplicationContext</code></td><td>Everything above, plus it <em>owns an embedded web server</em>. It creates the server during refresh and stops it on close.</td><td>The actual class of our context</td></tr>
           </tbody>
         </table>
       </div>
 
       <p><strong>Which one does Boot choose?</strong> It decides very early, inside the <code>SpringApplication</code> constructor, by looking at the classpath. This choice is called the <strong>web application type</strong>. Here are the rules, from the official 4.1.1 reference documentation:</p>
       <ul>
-        <li>If Spring MVC is there, it is a <em>servlet</em> web application. The context is an <code>AnnotationConfigServletWebServerApplicationContext</code>.</li>
-        <li>If Spring MVC is missing but Spring WebFlux is there, it is <em>reactive</em>. (WebFlux is the other way of building web apps, covered in Phase 3.)</li>
+        <li>If Spring MVC is there, it is a <em>servlet</em> web app. The context is an <code>AnnotationConfigServletWebServerApplicationContext</code>.</li>
+        <li>If Spring MVC is missing but Spring WebFlux is there, it is <em>reactive</em>. (WebFlux is the other way to build web apps, from Lesson 01. We cover it in Phase 3.)</li>
         <li>Otherwise it is <em>none</em>: a plain <code>AnnotationConfigApplicationContext</code>, with no web server at all.</li>
       </ul>
       <p>You can override this choice with the setting <code>spring.main.web-application-type</code>. Its values are <code>servlet</code>, <code>reactive</code> or <code>none</code>. Our demo test does exactly that, and watches the web server disappear.</p>
@@ -609,26 +731,39 @@ Negative matches:
         <figcaption>The context sits in the middle of everything. Green is the one bean that comes from our own code. Teal is what Spring Boot added. Neutral is the context's other jobs. Our tests in section 6 ask the real context about every arrow here.</figcaption>
       </figure>
 
-      <h3>3.7 The embedded Tomcat, and why there is no server to install</h3>
+      <h3>3.14 The embedded Tomcat, and why there is no server to install</h3>
 
-      <p><a href="lesson-01-what-is-spring-boot-and-why-it-exists.html">Lesson 01</a> showed the big flip. In the old world, your application was copied <em>into</em> a Tomcat that someone installed separately. With Spring Boot, Tomcat is a library that lives <em>inside</em> your application. Lesson 01 explained <em>why</em> this is better. Now that we have every piece, here is <em>how</em> it really happens.</p>
+      <p><a href="lesson-01-what-is-spring-boot-and-why-it-exists.html">Lesson 01</a> showed the big flip. In the old world, people copied your app <em>into</em> a Tomcat that someone installed separately. With Spring Boot, Tomcat is a library that lives <em>inside</em> your app. Lesson 01 explained <em>why</em> this is better. Now that we have every piece, here is <em>how</em> it really happens.</p>
 
       <ol>
-        <li>Tomcat's classes are on the classpath because <code>spring-boot-starter-webmvc</code> brought in <code>spring-boot-starter-tomcat</code> (<a href="lesson-02-project-setup-and-structure.html">Lesson 02</a>). They are just jar files. Nothing has started yet.</li>
-        <li>Spring MVC is on the classpath, so Boot chooses a servlet web application. So the context is a <code>ServletWebServerApplicationContext</code>.</li>
-        <li><code>@EnableAutoConfiguration</code> finds the <code>TomcatServletWebServerAutoConfiguration</code> recipe. Its conditions pass. The Tomcat classes are there, this is a servlet application, and we have not defined a web server factory of our own. So it registers a bean named <code>tomcatServletWebServerFactory</code>. A <em>factory</em> is an object whose only job is to build another object. This one knows how to build a Tomcat with the right settings. It reads <code>server.port</code> and every other <code>server.*</code> setting.</li>
-        <li>Partway through refresh, the context reaches a step called <code>onRefresh</code>. In that step, <code>ServletWebServerApplicationContext</code> calls its own <code>createWebServer()</code> method. It asks itself for beans of type <code>ServletWebServerFactory</code>, and it expects <strong>exactly one</strong>. If there are none, it throws <code>MissingWebServerFactoryBeanException</code>, which you will meet in section 4. If there are two or more, it throws <em>"Unable to start ServletWebServerApplicationContext due to multiple ServletWebServerFactory beans"</em>. Both messages are quoted from the 4.1.1 source.</li>
+        <li>Tomcat's classes are on the classpath, because <code>spring-boot-starter-webmvc</code> brought in <code>spring-boot-starter-tomcat</code> (<a href="lesson-02-project-setup-and-structure.html">Lesson 02</a>). They are just JAR files. Nothing has started yet.</li>
+        <li>Spring MVC is on the classpath, so Boot chooses a servlet web app. So the context is a <code>ServletWebServerApplicationContext</code>.</li>
+        <li><code>@EnableAutoConfiguration</code> finds the <code>TomcatServletWebServerAutoConfiguration</code> recipe. Its conditions pass: the Tomcat classes are there, this is a servlet app, and we defined no web server factory of our own. So it registers a bean named <code>tomcatServletWebServerFactory</code>. A <em>factory</em> is an object whose only job is to build another object. This one knows how to build a Tomcat with the right settings. It reads <code>server.port</code> and every other <code>server.*</code> setting.</li>
+        <li>Partway through refresh, the context reaches a step called <code>onRefresh</code>. In that step, <code>ServletWebServerApplicationContext</code> calls its own <code>createWebServer()</code> method. It asks itself for beans of type <code>ServletWebServerFactory</code>, and it expects <strong>exactly one</strong>.
+          <ul>
+            <li>If there are none, it throws <code>MissingWebServerFactoryBeanException</code>. You meet it in section 4.</li>
+            <li>If there are two or more, it throws <em>"Unable to start ServletWebServerApplicationContext due to multiple ServletWebServerFactory beans"</em>.</li>
+          </ul>
+          Both messages are quoted from the 4.1.1 source.</li>
         <li>With exactly one factory, it calls <code>factory.getWebServer(...)</code>. Tomcat is built in memory and claims the port. The log prints <code>Tomcat initialized with port 8080 (http)</code>. Tomcat then starts its own insides, and hands control back to Spring for Spring's web setup. The log prints <code>Root WebApplicationContext: initialization completed in … ms</code>.</li>
-        <li>The context goes on to create every remaining bean. Only at the very end of refresh does it tell Tomcat to start <em>accepting</em> requests. Then the log prints <code>Tomcat started on port 8080 (http) with context path '/'</code>. The two log lines are kept apart on purpose. Opening the doors before all the beans were ready would let the first customers into an unfinished application.</li>
+        <li>The context goes on to create every remaining bean. Only at the very end of refresh does it tell Tomcat to start <em>accepting</em> requests. Then the log prints <code>Tomcat started on port 8080 (http) with context path '/'</code>.</li>
       </ol>
 
-      <p>So "why is no separate server needed?" now has a clear, mechanical answer. <strong>The server is just another object, built by a factory bean. And like any bean created by auto-configuration, it can be replaced, set up differently, or switched off.</strong> Change <code>server.port</code>, and the factory builds Tomcat on a different port. Define your own <code>ServletWebServerFactory</code> bean, and the recipe steps aside. Exclude the recipe, and there is no factory, so the web application cannot start. Our demo test proves that on your machine.</p>
+      <p>Spring keeps those two log lines apart on purpose. Imagine opening the doors before all the beans were ready. The first customers would walk into an unfinished app.</p>
+
+      <p>So "why is no separate server needed?" now has a clear, mechanical answer. <strong>The server is just another object, built by a factory bean. And like any bean that auto-configuration creates, you can replace it, set it up differently, or switch it off.</strong></p>
+
+      <ul>
+        <li>Change <code>server.port</code>, and the factory builds Tomcat on a different port.</li>
+        <li>Define your own <code>ServletWebServerFactory</code> bean, and the recipe steps aside.</li>
+        <li>Exclude the recipe, and there is no factory, so the web app cannot start. Our demo test proves that on your machine.</li>
+      </ul>
 
       <div class="v4">
-        <p><strong>The web-server classes moved to new packages, so your log lines and imports look different from every older tutorial.</strong></p>
+        <p><strong>The web-server classes moved to new packages. So your log lines and imports look different from every older tutorial.</strong></p>
         <span class="v4-old">org.springframework.boot.web.embedded.tomcat.TomcatWebServer</span>
         <span class="v4-new">org.springframework.boot.tomcat.TomcatWebServer</span>
-        <p><strong>What 3.x did:</strong> all embedded-server support lived inside the main <code>spring-boot</code> jar: Tomcat under <code>org.springframework.boot.web.embedded.tomcat</code>, the servlet web context under <code>org.springframework.boot.web.servlet.context</code>, and <code>WebServerApplicationContext</code> under <code>org.springframework.boot.web.context</code>.</p>
+        <p><strong>What 3.x did:</strong> all embedded-server support lived inside the main <code>spring-boot</code> JAR. Tomcat sat under <code>org.springframework.boot.web.embedded.tomcat</code>. The servlet web context sat under <code>org.springframework.boot.web.servlet.context</code>. <code>WebServerApplicationContext</code> sat under <code>org.springframework.boot.web.context</code>.</p>
         <p><strong>What 4.x does</strong> (each checked against the 4.1.1 source on 2026-09-30):</p>
         <div class="tablewrap">
           <table>
@@ -642,29 +777,41 @@ Negative matches:
             </tbody>
           </table>
         </div>
-        <p><strong>Why it changed:</strong> the split into modules, again. Tomcat support now lives in its own <code>spring-boot-tomcat</code> module. The general machinery for "a context that owns a web server" lives in <code>spring-boot-web-server</code>. An application that uses the Jetty server instead carries no Tomcat code at all.</p>
-        <p><strong>What this means for you:</strong> two things. <em>First, your startup log looks different.</em> A 3.x log says <code>o.s.b.w.embedded.tomcat.TomcatWebServer : Tomcat started on port 8080</code>. Ours says <code>o.s.boot.tomcat.TomcatWebServer : Tomcat started on port 8080</code>. The message is the same. Only the logger name moved, and it is printed in shortened form. The line <code>Root WebApplicationContext: initialization completed</code> now comes from <code>WebApplicationContextInitializer</code>. The official 4.1.1 reference documentation shows exactly these names. <em>Second, old imports will not compile.</em> Code copied from a tutorial that imports <code>org.springframework.boot.web.embedded.tomcat.*</code> fails with "package does not exist". The fix is in the table above. <strong>A correction:</strong> the predicted logs in <a href="lesson-01-what-is-spring-boot-and-why-it-exists.html">Lesson 01</a> and <a href="lesson-02-project-setup-and-structure.html">Lesson 02</a> used to show the 3.x logger names. They now show the checked 4.1.1 ones. If your real log disagreed with those lessons before, this is why, and your machine was right.</p>
+        <p><strong>Why it changed:</strong> the split into modules, again. Tomcat support now lives in its own <code>spring-boot-tomcat</code> module. The general machinery for "a context that owns a web server" lives in <code>spring-boot-web-server</code>. An app that uses Jetty (another embedded web server) instead carries no Tomcat code at all.</p>
+        <p><strong>What this means for you:</strong> two things.</p>
+        <p><em>First, your startup log looks different.</em> A 3.x log says <code>o.s.b.w.embedded.tomcat.TomcatWebServer : Tomcat started on port 8080</code>. Ours says <code>o.s.boot.tomcat.TomcatWebServer : Tomcat started on port 8080</code>. The message is the same. Only the logger name moved, and Boot prints it in shortened form. The line <code>Root WebApplicationContext: initialization completed</code> now comes from <code>WebApplicationContextInitializer</code>. The official 4.1.1 reference documentation shows exactly these names.</p>
+        <p><em>Second, old imports will not compile.</em> Code copied from a tutorial that imports <code>org.springframework.boot.web.embedded.tomcat.*</code> fails with "package does not exist". The fix is in the table above.</p>
+        <p><strong>A correction:</strong> the predicted logs in <a href="lesson-01-what-is-spring-boot-and-why-it-exists.html">Lesson 01</a> and <a href="lesson-02-project-setup-and-structure.html">Lesson 02</a> used to show the 3.x logger names. They now show the checked 4.1.1 ones. If your real log disagreed with those lessons before, this is why, and your machine was right.</p>
       </div>
 
-      <h3>3.8 Why the program keeps running after <code>main()</code> has finished</h3>
+      <h3>3.15 Why the program keeps running after <code>main()</code> has finished</h3>
 
       <div class="warn">
-        <p><strong>A correction to Lesson 02.</strong> An earlier version of Lesson 02, and the comments in <code>EcommerceApplication.java</code>, said that <code>SpringApplication.run</code> "does not return while the server is running". <strong>That was wrong.</strong> I checked the 4.1.1 source of <code>SpringApplication.run</code>. Its last line is <code>return context;</code>. It returns as soon as startup is complete. The comments in the main class have been fixed, and so has Lesson 02. This section explains what really keeps the application alive. It is also a small example of why every claim in this course is a prediction you are invited to check.</p>
+        <p><strong>A correction to Lesson 02.</strong> An earlier version of Lesson 02, and the comments in <code>EcommerceApplication.java</code>, said that <code>SpringApplication.run</code> "does not return while the server is running". <strong>That was wrong.</strong> I checked the 4.1.1 source of <code>SpringApplication.run</code>. Its last line is <code>return context;</code>. It returns as soon as startup is complete. The comments in the main class are now fixed, and so is Lesson 02. This section explains what really keeps the app alive. It is also a small example of why every claim in this course is a prediction you are invited to check.</p>
       </div>
 
-      <p>To see how, we need one new idea. A Java program can do several things at once. Each separate line of work inside a running program is called a <span class="term" tabindex="0" data-def="A separate line of work inside a running program. A program can have many at once; main() runs on the one called main.">thread</span>. Think of the cooks in one kitchen. They share the same kitchen, but each follows their own list of steps. When the Java runtime starts your program, it creates one thread named <code>main</code>, and runs your <code>main()</code> method on it. That is why every startup log line so far shows <code>[main]</code>. Code can start more threads, and Tomcat starts several.</p>
+      <p>To see how, we need one new idea. A Java program can do several things at once. Each separate line of work inside a running program is called a <span class="term" tabindex="0" data-def="A separate line of work inside a running program. A program can have many at once; main() runs on the one called main.">thread</span>. Think of the cooks in one kitchen. They share the same kitchen, but each follows their own list of steps.</p>
 
-      <p>Now for the rule that decides when a Java program ends. Every thread is either a <strong>daemon</strong> thread or a <strong>non-daemon</strong> thread. A daemon thread is background help that the program does not wait for. A non-daemon thread is real work that the program must wait for. <strong>The Java runtime only exits when no non-daemon threads are left.</strong> The <code>main</code> thread is non-daemon. So an ordinary program ends when <code>main()</code> returns, because <code>main</code> was the last one.</p>
+      <p>When the JVM starts your program, it creates one thread named <code>main</code>, and runs your <code>main()</code> method on it. That is why every startup log line so far shows <code>[main]</code>. Code can start more threads, and Tomcat starts several.</p>
 
-      <p>Here is what happens in our application:</p>
+      <p>Now for the rule that decides when a Java program ends. Every thread is one of two kinds:</p>
+
+      <ul>
+        <li>A <strong>daemon</strong> thread is background help that the program does not wait for. (The word comes from old computing, where a "daemon" was a helper working quietly in the background.)</li>
+        <li>A <strong>non-daemon</strong> thread is real work that the program must wait for.</li>
+      </ul>
+
+      <p><strong>The JVM only exits when no non-daemon threads are left.</strong> The <code>main</code> thread is non-daemon. So an ordinary program ends when <code>main()</code> returns, because <code>main</code> was the last one.</p>
+
+      <p>Here is what happens in our app:</p>
 
       <ol>
         <li>The <code>main</code> thread calls <code>SpringApplication.run</code>, and all of startup happens on it.</li>
         <li>When Tomcat starts, its <code>TomcatWebServer</code> class starts one extra thread, named <code>container-0</code>. It marks that thread as non-daemon on purpose, with <code>setDaemon(false)</code>. The thread's only job is to wait. (Checked in the 4.1.1 source: the method is <code>startNonDaemonAwaitThread()</code>.) Tomcat also runs other threads that listen for connections and handle requests.</li>
         <li><code>run</code> returns the context. <code>main()</code> has nothing left to do, so it returns, and the <code>main</code> thread ends.</li>
-        <li>The Java runtime checks for non-daemon threads that are still running. It finds <code>container-0</code>, so it does not exit. The application keeps answering requests on Tomcat's threads. Nothing is "stuck". The waiting is done by a thread whose whole purpose is to wait.</li>
-        <li>You press <kbd>Ctrl</kbd>+<kbd>C</kbd>. The operating system asks the Java runtime to stop. Before it exits, the runtime runs its <em>shutdown hooks</em>. These are pieces of code registered in advance, to run "on the way out". Spring Boot registered one that closes the context.</li>
-        <li>Closing the context stops Tomcat <em>gracefully</em>. Tomcat stops accepting new connections, lets the requests already in progress finish, and then shuts down. That ends <code>container-0</code>. Now no non-daemon threads are left, and the Java runtime exits.</li>
+        <li>The JVM checks for non-daemon threads that are still running. It finds <code>container-0</code>, so it does not exit. The app keeps answering requests on Tomcat's threads. Nothing is "stuck". A thread whose whole purpose is to wait does the waiting.</li>
+        <li>You press <kbd>Ctrl</kbd>+<kbd>C</kbd>. The operating system asks the JVM to stop. Before it exits, the JVM runs its <em>shutdown hooks</em>. A <strong>shutdown hook</strong> is a piece of code registered in advance, to run "on the way out". Spring Boot registered one that closes the context.</li>
+        <li>Closing the context stops Tomcat <em>gracefully</em>. That is called <strong>graceful shutdown</strong>. Tomcat stops accepting new connections. It lets the requests already in progress finish. Then it shuts down. That ends <code>container-0</code>. Now no non-daemon threads are left, and the JVM exits.</li>
       </ol>
 
       <p>The sample log in the official 4.1.1 documentation shows the last two steps. Look at the thread names. The shutdown runs on a thread whose name, cut short to fit, ends in <code>…ionShutdownHook</code>. The graceful stop runs on one called <code>tomcat-shutdown</code>:</p>
@@ -672,14 +819,16 @@ Negative matches:
       <pre><code>INFO 18244 --- [ecommerce] [ionShutdownHook] o.s.boot.tomcat.GracefulShutdown : Commencing graceful shutdown. Waiting for active requests to complete
 INFO 18244 --- [ecommerce] [tomcat-shutdown] o.s.boot.tomcat.GracefulShutdown : Graceful shutdown complete</code></pre>
 
-      <p>This has a practical result you can use. <strong>Code written after <code>SpringApplication.run(...)</code> in <code>main()</code> does run.</strong> It runs once, right after startup finishes, while the application is already answering requests. (It is not the usual place for "do something at startup". Lesson 10 shows the proper tools.) It also explains the opposite case. With <code>spring.main.web-application-type=none</code>, there is no Tomcat, so there is no <code>container-0</code>. So the program starts, prints <code>Started EcommerceApplication</code>, and exits straight away. That is not a crash. The program simply ran out of work.</p>
+      <p>This has a practical result you can use. <strong>Code written after <code>SpringApplication.run(...)</code> in <code>main()</code> does run.</strong> It runs once, right after startup finishes, while the app is already answering requests. (It is not the usual place for "do something at startup". Lesson 10 shows the proper tools.)</p>
+
+      <p>It also explains the opposite case. With <code>spring.main.web-application-type=none</code>, there is no Tomcat, so there is no <code>container-0</code>. So the program starts, prints <code>Started EcommerceApplication</code>, and exits straight away. That is not a crash. The program simply ran out of work.</p>
 
       <details class="check">
         <summary>Check yourself: you add <code>System.out.println("hello");</code> on the line after <code>SpringApplication.run(...)</code>. When, if ever, does "hello" appear?</summary>
-        <p>Once, right after the <code>Started EcommerceApplication in … seconds</code> line. <code>run</code> returns when startup is complete. <code>main</code> carries on to your <code>println</code>, prints "hello", and then returns. The application keeps running after that, because Tomcat's non-daemon <code>container-0</code> thread keeps the Java runtime alive. If <code>run</code> really waited forever, as Lesson 02 once wrongly said, "hello" would only appear after you pressed <kbd>Ctrl</kbd>+<kbd>C</kbd>. Try it, and let the machine settle it. Then delete the line.</p>
+        <p>Once, right after the <code>Started EcommerceApplication in … seconds</code> line. <code>run</code> returns when startup is complete. <code>main</code> carries on to your <code>println</code>, prints "hello", and then returns. The app keeps running after that, because Tomcat's non-daemon <code>container-0</code> thread keeps the JVM alive. If <code>run</code> really waited forever, as Lesson 02 once wrongly said, "hello" would only appear after you pressed <kbd>Ctrl</kbd>+<kbd>C</kbd>. Try it, and let the machine settle it. Then delete the line.</p>
       </details>
 
-      <h3>3.9 The whole of <code>SpringApplication.run</code>, start to finish</h3>
+      <h3>3.16 The whole of <code>SpringApplication.run</code>, start to finish</h3>
 
       <p>Everything in this lesson happens inside one method call. Here it is in order, based on the 4.1.1 source of <code>SpringApplication</code>. Nothing is left as "it just happens".</p>
 
@@ -724,29 +873,42 @@ INFO 18244 --- [ecommerce] [tomcat-shutdown] o.s.boot.tomcat.GracefulShutdown : 
 
           <text x="470" y="336" text-anchor="middle" class="fig-caption-accent">the program ends only when BOTH lanes have ended</text>
         </svg>
-        <figcaption>Two lanes, one program. Teal is Spring Boot's work, neutral is settings, and green is where control comes back to your code. The main thread does all the startup work and then finishes. Tomcat's own non-daemon thread, started during refresh, is what keeps the program running.</figcaption>
+        <figcaption>Two lanes, one program. Teal is Spring Boot's work, neutral is settings, and green is where control comes back to your code. The main thread does all the startup work and then finishes. Tomcat's own non-daemon thread, started during refresh, keeps the program running.</figcaption>
       </figure>
 
       <ol>
-        <li><strong><code>new SpringApplication(EcommerceApplication.class)</code>.</strong> The static <code>run</code> first builds a <code>SpringApplication</code> object. Its constructor does four things. It records our class as the <strong>primary source</strong>: the first configuration class the context will read. It decides the web application type from the classpath (servlet, for us). It loads Boot's own built-in list of startup helpers from the jars. And it works out which class holds the <code>main</code> method, so the log can name it.</li>
-        <li><strong>Prepare the <code>Environment</code>.</strong> <code>application.yml</code> is read. The command-line <code>args</code> are turned into settings: every <code>--name=value</code> becomes a setting that beats the YAML file. Then they are all combined into one <code>Environment</code>.</li>
+        <li><strong><code>new SpringApplication(EcommerceApplication.class)</code>.</strong> The static <code>run</code> first builds a <code>SpringApplication</code> object. Its constructor does four things:
+          <ul>
+            <li>It records our class as the <strong>primary source</strong>: the first configuration class the context will read.</li>
+            <li>It decides the web application type from the classpath (servlet, for us).</li>
+            <li>It loads Boot's own built-in list of startup helpers from the JARs.</li>
+            <li>It works out which class holds the <code>main</code> method, so the log can name it.</li>
+          </ul>
+        </li>
+        <li><strong>Prepare the <code>Environment</code>.</strong> Boot reads <code>application.yml</code>. It turns the command-line <code>args</code> into settings: every <code>--name=value</code> becomes a setting that beats the YAML file. Then it combines them all into one <code>Environment</code>.</li>
         <li><strong>Print the banner</strong>, the Spring logo drawn in text characters. Then log <code>Starting EcommerceApplication using Java 21…</code> and <code>No active profile set…</code>.</li>
-        <li><strong>Create the context</strong> of the chosen type. Then <strong>register the primary source</strong>, our main class, as the first bean definition. That is the moment <code>@SpringBootApplication</code> gets noticed. Spring never went looking for it. We handed it over, as the first argument to <code>run</code>.</li>
+        <li><strong>Create the context</strong> of the chosen type. Then <strong>register the primary source</strong>, our main class, as the first bean definition. That is the moment Spring notices <code>@SpringBootApplication</code>. Spring never went looking for it. We handed it over, as the first argument to <code>run</code>.</li>
         <li><strong>Refresh the context.</strong> This is the big one. In order:
           <ol>
             <li>Read the configuration classes, starting with ours. Reading its annotations sets off two things. <code>@ComponentScan</code> finds and registers our components (none yet). <code>@EnableAutoConfiguration</code> reads every recipe list, removes exclusions, checks conditions, and registers the beans of the recipes that pass. All of that happens <em>after</em> our own configuration.</li>
             <li>Prepare the special beans that adjust other beans (a Chapter 2 topic).</li>
             <li><code>onRefresh</code>: create the web server. <code>Tomcat initialized with port 8080</code>, then <code>Root WebApplicationContext: initialization completed</code>.</li>
-            <li>Create every remaining bean, in the order their dependencies need. (Beans marked "lazy" are skipped here. They are created only when first used.)</li>
+            <li>Create every remaining bean, in the order their dependencies need. (Spring skips beans marked "lazy" here. It creates them only when something first uses them.)</li>
             <li>Finish: start everything that has a start step, including Tomcat's connector. <code>Tomcat started on port 8080</code>.</li>
           </ol>
         </li>
         <li><strong>Log <code>Started EcommerceApplication in 1.9 seconds</code>.</strong> Announce "started". Run any startup runners (Lesson 10). Announce "ready".</li>
-        <li><strong>Return the context.</strong> If anything in steps 1–6 threw an error, the context is closed instead. A failure report such as <code>APPLICATION FAILED TO START</code> is printed, and the error is thrown on out of <code>run</code>. That is exactly how a failing startup fails our <code>contextLoads()</code> test.</li>
+        <li><strong>Return the context.</strong> If anything in steps 1–6 threw an error, Boot closes the context instead. It prints a failure report such as <code>APPLICATION FAILED TO START</code>, and throws the error on out of <code>run</code>. That is exactly how a failing startup fails our <code>contextLoads()</code> test.</li>
       </ol>
 
       <div class="realworld">
-        <p>"What does <code>@SpringBootApplication</code> do?" is one of the most common Spring interview questions. If you answer "it starts the application", the interview ends early. The answer that gets you hired is section 3.2: three annotations, what each one does, and one result of each. "The main class is a bean." "Recipes step back if you define your own bean." "Scanning starts at the main class's package, so the main class goes in the top package." On real teams, the scanning boundary causes a whole family of live incidents in projects built from several modules. Here is a typical one. A shared library module is published under <code>com.company.common</code>. The services live in <code>com.company.orders</code>. So a <code>@Component</code> in the library is quietly never created, until someone adds <code>scanBasePackages</code>. If you know where the boundary is, you can find that in minutes instead of days.</p>
+        <p>"What does <code>@SpringBootApplication</code> do?" is one of the most common Spring interview questions. If you answer "it starts the app", the interview ends early. The answer that gets you hired is section 3.4: three annotations, what each one does, and one result of each:</p>
+        <ul>
+          <li>"The main class is a bean."</li>
+          <li>"Recipes step back if you define your own bean."</li>
+          <li>"Scanning starts at the main class's package, so the main class goes in the top package."</li>
+        </ul>
+        <p>On real teams, the scanning boundary causes a whole family of problems in live systems. They happen most in projects split into several Maven <strong>modules</strong> (smaller projects that are built together). Here is a typical one. A shared library module lives under <code>com.company.common</code>. The services live in <code>com.company.orders</code>. So Spring never creates a <code>@Component</code> in the library, and nobody notices, until someone adds <code>scanBasePackages</code>. If you know where the boundary is, you can find that in minutes instead of days.</p>
       </div>
     </section>
 
@@ -756,7 +918,9 @@ INFO 18244 --- [ecommerce] [tomcat-shutdown] o.s.boot.tomcat.GracefulShutdown : 
 
       <p class="approach-wrong">Wrong approach</p>
 
-      <p>Now you know <code>@SpringBootApplication</code> is "just three annotations". So a very natural idea is to write the three out by hand, to be clear and to see what is going on. That idea is fine. It usually goes wrong when one piece gets left out. Often it is <code>@EnableAutoConfiguration</code>, because it "sounds optional".</p>
+      <h3>4.1 Writing the three annotations by hand, and forgetting one</h3>
+
+      <p>Now you know <code>@SpringBootApplication</code> is "just three annotations". So a very natural idea is to write the three out by hand. That feels clearer, and you can see what is going on. That idea is fine. It usually goes wrong when one piece gets left out. Often it is <code>@EnableAutoConfiguration</code>, because it "sounds optional".</p>
 
       <pre><code><span class="k">package</span> com.ecommerce;
 
@@ -773,7 +937,17 @@ INFO 18244 --- [ecommerce] [tomcat-shutdown] o.s.boot.tomcat.GracefulShutdown : 
     }
 }</code></pre>
 
-      <p><strong>What goes wrong.</strong> Follow the chain from section 3. Spring MVC is still on the classpath. So the <code>SpringApplication</code> constructor still decides this is a servlet web application, and still creates a <code>ServletWebServerApplicationContext</code>. That context still reaches <code>onRefresh</code>, and still asks for exactly one <code>ServletWebServerFactory</code> bean. But the only thing that ever defined one was the Tomcat auto-configuration recipe. Without <code>@EnableAutoConfiguration</code>, no recipe is ever read. So there are zero factories. The Tomcat jar is right there on the classpath, and nothing will build it.</p>
+      <p><strong>What goes wrong.</strong> Follow the chain from section 3:</p>
+
+      <ol>
+        <li>Spring MVC is still on the classpath.</li>
+        <li>So the <code>SpringApplication</code> constructor still decides this is a servlet web app, and still creates a <code>ServletWebServerApplicationContext</code>.</li>
+        <li>That context still reaches <code>onRefresh</code>, and still asks for exactly one <code>ServletWebServerFactory</code> bean.</li>
+        <li>But the only thing that ever defined one was the Tomcat auto-configuration recipe.</li>
+        <li>Without <code>@EnableAutoConfiguration</code>, Spring never reads any recipe. So there are zero factories.</li>
+      </ol>
+
+      <p>The Tomcat JAR is right there on the classpath, and nothing will build it.</p>
 
       <p><strong>If this ran, the output would be</strong> as below. (A prediction. The Description and Action text is quoted from the 4.1.1 source. The logger names follow the checked 4.1.1 packages.)</p>
 
@@ -799,22 +973,25 @@ Check your application's dependencies for a supported servlet web server.
 Check the configured web application type.</code></pre>
 
       <div class="warn">
-        <p>This error message is a very good one. It names the missing bean, and the Action part tells you both places to look. But picture a beginner. They read "check your dependencies for a supported servlet web server". They look at <code>pom.xml</code> and see <code>spring-boot-starter-webmvc</code> sitting there. They are baffled, because the dependency <em>is</em> there. The real cause is one line away, in a file they did not think to check. Here is the lesson: <strong>a library being on the classpath does not mean anything uses it.</strong> Auto-configuration is what turns "Tomcat is available" into "Tomcat is running". And <code>@EnableAutoConfiguration</code> is the switch for auto-configuration.</p>
+        <p>This error message is a very good one. It names the missing bean, and the Action part tells you both places to look. But picture a beginner. They read "check your dependencies for a supported servlet web server". They look at <code>pom.xml</code> and see <code>spring-boot-starter-webmvc</code> sitting there. They are baffled, because the dependency <em>is</em> there. The real cause is one line away, in a file they did not think to check.</p>
+        <p>Here is the lesson: <strong>a library being on the classpath does not mean anything uses it.</strong> Auto-configuration turns "Tomcat is available" into "Tomcat is running". And <code>@EnableAutoConfiguration</code> is the switch for auto-configuration.</p>
       </div>
+
+      <h3>4.2 Two quieter wrong ways</h3>
 
       <p>There are two more wrong ways. Both are quieter, which makes them worse.</p>
 
-      <p><strong>Leaving out <code>@ComponentScan</code> instead.</strong> Now the application starts perfectly. Tomcat runs, and <code>curl</code> gets its 404. Nothing looks broken <em>today</em>, because we have no components yet. But from Chapter 4 on, every controller and service you write will be quietly missing. None of them will be found or created, and every endpoint will be a 404. There is no error, because no rule was broken. Spring was simply never asked to look.</p>
+      <p><strong>Leaving out <code>@ComponentScan</code> instead.</strong> Now the app starts perfectly. Tomcat runs, and <code>curl</code> gets its 404. Nothing looks broken <em>today</em>, because we have no components yet. But from Chapter 4 on, every controller and service you write will be quietly missing. Spring will never find or create any of them, and every endpoint will be a 404. There is no error, because no rule was broken. Nobody ever asked Spring to look.</p>
 
-      <p><strong>Tidying the main class into a sub-package.</strong> Someone thinks the top package looks messy. They move <code>EcommerceApplication</code> into <code>com.ecommerce.app</code>, and change its <code>package</code> line to match. It compiles. It starts. The log looks the same. But the search now starts at <code>com.ecommerce.app</code>. So every future class in <code>com.ecommerce.product</code>, <code>com.ecommerce.order</code> and so on sits next to <code>app</code>, not inside it, and is invisible. This is the simulation's second button. It is the most common "my endpoint returns 404 and I don't know why" question on Stack Overflow. The challenge in section 10 shows exactly which of our tests would catch it.</p>
+      <p><strong>Tidying the main class into a sub-package.</strong> Someone thinks the top package looks messy. They move <code>EcommerceApplication</code> into <code>com.ecommerce.app</code>, and change its <code>package</code> line to match. It compiles. It starts. The log looks the same. But the search now starts at <code>com.ecommerce.app</code>. So every future class in <code>com.ecommerce.product</code>, <code>com.ecommerce.order</code> and so on sits next to <code>app</code>, not inside it, and is invisible. This is the simulation's second button. It is the most common "my endpoint returns 404 and I don't know why" question on Stack Overflow. The challenge in section 9 shows exactly which of our tests would catch it.</p>
 
       <details class="check">
         <summary>Check yourself: the error message says to "check your application's dependencies", but the dependency is there. Name two <em>different</em> changes that would each cause this exact error.</summary>
-        <p>Anything that leaves zero <code>ServletWebServerFactory</code> beans while the application is still a servlet web application. Here are three:</p>
+        <p>Anything that leaves zero <code>ServletWebServerFactory</code> beans while the app is still a servlet web app. Here are three:</p>
         <ol>
           <li>Removing <code>@EnableAutoConfiguration</code>, or replacing <code>@SpringBootApplication</code> with <code>@Configuration</code> + <code>@ComponentScan</code>. Then no recipe runs at all.</li>
           <li>Excluding the Tomcat recipe, <code>TomcatServletWebServerAutoConfiguration</code>. That is exactly what our demo test does.</li>
-          <li>Removing the Tomcat jar from the webmvc starter in <code>pom.xml</code>, without adding another server such as Jetty. This one really <em>is</em> a dependency problem. It is the case the message was written for.</li>
+          <li>Removing the Tomcat JAR from the webmvc starter in <code>pom.xml</code>, without adding another server such as Jetty. This one really <em>is</em> a dependency problem. It is the case the message was written for.</li>
         </ol>
       </details>
     </section>
@@ -824,6 +1001,8 @@ Check the configured web application type.</code></pre>
       <h2><span class="secno">5</span>The Right Way</h2>
 
       <p class="approach-right">Correct approach</p>
+
+      <h3>5.1 Keep the one annotation</h3>
 
       <p>Keep <code>@SpringBootApplication</code>. It is the correct, standard choice, and after this lesson it is no longer a mystery. The main class stays exactly as it was in Lesson 02. Only its comments changed. The full file on disk has them.</p>
 
@@ -842,7 +1021,9 @@ Check the configured web application type.</code></pre>
     }
 }</code></pre>
 
-      <p>For understanding only, here is the same class with the bundle opened up. It behaves the same as the version above, with one small difference. It loses the two exclude filters, unless you copy them too. That is one reason not to do this. <strong>Do not put this in the project.</strong> It is here so you can compare the three parts with the one-line version.</p>
+      <h3>5.2 The same class, opened up (for understanding only)</h3>
+
+      <p>Here is the same class with the bundle opened up. It behaves the same as the version above, with one small difference. It loses the two exclude filters, unless you copy them too. That is one reason not to do this. <strong>Do not put this in the project.</strong> It is here so you can compare the three parts with the one-line version.</p>
 
       <pre><code><span class="an">@SpringBootConfiguration</span>     <span class="c">// part 1: the primary configuration class; tests can find it</span>
 <span class="an">@EnableAutoConfiguration</span>     <span class="c">// part 2: run the recipe engine</span>
@@ -851,32 +1032,34 @@ Check the configured web application type.</code></pre>
     <span class="an">@Filter</span>(type = <span class="t">FilterType</span>.CUSTOM, classes = <span class="t">AutoConfigurationExcludeFilter</span>.<span class="k">class</span>) })  <span class="c">//   and stray recipes</span>
 <span class="k">public class</span> <span class="t">EcommerceApplication</span> { ... }</code></pre>
 
-      <p>And here is how to look at the brain directly, by keeping the value <code>run</code> returns. This is also an illustration rather than a project change. Our tests in section 6 do this properly.</p>
+      <h3>5.3 Looking at the brain directly</h3>
+
+      <p>Here is how to look at the context directly, by keeping the value <code>run</code> returns. This is also an illustration, not a project change. Our tests in section 6 do this properly.</p>
 
       <pre><code><span class="t">ConfigurableApplicationContext</span> context = <span class="t">SpringApplication</span>.<span class="fn">run</span>(<span class="t">EcommerceApplication</span>.<span class="k">class</span>, args);
 <span class="t">System</span>.out.<span class="fn">println</span>(<span class="s">"Beans: "</span> + context.<span class="fn">getBeanDefinitionCount</span>());            <span class="c">// well over a hundred</span>
 <span class="t">System</span>.out.<span class="fn">println</span>(<span class="s">"Context: "</span> + context.<span class="fn">getClass</span>().<span class="fn">getSimpleName</span>());   <span class="c">// AnnotationConfigServletWebServerApplicationContext</span>
 <span class="t">System</span>.out.<span class="fn">println</span>(<span class="s">"Name: "</span> + context.<span class="fn">getEnvironment</span>().<span class="fn">getProperty</span>(<span class="s">"spring.application.name"</span>));  <span class="c">// ecommerce</span></code></pre>
 
-      <h3>Step-by-step walkthrough of what happens when this runs</h3>
+      <h3>5.4 Step by step: what happens when this runs</h3>
 
       <ol>
         <li>The JVM calls <code>main</code> on the thread named <code>main</code>.</li>
-        <li><code>SpringApplication.run</code> builds a <code>SpringApplication</code>. It records <code>EcommerceApplication</code> as the primary source, sees Spring MVC on the classpath, and chooses a servlet web application.</li>
+        <li><code>SpringApplication.run</code> builds a <code>SpringApplication</code>. It records <code>EcommerceApplication</code> as the primary source. It sees Spring MVC on the classpath, and chooses a servlet web app.</li>
         <li>It reads <code>application.yml</code> (<code>spring.application.name=ecommerce</code>, <code>server.port=8080</code>) and the command-line arguments into the <code>Environment</code>.</li>
         <li>It prints the banner and logs <code>Starting EcommerceApplication…</code>.</li>
-        <li>It creates an <code>AnnotationConfigServletWebServerApplicationContext</code> and registers <code>EcommerceApplication</code> in it as the bean <code>ecommerceApplication</code>.</li>
+        <li>It creates an <code>AnnotationConfigServletWebServerApplicationContext</code>. It registers <code>EcommerceApplication</code> in it as the bean <code>ecommerceApplication</code>.</li>
         <li>Refresh begins. Spring reads the annotations on <code>EcommerceApplication</code> and opens up <code>@SpringBootApplication</code> into its three parts.</li>
         <li><code>@ComponentScan</code> searches <code>com/ecommerce/**/*.class</code>. It finds only <code>EcommerceApplication</code>, which is already registered. There are no other components yet.</li>
         <li><code>@EnableAutoConfiguration</code>'s selector reads every <code>AutoConfiguration.imports</code> file. It removes nothing, because we excluded nothing. It checks the conditions, and registers the beans of the recipes that pass. Those include <code>tomcatServletWebServerFactory</code> and <code>dispatcherServlet</code>. <code>@AutoConfigurationPackage</code> records <code>com.ecommerce</code>.</li>
         <li><code>onRefresh</code> finds exactly one <code>ServletWebServerFactory</code>. It builds Tomcat and claims port 8080: <code>Tomcat initialized with port 8080 (http)</code>. Tomcat starts its engine and runs Spring's web setup: <code>Root WebApplicationContext: initialization completed</code>.</li>
-        <li>Every remaining bean is created. Then Tomcat's connector starts accepting requests: <code>Tomcat started on port 8080 (http) with context path '/'</code>. The non-daemon thread <code>container-0</code> is now running.</li>
-        <li><code>Started EcommerceApplication in … seconds</code> is logged, and <code>run</code> returns the context. <code>main</code> ends, and the thread named <code>main</code> ends with it.</li>
+        <li>Spring creates every remaining bean. Then Tomcat's connector starts accepting requests: <code>Tomcat started on port 8080 (http) with context path '/'</code>. The non-daemon thread <code>container-0</code> is now running.</li>
+        <li>Boot logs <code>Started EcommerceApplication in … seconds</code>, and <code>run</code> returns the context. <code>main</code> ends, and the thread named <code>main</code> ends with it.</li>
         <li>The program stays alive on Tomcat's threads. A request to <code>/</code> still gets the 404 from Lesson 02, and that is correct.</li>
-        <li><kbd>Ctrl</kbd>+<kbd>C</kbd> runs the shutdown hook. The context closes, Tomcat shuts down gracefully, <code>container-0</code> ends, and the Java runtime exits.</li>
+        <li><kbd>Ctrl</kbd>+<kbd>C</kbd> runs the shutdown hook. The context closes. Tomcat shuts down gracefully. <code>container-0</code> ends, and the JVM exits.</li>
       </ol>
 
-      <h3>Expected output — <code>mvn spring-boot:run</code></h3>
+      <h3>5.5 Expected output: <code>mvn spring-boot:run</code></h3>
 
       <pre><code>$ cd phase-1-monolith/ecommerce
 $ mvn spring-boot:run
@@ -892,16 +1075,29 @@ $ mvn spring-boot:run
 <span class="hi">2026-09-30T10:15:03.480+01:00  INFO 18244 --- [ecommerce] [           main] o.s.boot.tomcat.TomcatWebServer          : Tomcat started on port 8080 (http) with context path '/'</span>
 <span class="hi">2026-09-30T10:15:03.492+01:00  INFO 18244 --- [ecommerce] [           main] com.ecommerce.EcommerceApplication       : Started EcommerceApplication in 1.874 seconds (process running for 2.215)</span></code></pre>
 
-      <p><strong>This is a prediction.</strong> The logger names, the message wording and the Tomcat version (11.0.24) match the sample log in the official Spring Boot 4.1.1 reference documentation, checked on 2026-09-30. The times, the process number, the exact Java version, the folders and the timings will all differ on your machine. Two small details are my best guess, so watch for them. First, the <code>[ecommerce]</code> column appears because we set <code>spring.application.name</code>. The documentation's sample sets no name, so it has no such column. Second, our main class's logger name, <code>com.ecommerce.EcommerceApplication</code>, is short (34 characters). So I expect Boot to print it in full, not shortened. Earlier lessons showed it shortened, as <code>c.e.EcommerceApplication</code>, and they have been corrected. If your log differs, your log is right.</p>
+      <p>This log has two new columns at the start. The first is the date and time. After <code>INFO</code>, <code>18244</code> is the <strong>PID</strong> (process ID): the number the operating system gave this running program. The <code>with PID 18244</code> part of the first line says the same thing.</p>
 
-      <h3>Expected output — pressing <kbd>Ctrl</kbd>+<kbd>C</kbd></h3>
+      <p><strong>This is a prediction.</strong> The logger names, the message wording and the Tomcat version (11.0.24) match the sample log in the official Spring Boot 4.1.1 reference documentation, checked on 2026-09-30. The times, the PID, the exact Java version, the folders and the timings will all differ on your machine.</p>
+
+      <p>Two small details are my best guess, so watch for them:</p>
+
+      <ul>
+        <li>The <code>[ecommerce]</code> column appears because we set <code>spring.application.name</code>. The documentation's sample sets no name, so it has no such column.</li>
+        <li>Our main class's logger name, <code>com.ecommerce.EcommerceApplication</code>, is short (34 characters). So I expect Boot to print it in full, not shortened. Earlier lessons showed it shortened, as <code>c.e.EcommerceApplication</code>, and they have been corrected.</li>
+      </ul>
+
+      <p>If your log differs, your log is right.</p>
+
+      <h3>5.6 Expected output: pressing <kbd>Ctrl</kbd>+<kbd>C</kbd></h3>
 
       <pre><code>2026-09-30T10:17:40.201+01:00  INFO 18244 --- [ecommerce] [ionShutdownHook] o.s.boot.tomcat.GracefulShutdown         : Commencing graceful shutdown. Waiting for active requests to complete
 2026-09-30T10:17:40.230+01:00  INFO 18244 --- [ecommerce] [tomcat-shutdown] o.s.boot.tomcat.GracefulShutdown         : Graceful shutdown complete</code></pre>
 
       <p>Notice that neither line runs on <code>main</code>. The <code>main</code> thread ended minutes earlier. Maven may also print a line saying the process was stopped. That line comes from Maven, not from Spring, and its wording varies.</p>
 
-      <h3>Expected output — the application with no web server</h3>
+      <h3>5.7 Expected output: the app with no web server</h3>
+
+      <p>The <code>-Dspring-boot.run.arguments=…</code> part passes arguments through Maven to your app, as if you typed them after <code>java -jar</code>.</p>
 
       <pre><code>$ mvn spring-boot:run -Dspring-boot.run.arguments=--spring.main.web-application-type=none
 
@@ -921,7 +1117,7 @@ $ mvn spring-boot:run
         <ol>
           <li><code>mvn spring-boot:run</code>. Compare every logger name against the first prediction above, especially <code>o.s.boot.tomcat.TomcatWebServer</code>.</li>
           <li>In a second terminal, <code>curl -i http://localhost:8080/</code>. Still <code>HTTP/1.1 404</code>, exactly as in Lesson 02.</li>
-          <li>Back in the first terminal, press <kbd>Ctrl</kbd>+<kbd>C</kbd> and look for the two graceful-shutdown lines and their thread names.</li>
+          <li>Back in the first terminal, press <kbd>Ctrl</kbd>+<kbd>C</kbd>. Look for the two graceful-shutdown lines and their thread names.</li>
           <li><code>mvn spring-boot:run -Dspring-boot.run.arguments=--debug</code>. Scroll up to <code>CONDITIONS EVALUATION REPORT</code> and find <code>TomcatServletWebServerAutoConfiguration matched</code>. Stop it with <kbd>Ctrl</kbd>+<kbd>C</kbd>.</li>
           <li><code>mvn spring-boot:run -Dspring-boot.run.arguments=--spring.main.web-application-type=none</code>. It should start and immediately finish.</li>
         </ol>
@@ -929,11 +1125,12 @@ $ mvn spring-boot:run
       </div>
     </section>
 
+
     <!-- ============================================================= -->
     <section id="applied">
       <h2><span class="secno">6</span>Applied to Our Project</h2>
 
-      <p>This lesson changes nothing about what the application <em>does</em>. It still starts, still answers with a 404, and still stops cleanly. What it adds is <strong>proof</strong>. Every claim in section 3 becomes a test. If a claim ever stops being true, its test fails loudly. And the one wrong claim from Lesson 02 is fixed where it was written.</p>
+      <p>This lesson changes nothing about what the app <em>does</em>. It still starts, still answers with a 404, and still stops cleanly. What it adds is <strong>proof</strong>. Every claim in section 3 becomes a test. If a claim ever stops being true, its test fails loudly. And the one wrong claim from Lesson 02 is fixed where it was written.</p>
 
       <div class="tablewrap">
         <table>
@@ -941,13 +1138,13 @@ $ mvn spring-boot:run
           <tbody>
             <tr><td><code>src/main/java/com/ecommerce/EcommerceApplication.java</code></td><td>Modified: comments only</td><td>Explains the three parts and the search boundary. Replaces "run() never returns" with what really happens. The code itself is exactly the same.</td></tr>
             <tr><td><code>src/test/java/com/ecommerce/EcommerceApplicationAnnotationTests.java</code></td><td>Created: 3 tests</td><td>Proves the chain of meta-annotations. Checks where the search starts, and its two filters.</td></tr>
-            <tr><td><code>src/test/java/com/ecommerce/EcommerceApplicationContextTests.java</code></td><td>Created: 4 tests</td><td>Opens the real <code>ApplicationContext</code>. Checks that the main class is a bean, Tomcat is real, the application package is <code>com.ecommerce</code>, and <code>close()</code> stops everything.</td></tr>
+            <tr><td><code>src/test/java/com/ecommerce/EcommerceApplicationContextTests.java</code></td><td>Created: 4 tests</td><td>Opens the real <code>ApplicationContext</code>. Checks that the main class is a bean, Tomcat is real, the app package is <code>com.ecommerce</code>, and <code>close()</code> stops everything.</td></tr>
             <tr><td><code>src/test/java/com/ecommerce/demos/mainclass/AutoConfigurationSwitchesDemoTests.java</code></td><td>Created: 3 demo tests</td><td>For learning only. Web application type <code>none</code>. Excluding the Tomcat recipe. And an out-of-date exclusion being quietly ignored.</td></tr>
           </tbody>
         </table>
       </div>
 
-      <h3>The annotation anatomy test</h3>
+      <h3>6.1 The annotation anatomy test</h3>
 
       <p>No Spring startup at all. These tests only read annotations from a class file, so they run in milliseconds. The full file on disk has a comment on every line. Here is the core of it:</p>
 
@@ -961,7 +1158,7 @@ $ mvn spring-boot:run
 
     <span class="an">@Test</span>
     <span class="k">void</span> <span class="fn">springSeesEveryAnnotationHiddenInsideSpringBootApplication</span>() {
-        <span class="c">// Spring's reader opens every layer. One line per box in the figure in section 3.2.</span>
+        <span class="c">// Spring's reader opens every layer. One line per box in the figure in section 3.4.</span>
         <span class="fn">assertThat</span>(<span class="t">AnnotatedElementUtils</span>.<span class="fn">hasAnnotation</span>(<span class="t">EcommerceApplication</span>.<span class="k">class</span>, <span class="t">SpringBootConfiguration</span>.<span class="k">class</span>)).<span class="fn">isTrue</span>();
         <span class="fn">assertThat</span>(<span class="t">AnnotatedElementUtils</span>.<span class="fn">hasAnnotation</span>(<span class="t">EcommerceApplication</span>.<span class="k">class</span>, <span class="t">Configuration</span>.<span class="k">class</span>)).<span class="fn">isTrue</span>();
         <span class="fn">assertThat</span>(<span class="t">AnnotatedElementUtils</span>.<span class="fn">hasAnnotation</span>(<span class="t">EcommerceApplication</span>.<span class="k">class</span>, <span class="t">Component</span>.<span class="k">class</span>)).<span class="fn">isTrue</span>();
@@ -979,11 +1176,19 @@ $ mvn spring-boot:run
     }
 }</code></pre>
 
-      <p>First, a new word. An <em>assertion</em> is a line in a test that states what must be true. If it is not true, the line throws an error, and the test fails. <code>assertThat(...)</code> comes from <strong>AssertJ</strong>, a library of ready-made assertions. <code>spring-boot-starter-webmvc-test</code> brought it in back in Lesson 02. AssertJ reads like a sentence: <code>assertThat(x).isTrue()</code>. When an assertion fails, it prints both what it expected and what it really found.</p>
+      <p>Remember from Lesson 02: an <strong>assertion</strong> is a line in a test that states what must be true. If it is not true, the line throws an error, and the test fails. <code>assertThat(...)</code> comes from <strong>AssertJ</strong>, a library of ready-made assertions. <code>spring-boot-starter-webmvc-test</code> brought it in back in Lesson 02. AssertJ reads like a sentence: <code>assertThat(x).isTrue()</code>. When an assertion fails, it prints both what it expected and what it really found.</p>
 
-      <h3>The ApplicationContext test</h3>
+      <p>Here is what each test proves:</p>
 
-      <p>This one starts the real application, with a real Tomcat, the same way <code>main</code> does. It calls <code>SpringApplication.run</code> directly. Why not use <code>@SpringBootTest</code>? Because in its default mode, it starts the application <em>without</em> a real server. It uses a pretend server instead. Here we want to see the real Tomcat. The testing chapter covers <code>@SpringBootTest</code>'s modes properly.</p>
+      <ul>
+        <li><strong>The first test</strong> asks plain Java's reflection. It sees <code>@SpringBootApplication</code>, but not <code>@Configuration</code> (section 3.3).</li>
+        <li><strong>The second test</strong> asks Spring's reader. It sees all six annotations in the figure in section 3.4.</li>
+        <li><strong>The third test</strong> checks that the search has no starting package set (so it uses the main class's own), and has two filters (section 3.10).</li>
+      </ul>
+
+      <h3>6.2 The <code>ApplicationContext</code> test</h3>
+
+      <p>This one starts the real app, with a real Tomcat, the same way <code>main</code> does. It calls <code>SpringApplication.run</code> directly. Why not use <code>@SpringBootTest</code>? Because in its default mode, it starts the app <em>without</em> a real server. It uses a pretend server instead. Here we want to see the real Tomcat. The testing chapter covers <code>@SpringBootTest</code>'s modes properly.</p>
 
       <pre><code><span class="k">class</span> <span class="t">EcommerceApplicationContextTests</span> {
 
@@ -1032,12 +1237,20 @@ $ mvn spring-boot:run
     }
 }</code></pre>
 
-      <p><code>@BeforeAll</code> and <code>@AfterAll</code> are JUnit annotations. A method marked <code>@BeforeAll</code> runs once, before any test in the class. A method marked <code>@AfterAll</code> runs once, after all of them. Both must be <code>static</code>. JUnit calls them outside any single test object, much as the JVM calls <code>main</code> before any object exists. We use them because starting Spring takes a second or two. The first three tests only read from the running application, so they can safely share one. The fourth test needs a context it is allowed to destroy, so it starts its own.</p>
+      <p>New pieces in this test:</p>
 
-      <h3>The demo tests (for learning only)</h3>
+      <ul>
+        <li><code>@BeforeAll</code> and <code>@AfterAll</code> are JUnit annotations. A method marked <code>@BeforeAll</code> runs once, before any test in the class. A method marked <code>@AfterAll</code> runs once, after all of them.</li>
+        <li>Both must be <code>static</code>. JUnit calls them outside any single test object, much as the JVM calls <code>main</code> before any object exists.</li>
+        <li><code>--server.port=0</code> means "use any free port". So the test never clashes with a copy of the app you have running on 8080.</li>
+      </ul>
+
+      <p>Why share one app between tests? Starting Spring takes a second or two. The first three tests only read from the running app, so they can safely share one. The fourth test needs a context it is allowed to destroy, so it starts its own.</p>
+
+      <h3>6.3 The demo tests (for learning only)</h3>
 
       <div class="demo">
-        <p><strong>This is included purely to demonstrate <code>spring.main.web-application-type</code> and auto-configuration exclusion; the E-Commerce product does not actually need either of them here.</strong> (Exclusion here means the <code>spring.autoconfigure.exclude</code> setting, which does the same job as <code>@SpringBootApplication(exclude = …)</code>.) Our application wants a web server and every recipe that applies. The demos live in their own test package, <code>com.ecommerce.demos.mainclass</code>, with this disclaimer at the top of the file.</p>
+        <p><strong>This is included purely to demonstrate <code>spring.main.web-application-type</code> and auto-configuration exclusion; the E-Commerce product does not actually need either of them here.</strong> (Exclusion here means the <code>spring.autoconfigure.exclude</code> setting. It does the same job as <code>@SpringBootApplication(exclude = …)</code>.) Our app wants a web server and every recipe that applies. The demos live in their own test package, <code>com.ecommerce.demos.mainclass</code>, with this disclaimer at the top of the file.</p>
       </div>
 
       <pre><code><span class="k">class</span> <span class="t">AutoConfigurationSwitchesDemoTests</span> {
@@ -1072,25 +1285,45 @@ $ mvn spring-boot:run
     }
 }</code></pre>
 
-      <p><code>try ( … ) { … }</code> with something inside the brackets is Java's <em>try-with-resources</em>. Anything declared in the brackets that can be closed is closed automatically when the block ends. That happens whether the block finished normally or threw an error. It is the tidiest way to make sure that every context a test starts, it also stops. <code>assertThatThrownBy</code> is AssertJ's way of saying "this code must throw an error, and here is what the error must look like". One error can be caused by another, which was caused by another. <code>.rootCause()</code> follows that chain of "caused by" errors to the bottom, and checks that one.</p>
+      <p>New pieces in this test:</p>
 
-      <h3>What this adds to our system</h3>
+      <ul>
+        <li><code>try ( … ) { … }</code>, with something inside the brackets, is Java's <em>try-with-resources</em>. Java closes anything declared in the brackets automatically when the block ends. That happens whether the block finished normally or threw an error. It is the tidiest way to make sure every context a test starts, it also stops.</li>
+        <li><code>assertThatThrownBy</code> is AssertJ's way of saying "this code must throw an error, and here is what the error must look like".</li>
+        <li>One error can be caused by another, which was caused by another. <code>.rootCause()</code> follows that chain of "caused by" errors to the bottom, and checks that one.</li>
+      </ul>
 
-      <p>No new behaviour, but three new guarantees. Say someone replaces <code>@SpringBootApplication</code> with a hand-picked set of annotations and leaves a piece out. The anatomy tests fail and say which piece. Say someone moves the main class out of the top package. <code>theApplicationPackageIsTheMainClassPackage</code> fails, before the missing controllers ever reach a customer. And say a dependency change stops Tomcat from being auto-configured. <code>autoConfigurationStartedARealEmbeddedTomcat</code> fails with a clear message, instead of a confusing startup error.</p>
+      <h3>6.4 What this adds to our system</h3>
 
-      <h3>If a user interacted with this right now</h3>
+      <p>No new behaviour, but three new guarantees:</p>
+
+      <ul>
+        <li>Say someone replaces <code>@SpringBootApplication</code> with a hand-picked set of annotations and leaves a piece out. The anatomy tests fail, and say which piece.</li>
+        <li>Say someone moves the main class out of the top package. <code>theApplicationPackageIsTheMainClassPackage</code> fails, before the missing controllers ever reach a customer.</li>
+        <li>Say a dependency change stops Tomcat from being auto-configured. <code>autoConfigurationStartedARealEmbeddedTomcat</code> fails with a clear message, instead of a confusing startup error.</li>
+      </ul>
+
+      <h3>6.5 If a user interacted with this right now</h3>
 
       <ol>
         <li>A user's browser asks for <code>http://localhost:8080/</code>.</li>
-        <li>One of Tomcat's request-handling threads accepts the connection. (Not <code>main</code>, which ended long ago.) This server was built by the <code>tomcatServletWebServerFactory</code> bean that auto-configuration registered.</li>
-        <li>Tomcat hands the request to the <code>dispatcherServlet</code> bean. That bean also came from auto-configuration, and is held in the <code>ApplicationContext</code>.</li>
+        <li>One of Tomcat's request-handling threads accepts the connection. (Not <code>main</code>, which ended long ago.) The <code>tomcatServletWebServerFactory</code> bean, registered by auto-configuration, built this server.</li>
+        <li>Tomcat hands the request to the <code>dispatcherServlet</code> bean. That bean also came from auto-configuration, and the <code>ApplicationContext</code> holds it.</li>
         <li>The <code>DispatcherServlet</code> asks the context for anything that handles <code>GET /</code>. Component scanning found no controllers in <code>com.ecommerce</code>, because we have written none yet.</li>
         <li>The result is the same 404 as in Lesson 02: the Whitelabel page in a browser, or JSON for <code>curl</code>. You can now name every step of that chain, and a test checks each one.</li>
       </ol>
 
-      <h3>Does the project still build, run and pass its tests?</h3>
+      <h3>6.6 Does the project still build, run and pass its tests?</h3>
 
-      <p><strong>Predicted: yes, with 11 tests.</strong> I traced it by hand. The main class is unchanged except for its comments. Every import in the new tests was checked against the 4.1.1 source on 2026-09-30. That includes <code>org.springframework.boot.tomcat.TomcatWebServer</code>, <code>org.springframework.boot.web.server.context.WebServerApplicationContext</code>, and <code>org.springframework.boot.autoconfigure.AutoConfigurationPackages</code> with its <code>get(BeanFactory)</code> method. Every other import comes from Spring Framework, JUnit or AssertJ. All of those are on the test classpath through <code>spring-boot-starter-webmvc-test</code>. No dependencies changed, so <code>pom.xml</code> is untouched. The bean names the tests check (<code>dispatcherServlet</code>, <code>ecommerceApplication</code>) are quoted from the 4.1.1 source. So are the failure messages they check (<code>Unable to start web server</code>, <code>missing ServletWebServerFactory bean</code>).</p>
+      <p><strong>Predicted: yes, with 11 tests.</strong> I traced it by hand:</p>
+
+      <ul>
+        <li>The main class is unchanged except for its comments.</li>
+        <li>I checked every import in the new tests against the 4.1.1 source on 2026-09-30. That includes <code>org.springframework.boot.tomcat.TomcatWebServer</code>, <code>org.springframework.boot.web.server.context.WebServerApplicationContext</code>, and <code>org.springframework.boot.autoconfigure.AutoConfigurationPackages</code> with its <code>get(BeanFactory)</code> method.</li>
+        <li>Every other import comes from Spring Framework, JUnit or AssertJ. All of those are on the test classpath through <code>spring-boot-starter-webmvc-test</code>.</li>
+        <li>No dependencies changed, so <code>pom.xml</code> is untouched.</li>
+        <li>The bean names the tests check (<code>dispatcherServlet</code>, <code>ecommerceApplication</code>) are quoted from the 4.1.1 source. So are the failure messages they check (<code>Unable to start web server</code>, <code>missing ServletWebServerFactory bean</code>).</li>
+      </ul>
 
       <pre><code>$ mvn test
 
@@ -1115,10 +1348,18 @@ APPLICATION FAILED TO START          &lt;-- EXPECTED: printed by the demo that e
 [INFO]
 <span class="hi">[INFO] BUILD SUCCESS</span></code></pre>
 
-      <p><strong>This is a prediction.</strong> The four test classes may run in a different order on your machine. Maven does not promise an order. The output is long, because the application starts six separate times, and each start prints a banner. The one part that will look alarming is the <code>APPLICATION FAILED TO START</code> block. It comes from <code>excludingTheTomcatRecipeMeansTheWebApplicationCannotStart</code>. That test <em>wants</em> startup to fail, and it passes because startup did fail. The only line that decides anything is <code>Tests run: 11, Failures: 0, Errors: 0</code>.</p>
+      <p><strong>This is a prediction.</strong> The four test classes may run in a different order on your machine. Maven does not promise an order. The output is long, because the app starts six separate times, and each start prints a banner.</p>
+
+      <p>The one part that will look alarming is the <code>APPLICATION FAILED TO START</code> block. It comes from <code>excludingTheTomcatRecipeMeansTheWebApplicationCannotStart</code>. That test <em>wants</em> startup to fail. It passes because startup did fail. The only line that decides anything is <code>Tests run: 11, Failures: 0, Errors: 0</code>.</p>
 
       <div class="tryit">
-        <p>From <code>phase-1-monolith/ecommerce/</code>, run <code>mvn test</code>. Check that you get <code>Tests run: 11, Failures: 0</code>. Then break one on purpose. In <code>EcommerceApplicationContextTests</code>, change <code>"com.ecommerce"</code> to <code>"com.shop"</code>, and run <code>mvn test</code> again. AssertJ's failure message will show you both the expected list and the real one. Put it back. If anything else fails, the machine is right. Send me the failure, and we will work out why.</p>
+        <p>From <code>phase-1-monolith/ecommerce/</code>, run <code>mvn test</code>. Check that you get <code>Tests run: 11, Failures: 0</code>. Then break one on purpose:</p>
+        <ol>
+          <li>In <code>EcommerceApplicationContextTests</code>, change <code>"com.ecommerce"</code> to <code>"com.shop"</code>.</li>
+          <li>Run <code>mvn test</code> again. AssertJ's failure message shows you both the expected list and the real one.</li>
+          <li>Put it back.</li>
+        </ol>
+        <p>If anything else fails, the machine is right. Send me the failure, and we will work out why.</p>
       </div>
     </section>
 
@@ -1128,22 +1369,29 @@ APPLICATION FAILED TO START          &lt;-- EXPECTED: printed by the demo that e
 
       <ul>
         <li>
-          <p><strong>Moving the main class into a sub-package "to tidy up".</strong> People do this because the top package is often messy, and a class called <code>…Application</code> looks as if it deserves its own folder. It compiles and starts perfectly. But every class outside the new, smaller boundary quietly disappears. <strong>Avoid it by:</strong> treating the top package as the main class's permanent home. Our test <code>theApplicationPackageIsTheMainClassPackage</code> now makes sure of this.</p>
+          <p><strong>Moving the main class into a sub-package "to tidy up".</strong> People do this because the top package is often messy. A class called <code>…Application</code> looks as if it deserves its own folder. It compiles and starts perfectly. But every class outside the new, smaller boundary quietly disappears. <strong>Avoid it by:</strong> treating the top package as the main class's permanent home. Our test <code>theApplicationPackageIsTheMainClassPackage</code> now makes sure of this.</p>
         </li>
         <li>
-          <p><strong>Copying an exclusion from an old tutorial.</strong> <code>excludeName</code> and <code>spring.autoconfigure.exclude</code> take class names written as text. A name that no longer exists is quietly ignored. That includes any 3.x <code>org.springframework.boot.autoconfigure.&lt;tech&gt;.…</code> name for a recipe that moved in Boot 4. People copy these because the snippet "worked" for someone else. <strong>Avoid it by:</strong> using <code>exclude = SomeAutoConfiguration.class</code> when you can, because the compiler checks the name. And check what really happened with <code>--debug</code>. Do not trust the report's <code>Exclusions:</code> list for this. As far as I recall from Boot's source (not re-checked for 4.1.1), it lists every name you asked to exclude, even names that matched nothing. Look for the recipe itself instead. If it still appears under <code>Positive matches</code>, your exclusion did nothing.</p>
+          <p><strong>Copying an exclusion from an old tutorial.</strong> <code>excludeName</code> and <code>spring.autoconfigure.exclude</code> take class names written as text. Boot quietly ignores a name that no longer exists. That includes any 3.x <code>org.springframework.boot.autoconfigure.&lt;tech&gt;.…</code> name for a recipe that moved in Boot 4. People copy these because the snippet "worked" for someone else. <strong>Avoid it by:</strong> using <code>exclude = SomeAutoConfiguration.class</code> when you can, because the compiler checks the name. And check what really happened with <code>--debug</code>.</p>
+          <p>Do not trust the report's <code>Exclusions:</code> list for this. As far as I recall from Boot's source (not re-checked for 4.1.1), it lists every name you asked to exclude, even names that matched nothing. Look for the recipe itself instead. If it still appears under <code>Positive matches</code>, your exclusion did nothing.</p>
         </li>
         <li>
-          <p><strong>A second <code>@SpringBootApplication</code> (or <code>@SpringBootConfiguration</code>) somewhere under the top package.</strong> This usually comes from copying a sample application into the project, or starting a "quick experiment" class. <code>@SpringBootTest</code>'s search then finds two candidates, and refuses to choose. Expect a message beginning <code>Found multiple @SpringBootConfiguration annotated classes</code>. (A prediction: that wording is from my memory of the source, not re-checked for 4.1.1.) Every <code>@SpringBootTest</code> in the project fails at once. <strong>Avoid it by:</strong> keeping exactly one per application. Experiments go in a separate project.</p>
+          <p><strong>A second <code>@SpringBootApplication</code> (or <code>@SpringBootConfiguration</code>) somewhere under the top package.</strong> This usually comes from copying a sample app into the project, or starting a "quick experiment" class. <code>@SpringBootTest</code>'s search then finds two candidates, and refuses to choose. Expect a message that begins <code>Found multiple @SpringBootConfiguration annotated classes</code>. (A prediction: that wording is from my memory of the source, not re-checked for 4.1.1.) Every <code>@SpringBootTest</code> in the project fails at once. <strong>Avoid it by:</strong> keeping exactly one per app. Experiments go in a separate project.</p>
         </li>
         <li>
-          <p><strong>Believing <code>SpringApplication.run</code> waits forever.</strong> Even this course said so, for one lesson. People believe it because the terminal prompt does not come back, and that looks like waiting. The result: code after <code>run(...)</code> surprises you by running, once, at startup. <strong>Avoid it by:</strong> remembering the two lanes in the figure in section 3.9. <code>run</code> returns. Tomcat's non-daemon thread keeps the program alive.</p>
+          <p><strong>Believing <code>SpringApplication.run</code> waits forever.</strong> Even this course said so, for one lesson. People believe it because the terminal prompt does not come back, and that looks like waiting. The result: code after <code>run(...)</code> surprises you by running, once, at startup. <strong>Avoid it by:</strong> remembering the two lanes in the figure in section 3.16. <code>run</code> returns. Tomcat's non-daemon thread keeps the program alive.</p>
         </li>
         <li>
-          <p><strong>Reading "check your dependencies" and only looking at <code>pom.xml</code>.</strong> As section 4 showed, the missing-web-server-factory error is just as often caused by an annotation or an exclusion as by a missing jar. <strong>Avoid it by:</strong> checking in this order. Is <code>@SpringBootApplication</code> still whole? Is <code>spring.autoconfigure.exclude</code> empty? Is <code>spring.main.web-application-type</code> left at its default? Only then, check the dependencies.</p>
+          <p><strong>Reading "check your dependencies" and only looking at <code>pom.xml</code>.</strong> As section 4 showed, an annotation or an exclusion causes the missing-web-server-factory error just as often as a missing JAR. <strong>Avoid it by:</strong> checking in this order:</p>
+          <ol>
+            <li>Is <code>@SpringBootApplication</code> still whole?</li>
+            <li>Is <code>spring.autoconfigure.exclude</code> empty?</li>
+            <li>Is <code>spring.main.web-application-type</code> left at its default?</li>
+            <li>Only then, check the dependencies.</li>
+          </ol>
         </li>
         <li>
-          <p><strong>Putting any class in the default package.</strong> This happens when a file is created at the top of <code>src/main/java</code> by mistake. For the main class, it means searching every jar. <strong>Avoid it by:</strong> always giving every class a <code>package</code> line. Your IDE warns about the default package. Take the warning seriously.</p>
+          <p><strong>Putting any class in the default package.</strong> This happens when you create a file at the top of <code>src/main/java</code> by mistake. For the main class, it means searching every JAR. <strong>Avoid it by:</strong> always giving every class a <code>package</code> line. Your IDE warns about the default package. Take the warning seriously.</p>
         </li>
       </ul>
     </section>
@@ -1152,33 +1400,48 @@ APPLICATION FAILED TO START          &lt;-- EXPECTED: printed by the demo that e
     <section id="tradeoffs">
       <h2><span class="secno">8</span>Tradeoffs and When Not to Use This</h2>
 
-      <p><strong>Convenience hides things.</strong> One annotation doing three jobs is wonderful, until one of the jobs does something you did not expect. The whole point of this lesson is that the cost is small <em>if you know what is inside</em>. <code>--debug</code> shows every auto-configuration decision, and one test can check the search boundary. The cost is large for a team that treats the annotation as magic. That is why the tests in section 6 are worth having. Knowing the facts is not enough on its own.</p>
+      <h3>8.1 Convenience hides things</h3>
 
-      <p><strong>Scanning costs startup time.</strong> Reading every class file under the top package is fast for our project. It is still fast for a few thousand classes. But it is not free, and it grows as your code grows. Huge applications, and apps that must start in milliseconds, use Spring's ahead-of-time processing and native images (Phase 3). These do the work while building, instead of at startup. <code>spring.main.lazy-initialization=true</code> is another option. It creates beans only when they are first used, so startup is faster. But mistakes that would have failed at startup now fail on the first request instead. That is usually a worse time to find them.</p>
+      <p>One annotation doing three jobs is wonderful, until one of the jobs does something you did not expect. The whole point of this lesson is that the cost is small <em>if you know what is inside</em>. <code>--debug</code> shows every auto-configuration decision, and one test can check the search boundary. The cost is large for a team that treats the annotation as magic. That is why the tests in section 6 are worth having. Knowing the facts is not enough on its own.</p>
 
-      <p><strong>When would you <em>not</em> use <code>@SpringBootApplication</code> as it is?</strong> Three honest cases. First, <em>projects made of several modules</em>, where shared code lives in a package tree next to yours. Add <code>scanBasePackages</code> or <code>scanBasePackageClasses</code>. Or better, have the shared module provide its own auto-configuration recipe (Phase 3). Second, <em>libraries</em> meant for other applications to use. They must never carry <code>@SpringBootApplication</code>, because it would compete with the real application's one. Third, <em>tests or tools that need only part of the machinery</em>. They can use narrower annotations, such as <code>@ImportAutoConfiguration</code> with a hand-picked list of recipes. The testing chapter's "slice" tests do exactly this.</p>
+      <h3>8.2 Scanning costs startup time</h3>
 
-      <p><strong>When would you not want the embedded server?</strong> Some companies run one shared, centrally managed server, and require every app to be deployed into it. Boot can still produce a WAR file for that (Lesson 01 explained the format). Then the server is no longer embedded. And some programs do not answer web requests at all, such as a batch job or a command-line tool. For those, set <code>spring.main.web-application-type=none</code>, or simply do not use a web starter. You keep the container and auto-configuration, and lose nothing you needed. That is exactly what Spring Batch jobs do in Phase 3.</p>
-    </section>
-
-    <!-- ============================================================= -->
-    <section id="takeaways">
-      <h2><span class="secno">9</span>Key Takeaways</h2>
+      <p>Reading every class file under the top package is fast for our project. It is still fast for a few thousand classes. But it is not free, and it grows as your code grows. There are two ways to cut it:</p>
 
       <ul>
-        <li><code>@SpringBootApplication</code> is a bundle of three meta-annotations. <code>@SpringBootConfiguration</code> makes the main class the main configuration class, and a bean. <code>@EnableAutoConfiguration</code> switches on the recipe engine. <code>@ComponentScan</code> searches for your classes. Plain Java cannot see inside the bundle, but Spring's annotation reader can.</li>
-        <li><code>@EnableAutoConfiguration</code> imports a selector. The selector reads every <code>META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports</code> file, removes your exclusions, and uses the recipes whose conditions pass. It does this after your own configuration, and that is what lets a recipe step back when you define your own bean.</li>
-        <li>Component scanning starts at the main class's package. It covers only that package and the packages inside it, matching whole package names. That is why the main class belongs in the top package, and why a class outside the boundary is quietly never created.</li>
-        <li>The <code>ApplicationContext</code> is the container at the centre of every Spring application. It holds and names every bean, creates and connects them, owns the <code>Environment</code>, sends out events, and controls startup and shutdown. That includes the embedded Tomcat, which is just built by an auto-configured factory bean during refresh.</li>
-        <li><code>SpringApplication.run</code> returns the finished context once startup is complete, and then <code>main()</code> ends. The program keeps running only because Tomcat started a non-daemon thread. In Spring Boot 4, the Tomcat and web-server classes live in new packages (<code>org.springframework.boot.tomcat</code>, <code>org.springframework.boot.web.server.*</code>). That is why our logs and imports differ from every 3.x tutorial.</li>
+        <li><strong>Ahead-of-time processing and native images</strong> (Phase 3). "Ahead of time" means Spring does this work while it builds the app, not each time the app starts. Huge apps, and apps that must start in milliseconds, use these.</li>
+        <li><strong><code>spring.main.lazy-initialization=true</code></strong>. It creates beans only when something first uses them, so startup is faster. But mistakes that would have failed at startup now fail on the first request instead. That is usually a worse time to find them.</li>
+      </ul>
+
+      <h3>8.3 When you would not use <code>@SpringBootApplication</code> as it is</h3>
+
+      <p>Here are three honest cases:</p>
+
+      <ul>
+        <li><strong>Projects made of several modules</strong>, where shared code lives in a package tree next to yours. Add <code>scanBasePackages</code> or <code>scanBasePackageClasses</code>. Or better, have the shared module provide its own auto-configuration recipe (Phase 3).</li>
+        <li><strong>Libraries</strong> meant for other apps to use. They must never carry <code>@SpringBootApplication</code>, because it would compete with the real app's one.</li>
+        <li><strong>Tests or tools that need only part of the machinery.</strong> They can use narrower annotations, such as <code>@ImportAutoConfiguration</code> with a hand-picked list of recipes. The testing chapter's "slice" tests do exactly this. A <strong>slice test</strong> starts only one layer of the app, such as just the web part.</li>
+      </ul>
+
+      <h3>8.4 When you would not want the embedded server</h3>
+
+      <ul>
+        <li>Some companies run one shared, centrally managed server, and require every app to be deployed into it. Boot can still produce a WAR file for that (Lesson 01 explained the format). Then the server is no longer embedded.</li>
+        <li>Some programs do not answer web requests at all. A <strong>batch job</strong> (a program that works through a big pile of data, then stops) is one example. A command-line tool is another. For those, set <code>spring.main.web-application-type=none</code>, or simply do not use a web starter. You keep the container and auto-configuration, and lose nothing you needed. That is exactly what Spring Batch jobs do in Phase 3.</li>
       </ul>
     </section>
 
     <!-- ============================================================= -->
     <section id="challenge">
-      <h2><span class="secno">10</span>Coding Challenge</h2>
+      <h2><span class="secno">9</span>Coding Challenge</h2>
 
-      <p>A teammate "tidies" the project. They move <code>EcommerceApplication.java</code> into a new folder, <code>src/main/java/com/ecommerce/app/</code>. They change its first line to <code>package com.ecommerce.app;</code>. And they add one line to <code>main</code>:</p>
+      <p>A teammate "tidies" the project:</p>
+
+      <ol>
+        <li>They move <code>EcommerceApplication.java</code> into a new folder, <code>src/main/java/com/ecommerce/app/</code>.</li>
+        <li>They change its first line to <code>package com.ecommerce.app;</code>.</li>
+        <li>They add one line to <code>main</code>.</li>
+      </ol>
 
       <pre><code><span class="k">package</span> com.ecommerce.app;
 
@@ -1205,9 +1468,15 @@ APPLICATION FAILED TO START          &lt;-- EXPECTED: printed by the demo that e
       <details>
         <summary>Click to reveal the answer</summary>
 
-        <p><strong>1. <code>mvn spring-boot:run</code>: yes, it starts, and looks healthy.</strong> The package line matches the folder, so it compiles. Nothing about Tomcat or auto-configuration depends on where the main class sits. So the log is the same, except for the main class's logger column. That now reads <code>com.ecommerce.app.EcommerceApplication</code>. At 38 characters, it should still fit in full. The <code>spring-boot-maven-plugin</code> finds the main class by looking for a class with a <code>main</code> method, and there is still exactly one. "Shop is open!" <strong>does</strong> appear, once, straight after the <code>Started EcommerceApplication in … seconds</code> line. That is because <code>run</code> returns when startup is complete. After that, the application keeps running on Tomcat's non-daemon thread.</p>
+        <p><strong>1. <code>mvn spring-boot:run</code>: yes, it starts, and looks healthy.</strong> The package line matches the folder, so it compiles. Nothing about Tomcat or auto-configuration depends on where the main class sits. So the log is the same, except for the main class's logger column. That now reads <code>com.ecommerce.app.EcommerceApplication</code>. At 38 characters, it should still fit in full. The <code>spring-boot-maven-plugin</code> finds the main class by looking for a class with a <code>main</code> method, and there is still exactly one.</p>
+        <p>"Shop is open!" <strong>does</strong> appear, once, straight after the <code>Started EcommerceApplication in … seconds</code> line. That is because <code>run</code> returns when startup is complete. After that, the app keeps running on Tomcat's non-daemon thread.</p>
 
-        <p><strong>2. The first <code>mvn test</code>: <code>COMPILATION ERROR</code>, and not a single test runs.</strong> <code>EcommerceApplicationAnnotationTests</code> and <code>EcommerceApplicationContextTests</code> are in package <code>com.ecommerce</code>. They use <code>EcommerceApplication</code> by its short name, with no import. That only works while it is in the <em>same</em> package. The demo test imports <code>com.ecommerce.EcommerceApplication</code> by its full name, which no longer exists. Predicted:</p>
+        <p><strong>2. The first <code>mvn test</code>: <code>COMPILATION ERROR</code>, and not a single test runs.</strong></p>
+        <ul>
+          <li><code>EcommerceApplicationAnnotationTests</code> and <code>EcommerceApplicationContextTests</code> are in package <code>com.ecommerce</code>. They use <code>EcommerceApplication</code> by its short name, with no import. That only works while it is in the <em>same</em> package.</li>
+          <li>The demo test imports <code>com.ecommerce.EcommerceApplication</code> by its full name, which no longer exists.</li>
+        </ul>
+        <p>Predicted:</p>
         <pre><code>[ERROR] COMPILATION ERROR :
 [ERROR] .../EcommerceApplicationAnnotationTests.java:[..] cannot find symbol
   symbol:   class EcommerceApplication
@@ -1223,7 +1492,7 @@ APPLICATION FAILED TO START          &lt;-- EXPECTED: printed by the demo that e
           <li><strong><code>contextLoads()</code> passes, which surprises people.</strong> <code>@SpringBootTest</code> starts its search in the test's own package, <code>com.ecommerce</code>. That search also covers every package <em>inside</em> it. It finds exactly one <code>@SpringBootConfiguration</code>, in <code>com.ecommerce.app</code>, and starts it happily. So <code>contextLoads()</code> on its own would never have noticed the move. That is exactly why this lesson added a test that checks the package directly.</li>
         </ul>
 
-        <p><strong>4. <code>GET /products</code> gives a 404.</strong> The search now starts at <code>com.ecommerce.app</code>. <code>com.ecommerce.product</code> sits next to <code>app</code>, not inside it. So the controller is never found, never created, and never connected to its address. Startup prints no error at all. It is the simulation's second button, now for real.</p>
+        <p><strong>4. <code>GET /products</code> gives a 404.</strong> The search now starts at <code>com.ecommerce.app</code>. <code>com.ecommerce.product</code> sits next to <code>app</code>, not inside it. So Spring never finds the controller, never creates it, and never connects it to its address. Startup prints no error at all. It is the simulation's second button, now for real.</p>
 
         <p><strong>5. Two fixes.</strong></p>
         <p><em>Fix A (the right one): move the class back.</em> Put <code>EcommerceApplication</code> back in <code>com.ecommerce</code>, using the IDE's move refactoring, which updates every reference. The usual layout is back, the boundary covers everything, and all 11 tests pass. This is the choice to make. Every other developer who opens the project will <em>expect</em> the main class in the top package.</p>
@@ -1232,21 +1501,97 @@ APPLICATION FAILED TO START          &lt;-- EXPECTED: printed by the demo that e
 <span class="k">public class</span> <span class="t">EcommerceApplication</span> { ... }</code></pre>
         <p>This fixes the controller. But it only widens <code>@ComponentScan</code>. <code>@AutoConfigurationPackage</code> still records <code>com.ecommerce.app</code>. So our package test still fails. And in Chapter 5, the database layer would not find entity classes outside <code>com.ecommerce.app</code> either. You would need more settings to cover that too. Fix B treats a symptom. Fix A removes the cause.</p>
 
-        <p>And delete the <code>println</code>. Lesson 10 shows the proper way to run something once the application is ready.</p>
+        <p>And delete the <code>println</code>. Lesson 10 shows the proper way to run something once the app is ready.</p>
 
         <div class="tryit">
-          <p>Want to watch this happen? Use your IDE's refactor → move to put <code>EcommerceApplication</code> into a new <code>com.ecommerce.app</code> package. That way the imports are updated. Then run <code>mvn test</code>. You should see exactly one failure: <code>theApplicationPackageIsTheMainClassPackage</code>. Move the class back, run <code>mvn test</code> again, and check you get <code>Tests run: 11, Failures: 0</code>. Commit only the working version.</p>
+          <p>Want to watch this happen? Follow these steps:</p>
+          <ol>
+            <li>Use your IDE's refactor → move to put <code>EcommerceApplication</code> into a new <code>com.ecommerce.app</code> package. That way the IDE updates the imports.</li>
+            <li>Run <code>mvn test</code>. You should see exactly one failure: <code>theApplicationPackageIsTheMainClassPackage</code>.</li>
+            <li>Move the class back. Run <code>mvn test</code> again, and check you get <code>Tests run: 11, Failures: 0</code>.</li>
+          </ol>
+          <p>Commit only the working version.</p>
         </div>
       </details>
     </section>
 
     <!-- ============================================================= -->
+    <section id="keywords">
+      <h2><span class="secno">10</span>Key Words</h2>
+
+      <p>Every new word from this lesson, with a one-line meaning.</p>
+
+      <dl class="keywords">
+        <dt>Connector</dt><dd>The part of Tomcat that accepts network connections.</dd>
+        <dt>Attribute (of an annotation)</dt><dd>A named setting you fill in when you use an annotation, like <code>exclude = …</code>.</dd>
+        <dt><code>@Retention(RUNTIME)</code></dt><dd>Keeps an annotation in the compiled class, so a running program can see it.</dd>
+        <dt>Reflection</dt><dd>A running Java program looking at its own classes, methods and annotations.</dd>
+        <dt>API</dt><dd>The set of classes and methods a library offers to other code.</dd>
+        <dt>Meta-annotation</dt><dd>An annotation placed on another annotation, so using the outer one brings the inner one too.</dd>
+        <dt><code>@AliasFor</code></dt><dd>Passes a setting from the bundle annotation on to one of the annotations inside it.</dd>
+        <dt>Bean</dt><dd>An object that Spring creates, keeps and hands out, instead of your code calling <code>new</code>.</dd>
+        <dt>Configuration class</dt><dd>A class marked <code>@Configuration</code> that holds setup instructions, usually <code>@Bean</code> methods.</dd>
+        <dt><code>@SpringBootConfiguration</code></dt><dd>Marks the one main configuration class. Tests search for it.</dd>
+        <dt><code>@Component</code></dt><dd>A marker meaning "Spring should manage this class". Lesson 05 covers it.</dd>
+        <dt><code>@EnableAutoConfiguration</code></dt><dd>Switches on the recipe engine from Lesson 01.</dd>
+        <dt><code>@Import</code></dt><dd>"While you read this configuration class, read that one too."</dd>
+        <dt>Selector</dt><dd>A class that decides at startup which configuration classes to import.</dd>
+        <dt><code>AutoConfiguration.imports</code></dt><dd>The text file in each JAR that lists its auto-configuration recipes.</dd>
+        <dt>Exclusion</dt><dd>A recipe you told Boot to skip, by class or by name.</dd>
+        <dt><code>@AutoConfigurationPackage</code></dt><dd>Records the main class's package as "where the app's own code lives".</dd>
+        <dt>Entity</dt><dd>A class whose objects are saved as rows in a database. Chapter 5 covers it.</dd>
+        <dt>Conditions evaluation report</dt><dd>The list <code>--debug</code> prints, showing which recipes matched and why.</dd>
+        <dt><code>@ComponentScan</code></dt><dd>Searches the main class's package, and every package inside it, for components.</dd>
+        <dt>Bean definition</dt><dd>A written plan for a bean that Spring will create later.</dd>
+        <dt>Hook</dt><dd>A place where other code can plug in its own rule or action.</dd>
+        <dt>Scan boundary</dt><dd>The edge of the search: the main class's package and everything inside it.</dd>
+        <dt>Default package</dt><dd>Where a class with no <code>package</code> line lives. Never put the main class there.</dd>
+        <dt><code>ApplicationContext</code></dt><dd>Spring's container: it holds every bean, owns the settings, sends events, and starts and stops everything.</dd>
+        <dt>Interface</dt><dd>A Java list of promised abilities, with no code of its own.</dd>
+        <dt><code>Environment</code></dt><dd>The one object that holds all settings, from every source, in priority order.</dd>
+        <dt>Event</dt><dd>A message that says "this just happened", such as "startup finished".</dd>
+        <dt>Refresh / close</dt><dd>The context's start-up step (create everything) and shut-down step (stop everything).</dd>
+        <dt>Web application type</dt><dd>Boot's choice of servlet, reactive or none, made from the classpath.</dd>
+        <dt>Factory</dt><dd>An object whose only job is to build another object.</dd>
+        <dt><code>onRefresh</code></dt><dd>The step during refresh where the context builds the web server.</dd>
+        <dt>Jetty</dt><dd>Another embedded web server you can use instead of Tomcat.</dd>
+        <dt>Thread</dt><dd>One line of work inside a running program.</dd>
+        <dt>Daemon / non-daemon thread</dt><dd>Background help the JVM does not wait for / real work it must wait for.</dd>
+        <dt>Shutdown hook</dt><dd>Code registered in advance to run when the program is told to stop.</dd>
+        <dt>Graceful shutdown</dt><dd>Stop taking new requests, finish the current ones, then stop.</dd>
+        <dt>Primary source</dt><dd>The first configuration class you hand to <code>SpringApplication.run</code>.</dd>
+        <dt>Lazy bean</dt><dd>A bean Spring creates only when something first uses it.</dd>
+        <dt>PID</dt><dd>Process ID: the number the operating system gives a running program.</dd>
+        <dt>Module (Maven)</dt><dd>A smaller project that is built together with others as one bigger project.</dd>
+        <dt><code>@BeforeAll</code> / <code>@AfterAll</code></dt><dd>JUnit annotations for methods that run once before / after all tests in a class.</dd>
+        <dt>Try-with-resources</dt><dd>A Java <code>try</code> that closes what it opened automatically when the block ends.</dd>
+        <dt>Root cause</dt><dd>The error at the bottom of a chain of "caused by" errors.</dd>
+        <dt>Ahead-of-time processing</dt><dd>Doing Spring's setup work while building the app, not each time it starts.</dd>
+        <dt>Slice test</dt><dd>A test that starts only one layer of the app, such as the web part.</dd>
+        <dt>Batch job</dt><dd>A program that works through a big pile of data, then stops.</dd>
+      </dl>
+    </section>
+
+    <!-- ============================================================= -->
+    <section id="recap">
+      <h2><span class="secno">11</span>Quick Recap</h2>
+
+      <ul>
+        <li><code>@SpringBootApplication</code> bundles three annotations. <code>@SpringBootConfiguration</code> makes the main class the main configuration class, and a bean. <code>@EnableAutoConfiguration</code> switches on the recipe engine. <code>@ComponentScan</code> searches for your classes.</li>
+        <li>The auto-configuration selector reads every <code>AutoConfiguration.imports</code> file, removes exclusions, and uses the recipes whose conditions pass. It runs after your own configuration, so recipes step back when you define your own bean.</li>
+        <li>Component scanning covers only the main class's package and the packages inside it. So the main class belongs in the top package. A class outside the boundary is silently never created.</li>
+        <li>The <code>ApplicationContext</code> holds every bean, owns the settings, sends events, and starts and stops everything. The embedded Tomcat is just a bean-built object it creates during refresh.</li>
+        <li><code>SpringApplication.run</code> returns once startup is done, and <code>main()</code> ends. Tomcat's non-daemon thread keeps the program alive. In Boot 4, the Tomcat and web-server classes live in new packages.</li>
+      </ul>
+    </section>
+
+    <!-- ============================================================= -->
     <section id="next">
-      <h2><span class="secno">11</span>What Is Next</h2>
+      <h2><span class="secno">12</span>What Is Next</h2>
 
       <p>That completes Chapter 1. The <a href="chapter-01-summary.html">Chapter 1 summary</a> pulls Lessons 01 to 03 together into one picture of the running system. It ends with a boss challenge.</p>
 
-      <p>Then Chapter 2 opens with <strong>Lesson 04 — Inversion of Control, the Soul of Spring</strong>. This lesson kept saying "Spring creates the object and hands it to you", and "the bean". It promised to explain them properly. Lesson 04 does. It shows why letting a container create your objects, instead of calling <code>new</code> yourself, is the idea everything else in Spring rests on. And it shows what a bean really is.</p>
+      <p>Then Chapter 2 opens with <strong>Lesson 04 — Inversion of Control, the Soul of Spring</strong>. This lesson kept saying "Spring creates the object and hands it to you", and "the bean". It promised to explain them properly. Lesson 04 does. It shows why everything else in Spring rests on one idea: a container creates your objects, instead of you calling <code>new</code> yourself. And it shows what a bean really is.</p>
     </section>
 
     <footer class="next">

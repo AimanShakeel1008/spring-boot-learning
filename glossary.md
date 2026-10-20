@@ -36,6 +36,21 @@ Terms are added as they are introduced, so this file grows lesson by lesson.
 | **Push** | Sending your new commits from your machine up to the remote. | Lesson 00 |
 | **`.gitignore`** | A file listing what Git must never track — build output, IDE settings, and above all real secrets. Written *before* the first `git add`. | Lesson 00 |
 | **Pinning (a version)** | Fixing a tool or library at one specific version deliberately, and writing it down, instead of accepting whatever is newest. Makes predicted output reproducible. | Lesson 00 |
+| **Processor (CPU)** | The chip inside a computer that carries out instructions. It only understands machine code. | Lesson 00 |
+| **Operating system** | The main program that runs a computer, such as Windows, macOS or Linux. Each needs different machine code. | Lesson 00 |
+| **Standard library** | The thousands of ready-made classes that come with Java itself, such as `String` and `List`. | Lesson 00 |
+| **Runtime** | "While a program is running." | Lesson 00 |
+| **`JAVA_HOME`** | An environment variable holding the folder where your JDK is installed. Maven uses it to pick which Java to use. | Lesson 00 |
+| **Cmdlet** | PowerShell's word for one of its built-in commands. | Lesson 00 |
+| **Plugin (Maven)** | An add-on that does one job for Maven, such as running the compiler. | Lesson 00 |
+| **Test** | A small piece of code that checks your real code still does what it should. | Lesson 00 |
+| **Stage (Git)** | To choose a file for the next commit. | Lesson 00 |
+| **Branch** | A named line of commits. Our main one is called `main`. | Lesson 00 |
+| **Major version** | The first number in a version, like the 4 in 4.1.1. A new one can change how things behave. | Lesson 00 |
+| **Deprecated** | Marked as old: it still works for now, but a later version will remove it. | Lesson 00 |
+| **API key** | A secret code that lets your app use an online service. Never committed to Git. | Lesson 00 |
+| **Version manager** | A tool that installs several Java versions and switches between them (SDKMAN!, winget, Chocolatey). | Lesson 00 |
+| **Container** (Docker) | A sealed box that holds an app and everything it needs to run. Covered in Phase 3. (Not the same as Spring's container.) | Lesson 00 |
 | **Framework** | Pre-written code that runs your application and calls *your* code at the right moments — the reverse of a library, where you do the calling. | Lesson 01 |
 | **Server** | A long-running program that waits for network requests and responds to them. A program, not a machine. | Lesson 01 |
 | **Port** | A numbered door on a machine, so many programs can share one network connection. Web servers commonly use 8080 in development. | Lesson 01 |
@@ -56,11 +71,35 @@ Terms are added as they are introduced, so this file grows lesson by lesson.
 | **`@ConditionalOnMissingBean`** | A condition applying an auto-configuration only if you have not already defined that object yourself. The mechanism by which Boot backs off. | Lesson 01 |
 | **`@SpringBootApplication`** | The single annotation marking the application's starting point, switching on auto-configuration, and telling Spring where to look for your classes. Unpacked in Lesson 03. | Lesson 01 |
 | **Condition report** | The list Boot prints with `--debug`, showing every candidate auto-configuration under "Positive matches" and "Negative matches" with the reason. | Lesson 01 |
+| **Hollywood Principle** | "Don't call us, we'll call you": the framework calls your code, not the other way round. | Lesson 01 |
+| **Request / response** | The two halves of an HTTP conversation: what the caller sends, and what comes back. | Lesson 01 |
+| **Status code** | A number in a response that says how it went. 200 means OK; 404 means nothing lives at that address. | Lesson 01 |
+| **XML** | A text format that describes data with tags in angle brackets, like `<port>8080</port>`. | Lesson 01 |
+| **Log file** | A text file where a program writes down what it is doing. | Lesson 01 |
+| **Database** | A program that stores your data safely, so it survives restarts. | Lesson 01 |
+| **JSON** | A simple text format for data, like `{"name":"Mug","price":12}`. The usual way web apps send data. | Lesson 01 |
+| **Production** | The real, live system that real customers use. | Lesson 01 |
+| **Deployment** | Putting your app onto the machine where it will run for real. | Lesson 01 |
+| **Bean** | An object that Spring creates and looks after for you. One-line meaning here; fuller in Lesson 03, full lesson in Lesson 04. | Lesson 01 |
+| **Rule engine** | A program that checks a list of rules and acts on the ones that are true. Auto-configuration works this way. | Lesson 01 |
+| **H2** | A small database that lives in your program's memory. Used from Lesson 22. | Lesson 01 |
+| **Driver (database)** | A library that knows how to talk to one kind of database. | Lesson 01 |
+| **JPA** | A standard way to save Java objects in a database and load them back. | Lesson 01 |
+| **`DataSource`** | The object that hands out connections to a database. | Lesson 01 |
+| **Dependency injection** | Handing an object the other objects it needs, instead of letting it build them itself. Chapter 2. | Lesson 01 |
+| **Transaction** | A group of database changes that all succeed together or are all undone, like both halves of a bank transfer. | Lesson 01 |
+| **Module** (Boot 4) | A smaller JAR with one clear job. Boot 4 split its auto-configuration into one module per technology. | Lesson 01 |
+| **`DispatcherServlet`** | Spring's main servlet: it receives every request and passes it to the right piece of your code. | Lesson 01 |
+| **Stack trace** | The list of method calls that led to an error, newest first. | Lesson 01 |
+| **Application context** | Spring's container object, which holds and connects your beans. Full treatment in Lesson 03. | Lesson 01 |
+| **Thread** | One line of work inside a program; a program can run several at once. Full treatment in Lesson 03. | Lesson 01 |
+| **Profile** | A named set of settings, such as one for your laptop and one for the live system. Lesson 39. | Lesson 01 |
+| **Endpoint** | One web address that your app answers. | Lesson 01 |
+| **Native image** | A program compiled straight to machine code, so it starts in milliseconds. Phase 3. | Lesson 01 |
 | **Build tool** | A program that turns source code into a runnable program — fetching dependencies, compiling, testing and packaging — the same way on every machine. Ours is Maven. | Lesson 02 |
 | **Maven** | The build tool this course uses. You describe *what the project is*; Maven already knows what building means. | Lesson 02 |
 | **`pom.xml`** | "Project Object Model" — Maven's file describing who the project is, what it depends on, and how to build it. Delete it and the folder stops being a Maven project. | Lesson 02 |
-| **Bytecode** | The compact instruction format the Java runtime actually executes. `javac` turns `.java` text into `.class` bytecode. | Lesson 02 |
-| **Artifact** | Any published, downloadable output of a build — in practice, a jar file. | Lesson 02 |
+| **Bytecode** | The compact instruction format the Java runtime actually executes. `javac` turns `.java` text into `.class` bytecode. | Lesson 02 || **Artifact** | Any published, downloadable output of a build — in practice, a jar file. | Lesson 02 |
 | **Coordinates** | The three values that uniquely name any artifact in the world: `groupId`, `artifactId`, `version`. | Lesson 02 |
 | **`groupId`** | Who published an artifact, written in reverse internet-domain order (e.g. `org.springframework.boot`). | Lesson 02 |
 | **`artifactId`** | Which of a publisher's artifacts this is (e.g. `spring-boot-starter-webmvc`). | Lesson 02 |
@@ -93,6 +132,27 @@ Terms are added as they are introduced, so this file grows lesson by lesson.
 | **Whitelabel Error Page** | Spring Boot's default HTML error page, shown when a browser asks for HTML and nothing is mapped. The JSON equivalent appears when the caller asks for JSON. | Lesson 02 |
 | **Content negotiation** | The server choosing a response format from what the caller says it accepts, via the `Accept` header. Full treatment in Chapter 4. | Lesson 02 |
 | **YAML** | An indentation-based settings format Spring Boot reads. Two spaces per level, spaces only — a tab is a syntax error. | Lesson 02 |
+| **Domain** | The name part of a web address, like `springframework.org`. Only one organisation can own each one, which is why `groupId`s use them. | Lesson 02 |
+| **POM** | "Project Object Model": Maven's description of a project, kept in `pom.xml`. | Lesson 02 |
+| **Property (POM)** | A named value in a POM, such as `java.version`, that other parts of the build read. | Lesson 02 |
+| **UTF-8** | The standard way to store letters as bytes, so accented letters like "é" survive. | Lesson 02 |
+| **Assertion** | A line in a test stating what must be true; if it is not, it throws and the test fails. | Lesson 02 |
+| **AssertJ** | The assertion library in `spring-boot-starter-test`. `assertThat(x).isTrue()` reads like a sentence and prints expected vs. actual on failure. | Lesson 02 |
+| **Mockito** | A testing library that makes fake objects, so you can test one class on its own. | Lesson 02 |
+| **MockMvc** | A testing tool that sends pretend requests to your web code without a real server. | Lesson 02 |
+| **`RestTestClient`** | Boot 4's new test client for sending HTTP requests to your app from a test. | Lesson 02 |
+| **OAuth2** | A standard way to log in through another service, like "Sign in with Google". | Lesson 02 |
+| **SNAPSHOT** | A version still being worked on, like `0.0.1-SNAPSHOT`. `-M` (milestone) and `-RC` (release candidate) also mean unfinished. | Lesson 02 |
+| **Controller** | The class that answers web requests. Chapter 4 builds the first one. | Lesson 02 |
+| **curl** | A terminal tool that sends a web request and shows what comes back. | Lesson 02 |
+| **Flag** | An extra instruction added to a command, like `-jar` or `-i`. | Lesson 02 |
+| **Class loader** | The part of Java that finds and loads classes while a program runs. The standard one cannot read JARs inside a JAR. | Lesson 02 |
+| **Header** | A labelled line of extra information sent with a request or a response, such as `Accept` or `Content-Type`. | Lesson 02 |
+| **`localhost`** | A name that means "this same computer". | Lesson 02 |
+| **`GET`** | The kind of HTTP request that means "give me something". | Lesson 02 |
+| **Refactor** | A safe, automatic code change that updates every place at once, such as the IDE's "move" command. | Lesson 02 |
+| **Build server** | A computer that builds and tests code automatically each time someone pushes. | Lesson 02 |
+| **Layer (container image)** | One slice of a container image. Only changed layers are rebuilt and sent. | Lesson 02 |
 | **`@interface`** | The Java keyword used to *declare* a new annotation, the way `class` declares a class. | Lesson 03 |
 | **Annotation attribute** | A named setting you can fill in when using an annotation, e.g. `scanBasePackages` in `@SpringBootApplication(scanBasePackages = "…")`. | Lesson 03 |
 | **Retention (`@Retention(RUNTIME)`)** | Whether an annotation survives compilation and can be seen by a running program. Spring can only read annotations with `RUNTIME` retention. | Lesson 03 |
@@ -135,7 +195,21 @@ Terms are added as they are introduced, so this file grows lesson by lesson.
 | **Shutdown hook** | Code registered in advance to run when the Java runtime is asked to stop (e.g. Ctrl+C). Spring Boot registers one that closes the context. | Lesson 03 |
 | **Graceful shutdown** | Stopping a server by refusing new connections, letting requests already in progress finish, and only then shutting down. | Lesson 03 |
 | **Lazy initialization** | Creating a bean only the first time it is used, instead of at startup. Faster startup, but mistakes surface on the first request instead. | Lesson 03 |
-| **Assertion** | A line in a test stating what must be true; if it is not, it throws and the test fails. | Lesson 03 |
-| **AssertJ** | The assertion library in `spring-boot-starter-test`. `assertThat(x).isTrue()` reads like a sentence and prints expected vs. actual on failure. | Lesson 03 |
 | **`@BeforeAll` / `@AfterAll`** | JUnit annotations for a `static` method that runs once before all tests in a class / once after all of them. | Lesson 03 |
 | **try-with-resources** | Java's `try ( … ) { … }` form: anything closeable declared in the brackets is closed automatically when the block ends, even if it throws. | Lesson 03 |
+| **Connector (Tomcat)** | The part of Tomcat that accepts network connections. | Lesson 03 |
+| **API** | The set of classes and methods a library offers to other code. | Lesson 03 |
+| **Selector** | A class that decides at startup which configuration classes to import. `AutoConfigurationImportSelector` is one. | Lesson 03 |
+| **Entity** | A class whose objects are saved as rows in a database. Chapter 5. | Lesson 03 |
+| **Hook** | A place where other code can plug in its own rule or action. | Lesson 03 |
+| **Interface** | A Java list of promised abilities, with no code of its own. `ApplicationContext` is one. | Lesson 03 |
+| **Event** | A message that says "this just happened", such as "startup finished". The context sends them; beans can listen. | Lesson 03 |
+| **Jetty** | Another embedded web server you can use instead of Tomcat. | Lesson 03 |
+| **PID** (process ID) | The number the operating system gives a running program. Shown in every log line. | Lesson 03 |
+| **Module (Maven)** | A smaller project built together with others as one bigger project. | Lesson 03 |
+| **Root cause** | The error at the bottom of a chain of "caused by" errors. | Lesson 03 |
+| **Ahead-of-time processing** | Doing Spring's setup work while building the app, not each time it starts. Phase 3. | Lesson 03 |
+| **Slice test** | A test that starts only one layer of the app, such as just the web part. Testing chapter. | Lesson 03 |
+| **Batch job** | A program that works through a big pile of data, then stops. | Lesson 03 |
+| **Pull request** | A set of proposed changes that a teammate asks the others to review before they join the main code. | Chapter 1 summary |
+| **Pipeline** | An automatic line that builds, tests and ships the app on every push. Chapter 25. | Chapter 1 summary |
