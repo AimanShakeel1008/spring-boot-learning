@@ -532,7 +532,7 @@ server:
         <p>The Spring team renamed the modules to match what they contain. So several starters got new names too. You will meet the first one, the web starter, in the very next lesson:</p>
         <span class="v4-old">spring-boot-starter-web</span>
         <span class="v4-new">spring-boot-starter-webmvc</span>
-        <p><strong>Why:</strong> the module behind it is clearly about Spring Web <em>MVC</em>. That is the servlet-based way to build a web app. There is also a "reactive" way, a different style built for handling very many requests at once. We study it in Chapter 27. The old name did not say which one you wanted. The new name does.</p>
+        <p><strong>Why:</strong> the module behind it is clearly about Spring Web <em>MVC</em>. That is the servlet-based way to build a web app. There is also a "reactive" way, a different style built for handling very many requests at once. We study it in Chapter 28. The old name did not say which one you wanted. The new name does.</p>
         <p><strong>What this means for you:</strong> in our project, type <code>spring-boot-starter-webmvc</code>. Nearly every tutorial says <code>spring-boot-starter-web</code>, because it was written before 2026. That is not a mistake in the tutorial. It is just the old name. Translate it and carry on.</p>
         <p>There is also <code>spring-boot-starter-classic</code>. It keeps the old all-in-one behaviour, for existing projects that move up from 3.x. A new project should not use it.</p>
       </div>
@@ -738,7 +738,7 @@ INFO 18244 --- [ecommerce] [  main] b.w.c.s.WebApplicationContextInitializer : R
 
       <p>Checking a hundred or so recipes every time the app starts costs time and memory. For a server that starts once and runs for weeks, this does not matter. But some programs run for only a moment and must start instantly. One example is a cloud function. That is a tiny program that a cloud company runs for you. You pay for it by the millisecond. There, the cost matters.</p>
 
-      <p>Lesson 144 covers the tools for that. One is doing the setup work while you build, not while the app starts. Another is a <strong>native image</strong>: a program compiled straight to machine code, so it starts in milliseconds.</p>
+      <p>Lesson 151 covers the tools for that. One is doing the setup work while you build, not while the app starts. Another is a <strong>native image</strong>: a program compiled straight to machine code, so it starts in milliseconds.</p>
 
       <h3>8.2 Convenience can hide things</h3>
 
@@ -746,7 +746,7 @@ INFO 18244 --- [ecommerce] [  main] b.w.c.s.WebApplicationContextInitializer : R
 
       <h3>8.3 Dependency weight</h3>
 
-      <p>One starter can bring in dozens of JARs, and you will never use some of them. That is a fair price for a working app in one line. But it means a Boot app is not small. And every JAR could carry a security hole. That is why Lesson 124 sets up automatic checks on your dependencies.</p>
+      <p>One starter can bring in dozens of JARs, and you will never use some of them. That is a fair price for a working app in one line. But it means a Boot app is not small. And every JAR could carry a security hole. That is why Lesson 80 sets up automatic checks on your dependencies.</p>
 
       <h3>8.4 When not to use Spring Boot</h3>
 
@@ -907,7 +907,7 @@ Consider the following:
       <p>Spring Initializr, Maven and dependency management, explained properly. Every file in the project accounted for. And the full journey from <code>java -jar</code> to the first HTTP response.</p>
     </footer>
 
-    <p class="lesson-footer">Lesson 01 of 168 · Phase 1 · Chapter 1 — Getting Started</p>
+    <p class="lesson-footer">Lesson 01 of 175 · Phase 1 · Chapter 1 — Getting Started</p>
 
   </main>
 </div>

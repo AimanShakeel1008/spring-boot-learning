@@ -6,8 +6,11 @@ One E-Commerce system, built from nothing and reshaped across four architectural
 |---|---|---|
 | 1 | A single Spring Boot application (the monolith) — users, products, orders, payments | `phase-1-monolith/` |
 | 2 | The same system split into microservices behind an API gateway | `phase-2-microservices/` |
-| 3 | The same system hardened for production — containers, CI/CD, performance, reactive | `phase-3-production/` |
+| 3 | The same system hardened for production — Docker, Kubernetes and Helm; CI/CD with GitHub Actions and Jenkins; Terraform, cloud deployment and GitOps; performance; reactive | `phase-3-production/` |
 | 4 | An AI Support Assistant added as a sixth service, built with Spring AI | `phase-2-microservices/ai-assistant-service/` |
+
+DevOps is part of the build from Phase 1 onward. From Lesson 80, a GitHub Actions pipeline
+builds and tests every push. From Lesson 81, a SonarQube quality gate checks the code too.
 
 Every lesson that builds part of this system is archived as a standalone page under [`lessons/`](lessons/), starting from the course map at `lessons/index.html`.
 

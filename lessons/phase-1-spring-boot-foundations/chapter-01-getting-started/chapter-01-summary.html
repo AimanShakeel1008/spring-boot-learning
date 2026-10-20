@@ -276,9 +276,9 @@ Boot 4 modularization ──────────────► -web → -we
       <ul>
         <li><strong>The bean and the <code>ApplicationContext</code>.</strong> Lesson 03 used just enough of both to move on. Chapter 2 is entirely about them. It covers how the context creates beans and connects them by dependency injection. It also covers bean <em>scope</em>: how many copies of a bean exist, and for how long. And it follows each bean's life, from creation to destruction.</li>
         <li><strong>The scan boundary.</strong> From Lesson 05, every <code>@Service</code> and <code>@RestController</code> you write lives or dies by it. It returns at full strength in Phase 2, when shared code sits in a package tree next to yours, not inside it.</li>
-        <li><strong><code>@ConditionalOnMissingBean</code> and "your configuration first, recipes last".</strong> Every change to Boot's defaults in this course works this way. That runs from defining your own bean in Lesson 07, to writing your own starter and auto-configuration in Chapter 29.</li>
+        <li><strong><code>@ConditionalOnMissingBean</code> and "your configuration first, recipes last".</strong> Every change to Boot's defaults in this course works this way. That runs from defining your own bean in Lesson 07, to writing your own starter and auto-configuration in Chapter 30.</li>
         <li><strong>The <code>Environment</code> and "the command line beats <code>application.yml</code>".</strong> Chapter 6 spells out the full priority order, and profiles. Every <code>--server.port=0</code> in our tests already uses it.</li>
-        <li><strong>The fat JAR.</strong> Chapter 24 puts it into a Docker image (the saved template a container starts from). Chapter 25 builds a <em>pipeline</em>: an automatic line that builds, tests and ships the app on every push. "One file, no server to install" is why both are easy.</li>
+        <li><strong>The fat JAR.</strong> Lesson 80 builds your first <em>pipeline</em>: an automatic line that builds and tests the app on every push. Chapter 24 puts the JAR into a Docker image (the saved template a container starts from). Chapter 25 grows the pipeline so it also ships that image. Chapter 26 deploys it to the cloud. "One file, no server to install" is why all of this is easy.</li>
       </ul>
     </section>
 

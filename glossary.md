@@ -212,4 +212,4 @@ Terms are added as they are introduced, so this file grows lesson by lesson.
 | **Slice test** | A test that starts only one layer of the app, such as just the web part. Testing chapter. | Lesson 03 |
 | **Batch job** | A program that works through a big pile of data, then stops. | Lesson 03 |
 | **Pull request** | A set of proposed changes that a teammate asks the others to review before they join the main code. | Chapter 1 summary |
-| **Pipeline** | An automatic line that builds, tests and ships the app on every push. Chapter 25. | Chapter 1 summary |
+| **Pipeline** | An automatic line that builds, tests and ships the app on every push. First built in Lesson 80; grown into full CI/CD in Chapter 25. | Chapter 1 summary |

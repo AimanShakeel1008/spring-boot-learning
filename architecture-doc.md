@@ -73,7 +73,7 @@ What it does today:
 
 ## Where it is going
 
-- **Phase 1** — one Spring Boot application containing users, products, orders and payments, backed by H2 and then PostgreSQL. Chapter 2 next: the container, beans and dependency injection.
+- **Phase 1** — one Spring Boot application containing users, products, orders and payments, backed by H2 and then PostgreSQL. It ends with a GitHub Actions CI pipeline and a SonarQube quality gate (Lessons 80–81). Chapter 2 next: the container, beans and dependency injection.
 - **Phase 2** — that application split into User, Product, Order, Payment and Notification services behind an API Gateway, communicating over HTTP and Kafka.
-- **Phase 3** — the same system containerised, deployed through a CI/CD pipeline, tuned for performance, and extended with a reactive slice where it earns its place.
+- **Phase 3** — the same system containerised and packaged with Helm. It is built, scanned and delivered by GitHub Actions and Jenkins pipelines. Its infrastructure is provisioned with Terraform, and Argo CD deploys it to the cloud using GitOps. It is then tuned for performance and extended with a reactive slice where it earns its place.
 - **Phase 4** — an AI Support Assistant added as a sixth service, grounded in our own help articles and catalog.

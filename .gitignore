@@ -18,3 +18,11 @@ target/
 # Real secrets - never commit; application.yml + .env.example are the templates
 **/application-local.yml
 .env
+
+# Terraform - state files can hold secrets in plain text; providers are re-downloaded
+.terraform/
+*.tfstate
+*.tfstate.*
+*.tfvars
+!*.tfvars.example
+crash.log
